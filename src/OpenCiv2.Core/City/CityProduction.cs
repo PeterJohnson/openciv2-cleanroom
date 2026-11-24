@@ -66,15 +66,26 @@ public sealed class CityProduction
     }
     private bool Human(int c) => world.Globals.HumanPlayers.Contains(c & 31);
     public Operation Begin(CitySlot city, string call) => new(this, city, call);
-
-    public sealed class Operation(CityProduction production, CitySlot slot, string call) : IDisposable
+    public Operation Begin(CitySlot city, string call, CivilizationElimination lifecycle, EspionageIncidents incidents)
     {
-        private enum Phase { Begin, FirstResearch, SecondResearch, AfterEffects, Finish, Done }
+        ArgumentNullException.ThrowIfNull(lifecycle);
+        ArgumentNullException.ThrowIfNull(incidents);
+        return new(this, city, call, lifecycle, incidents);
+    }
+
+    public sealed class Operation(CityProduction production, CitySlot slot, string call,
+        CivilizationElimination? lifecycle = null, EspionageIncidents? incidents = null) : IDisposable
+    {
+        private enum Phase { Begin, Unit, FirstResearch, SecondResearch, AfterEffects, Finish, Done }
         private Phase phase;
         private bool faulted, disposed;
         private int owner, net, cost;
         private int? improvement, wonder;
         private ResearchOperation? child;
+        private CityUnitProduction.Operation? unit;
+        public UnitProductionDecision? UnitDecision { get; private set; }
+        private readonly List<Exception> failures = [];
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
         private CityProductionOutcome outcome = CityProductionOutcome.NotReady;
         private GameState World => production.world;
         private RuleTables Rules => production.rules;
@@ -93,9 +104,9 @@ public sealed class CityProduction
 
             try
             { return ResumeCore(reply); }
-            catch { faulted = true; child?.Dispose(); throw; }
+            catch { faulted = true; child?.Dispose(); unit?.Dispose(); throw; }
         }
-        public void Dispose() { disposed = true; child?.Dispose(); }
+        public void Dispose() { disposed = true; child?.Dispose(); unit?.Dispose(); }
 
         private ResearchDecision? ResumeCore(ResearchReply? reply)
         {
@@ -114,12 +125,34 @@ public sealed class CityProduction
                         World.Production.CompletedImprovement = null;
                         if (City.Production >= 0)
                         {
-                            Result = new(CityProductionOutcome.Unit, Unit: production.units.Run(slot, call));
-                            Finished = true;
-                            return null;
+                            if (lifecycle is null)
+                            {
+                                Result = new(CityProductionOutcome.Unit, Unit: production.units.Run(slot, call));
+                                Finished = true;
+                                return null;
+                            }
+                            unit = production.units.Begin(slot, call, lifecycle, incidents
+                                ?? throw new InvalidOperationException("Retained unit production requires incident services"));
+                            phase = Phase.Unit;
+                            reply = null;
+                            break;
                         }
                         StartNonunit();
                         break;
+                    case Phase.Unit:
+                        UnitDecision = unit!.ResumeDecision(reply);
+                        reply = null;
+                        if (unit.Result is null)
+                        {
+                            return null;
+                        }
+
+                        failures.AddRange(unit.PresentationFailures);
+                        Result = new(CityProductionOutcome.Unit, Unit: unit.Result);
+                        unit.Dispose();
+                        unit = null;
+                        Finished = true;
+                        return null;
                     case Phase.FirstResearch:
                     case Phase.SecondResearch:
                         if (child!.Resume(reply) is { } request)
@@ -130,6 +163,7 @@ public sealed class CityProduction
                         reply = null;
                         if (!child.Finished)
                         { return null; }
+                        failures.AddRange(child.PresentationFailures);
                         child.Dispose();
                         child = null;
                         if (phase == Phase.FirstResearch)

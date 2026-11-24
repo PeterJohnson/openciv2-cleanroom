@@ -143,7 +143,10 @@ F04 scheduling remain separate work.
 
 `CityUnitProduction` handles C06's unit-at-entry branch with actual U01 creation,
 veteran/transport initialization, first obsolete-type replacement, stock spending
-and settler population/city-removal consequences. Its AI diplomat path uses real
+and settler population/city-removal consequences. Its retained entry shares the
+unit sequence, asks for settler abandonment after creation/stock spending and
+waits through actual city removal/elimination before the second creation and
+completion notices. Its AI diplomat path uses real
 nearest-unit queries and preserves the specified distance comparison. C07 cargo
 selection remains an explicit owning continuation. A02 selection is provided by
 `CityProductionChoice`; isolated production tests also retain controlled replies.
@@ -152,7 +155,10 @@ with retained F04 human wonder ranges, regional policy and real V07 race queries
 Alder Valley now calls this service instead of its previous completion shortcut and uses shared `UnitAvailability`.
 `CityProduction` supplies the local unit/nonunit parent, using actual ordinary
 building storage, wonder ownership/effects, spaceship retargeting/assembly and
-resumable Darwin research. It retains cost/net/item across choices, applies the
+resumable Darwin research. The lifecycle-service overload also retains the unit
+child; `CityProductionOperation` routes its abandonment/lifecycle choices and
+research decisions privately and reports deferred child presentation failures.
+It retains cost/net/item across choices, applies the
 human wonder-priority early return, and runs the common tail once. The desktop
 city pass now uses it; Temple and Library choices extend the authored profile.
 Shared unit/improvement/wonder eligibility is available; the scenario wonder-flag

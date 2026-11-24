@@ -34,11 +34,14 @@ public interface ICityUnitProductionEffects
 /// <summary>C06's local unit-production branch, with its entry accumulation and common tail.
 /// Uses actual U01 creation/deletion and C01 removal. CityProduction owns nonunit completion;
 /// a chooser changing the next item does not run a second completion pass.</summary>
-public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCreation creation,
+public sealed partial class CityUnitProduction(GameState world, RuleTables rules, UnitCreation creation,
     UnitDeletion deletion, CityRemoval removal, GameplayRandom random,
     ICityUnitProductionContinuations continuations, ICityUnitProductionEffects effects)
 {
     private readonly AiProductionPurchase purchase = new(world, rules, continuations.ReconsiderProduction, effects.AlmostWonder);
+    private GameState World => world;
+    private CityRemoval Removal => removal;
+    private ref State.City CityAt(CitySlot slot) => ref world.Entities.Cities.At(slot);
     private CityCalculationWorkspace Work => world.Calculation;
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
     private bool Knows(int owner, int advance) => CivilizationKnowledge.KnowsAdvance(world.Civilizations, owner, advance);
@@ -47,24 +50,55 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
 
     public UnitProductionResult Run(CitySlot slot, string call)
     {
+        UnitProductionResult? result = null;
+        foreach (var action in Steps(slot, call, value => result = value))
+        {
+            switch (action.Kind)
+            {
+                case ProductionWorkKind.Abandon:
+                    action.Reply!(continuations.AbandonCity(slot, action.Choice!.Type) ? 1 : 0);
+                    break;
+                case ProductionWorkKind.DeleteUnit:
+                    deletion.Erase(action.Target, true);
+                    break;
+                case ProductionWorkKind.RemoveCity:
+                    removal.Delete(action.Target);
+                    break;
+                case ProductionWorkKind.CheckOwner:
+                    action.Reply!(continuations.CheckCivilization(action.Target, -1));
+                    break;
+            }
+        }
+        return result!;
+    }
+
+    /// <summary>Retain GhostTown and actual deletion/elimination before completing C06's unit branch.
+    /// Production policy and trade cargo remain required owning continuations.</summary>
+    public Operation Begin(CitySlot slot, string call, CivilizationElimination lifecycle,
+        EspionageIncidents incidents, int candidateBudget = 64) => new(this, slot, call, lifecycle, incidents, candidateBudget);
+
+    private enum ProductionWorkKind { Abandon, DeleteUnit, RemoveCity, CheckOwner }
+    private sealed record ProductionWork(ProductionWorkKind Kind, int Target, Action<int>? Reply = null, SettlerAbandonment? Choice = null);
+
+    private IEnumerable<ProductionWork> Steps(CitySlot slot, string call, Action<UnitProductionResult> complete)
+    {
         MapKnowledge.RequireLocal(world);
         ArgumentException.ThrowIfNullOrEmpty(call);
-        ref var city = ref world.Entities.Cities.At(slot);
-        int type = city.Production;
+        int type = CityAt(slot).Production;
         if (type < 0 || type >= RuleLimits.UnitTypes)
         {
             throw new ArgumentOutOfRangeException(nameof(slot), "Unit production requires a unit order");
         }
 
         world.Production.CompletedImprovement = null;
-        int owner = unchecked((sbyte)city.Owner.Value);
-        CityTarget target = new(slot, city.Token);
-        int net = city.Flags.Disorder ? 0 : Math.Max(0, unchecked(Work.Shields - Work.ShieldSupport));
-        city.ShieldBox = unchecked((short)(city.ShieldBox + (short)net));
-        if (owner == 0 && world.Civilizations[0].ContinentMilitary[world.Map.TileAt(city.Position).Region] > 16
-            && world.Map.UnitOwner(city.Position) is not null)
+        int owner = unchecked((sbyte)CityAt(slot).Owner.Value);
+        CityTarget target = new(slot, CityAt(slot).Token);
+        int net = CityAt(slot).Flags.Disorder ? 0 : Math.Max(0, unchecked(Work.Shields - Work.ShieldSupport));
+        CityAt(slot).ShieldBox = unchecked((short)(CityAt(slot).ShieldBox + (short)net));
+        if (owner == 0 && world.Civilizations[0].ContinentMilitary[world.Map.TileAt(CityAt(slot).Position).Region] > 16
+            && world.Map.UnitOwner(CityAt(slot).Position) is not null)
         {
-            city.ShieldBox = 0;
+            CityAt(slot).ShieldBox = 0;
         }
 
         int obsolete = (int)rules.Units[type].ObsoleteBy;
@@ -82,32 +116,35 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
                     effects.Upgraded(slot, new((byte)type), new((byte)candidate));
                 }
 
-                city.Production = (sbyte)candidate;
+                CityAt(slot).Production = (sbyte)candidate;
                 type = candidate;
                 break;
             }
         }
         int cost = unchecked(unchecked((sbyte)rules.Units[type].CostRows) * Work.ShieldRows);
-        if (cost > city.ShieldBox)
+        if (cost > CityAt(slot).ShieldBox)
         {
-            return Finish(new(UnitProductionOutcome.NotReady));
+            complete(Finish(new(UnitProductionOutcome.NotReady)));
+            yield break;
         }
 
-        city.Flags.WonderBuilt = false;
-        if (rules.Units[type].Role == RuleRole.Settle && city.Size == 1 && world.Globals.Difficulty == Difficulty.Chieftain)
+        CityAt(slot).Flags.WonderBuilt = false;
+        if (rules.Units[type].Role == RuleRole.Settle && CityAt(slot).Size == 1 && world.Globals.Difficulty == Difficulty.Chieftain)
         {
-            return new(UnitProductionOutcome.ChieftainRefusal);
+            complete(new(UnitProductionOutcome.ChieftainRefusal));
+            yield break;
         }
 
-        city.ShieldBox = unchecked((short)(city.ShieldBox - (short)cost));
+        CityAt(slot).ShieldBox = unchecked((short)(CityAt(slot).ShieldBox - (short)cost));
 
         UnitSlot? created = null;
         if (Human(owner) || rules.Units[type].Role != RuleRole.Diplomacy)
         {
-            created = creation.Create(new((byte)type), new((byte)owner), city.Position);
+            created = creation.Create(new((byte)type), new((byte)owner), CityAt(slot).Position);
             if (created is not { } unit)
             {
-                return Finish(new(UnitProductionOutcome.CreationFailed));
+                complete(Finish(new(UnitProductionOutcome.CreationFailed)));
+                yield break;
             }
 
             SetVeteran(slot, owner, type, unit);
@@ -118,23 +155,36 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
 
             if (rules.Units[type].Role == RuleRole.Settle)
             {
-                if (city.Size == 1 && world.Civilizations[owner].CityCount == 1)
+                if (CityAt(slot).Size == 1 && world.Civilizations[owner].CityCount == 1)
                 {
-                    return new(UnitProductionOutcome.LastCitySettler, UnitTarget(unit));
+                    complete(new(UnitProductionOutcome.LastCitySettler, UnitTarget(unit)));
+                    yield break;
                 }
 
-                if (city.Size == 1 && Human(owner)
-                    && (world.Multiplayer.Saved.AutoplayActive || !continuations.AbandonCity(slot, new((byte)type))))
+                if (CityAt(slot).Size == 1 && Human(owner))
                 {
-                    deletion.Erase(unit.Value, true);
-                    return new(UnitProductionOutcome.SettlerCancelled);
+                    int abandon = 0;
+                    if (!world.Multiplayer.Saved.AutoplayActive)
+                    {
+                        var choice = new SettlerAbandonment(owner, target, CityAt(slot).Name,
+                            new((byte)type), RuleText.Display(rules.Units[type].Identity.Name));
+                        yield return new(ProductionWorkKind.Abandon, owner, value => abandon = value, choice);
+                    }
+                    if (abandon == 0)
+                    {
+                        yield return new(ProductionWorkKind.DeleteUnit, unit.Value);
+                        complete(new(UnitProductionOutcome.SettlerCancelled));
+                        yield break;
+                    }
                 }
-                city.Size = unchecked((sbyte)(city.Size - 1));
-                if (city.Size < 1)
+                CityAt(slot).Size = unchecked((sbyte)(CityAt(slot).Size - 1));
+                if (CityAt(slot).Size < 1)
                 {
-                    var position = city.Position;
-                    removal.Delete(slot.Value);
-                    if (continuations.CheckCivilization(owner, -1) == 0)
+                    var position = CityAt(slot).Position;
+                    yield return new(ProductionWorkKind.RemoveCity, slot.Value);
+                    int eliminated = 0;
+                    yield return new(ProductionWorkKind.CheckOwner, owner, value => eliminated = value);
+                    if (eliminated == 0)
                     {
                         creation.Create(new((byte)type), new((byte)owner), position);
                     }
@@ -145,7 +195,8 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
                     }
 
                     effects.Redraw(position);
-                    return new(UnitProductionOutcome.CityDisbanded);
+                    complete(new(UnitProductionOutcome.CityDisbanded));
+                    yield break;
                 }
             }
         }
@@ -186,19 +237,20 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
                     effects.Built(target, new((byte)type));
                 }
             }
-            city.ShieldBox = 0;
-            if (city.Flags.Autobuild)
+            CityAt(slot).ShieldBox = 0;
+            if (CityAt(slot).Flags.Autobuild)
             {
                 continuations.ReconsiderProduction(slot);
             }
         }
-        return Finish(new(UnitProductionOutcome.Completed, created is { } built ? UnitTarget(built) : null));
+        complete(Finish(new(UnitProductionOutcome.Completed, created is { } built ? UnitTarget(built) : null)));
+        yield break;
 
         UnitTarget UnitTarget(UnitSlot unit) => new(unit, world.Entities.Units.At(unit).Token);
 
         UnitProductionResult Finish(UnitProductionResult result)
         {
-            ref var live = ref world.Entities.Cities.At(slot);
+            ref var live = ref CityAt(slot);
             // This unit branch's retained improvement is None, including after the chooser changes its order.
             if (Human(owner) && live.Flags.Autobuild && (live.ShieldBox == 0 || live.Production < 0))
             {
@@ -302,7 +354,7 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
             { ties = 1; bestDistance = distance; }
             target = unit;
         }
-        var origin = world.Entities.Cities.At(slot).Position;
+        var origin = CityAt(slot).Position;
         if (bestDistance < 4 && random.PrimaryModulo(new ChoiceKey("C06.diplomat.placement", call, 0), 10) <= (byte)world.Globals.Difficulty)
         {
             origin = world.Entities.Units.At(target!.Value).Position;

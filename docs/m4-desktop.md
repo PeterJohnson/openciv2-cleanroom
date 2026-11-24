@@ -6999,3 +6999,61 @@ Maintenance and other general parent integration, the undefined government-score
 and best-shield formulas, generated-game acceptance and independent original-game
 evidence remain open. Browser, cross-platform and network execution are deferred;
 M4 remains active.
+
+## Retained settler production and private completion decisions
+
+Inspection of F04 stage 6 confirmed that the existing human maintenance pair
+requires no new loss continuation: W05 meltdown calls U07's direct blast, which
+retains units and invokes neither the nuclear-action removal pass nor SDI or
+nuclear diplomatic penalties. `CityHumanMaintenance` already tests the captured
+owner's live human membership once, runs pollution/meltdown and then building
+maintenance. Adding a nuclear-action continuation there would change gameplay.
+
+C06 unit completion did require retained decisions. `CityUnitProduction.Begin`
+now shares its sequence with the synchronous entry, keeping the spent stock,
+created unit and captured owner/type across the size-one abandonment question.
+Decline, cancel and timeout remove the created unit without refunding its shields.
+Acceptance decrements population, waits for actual C01 cleanup and V01 checks,
+and performs the specified second creation only after the elimination result.
+Completion notices and redraw follow that result. Chieftain refusal and the
+last-city settler early return retain their distinct paid/created prefixes.
+
+The full `CityProduction` lifecycle-service overload retains this unit child and
+its pending decision alongside its existing research child. The session's
+`CityProductionOperation` independently routes abandonment, nested lifecycle and
+research choices, retains intelligence presentation and reports deferred child
+presentation failures. Desktop upkeep uses the adapter before support retirement
+and later city stages. The prompt explains the unit/shield consequence of keeping
+the city. C07 cargo remains a required owning callback; neither cargo selection
+nor general spaceship construction choices are supplied by this checkpoint.
+
+Four new shared groups exercise actual unit creation, bare deletion, city cleanup
+and elimination through the production parent. A city owner's abandonment choice
+can lead to a different human victim's espionage decision before the city cleanup,
+second creation and completion notice. Cases check private reply admission,
+accepted prefixes through disposal/failure, no replay on polls/completion,
+cancel/timeout and Darwin's two research completions through the new session
+adapter. Existing unit, nonunit and direct/console desktop cases remain regressions
+for the shared sequence. Alder Valley still excludes settler production; shared
+abandonment/removal cases do not claim that authored desktop admission.
+
+Validation applied and verified formatting for the root and App solutions; both
+Release builds completed with zero warnings/errors. Native tests passed
+**1773/1775**, with the two existing platform/audio skips. All **1738 shared
+groups** passed across **191 coverage families**; identity verified **869 compiled
+inputs**. The 43-project graph, eight identity tests and three coverage tests
+passed. The isolated native input driver passed **27 desktop checks** on its
+first run for this checkpoint, including complete save-byte comparisons and
+reload/continuation paths.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-retained-unit-production-native.json` | `b203527f0d192fa22fb27d6402ad8da3785edec666d4ef5b3196dd3a805d9f74` |
+| `m4-retained-unit-production-identity.json` | `a3f3e0c891f53eaeab089d1e0ebf0aab0ea083ab52e84188b53a2cc0f8249e9f` |
+| `m4-retained-unit-production-play.json` | `245487a9a63d56bc552c783c890d2ed6f679dd1ed97120e4e9c7290d2bc3c95b` |
+
+This closes retained settler abandonment and its lifecycle children through the
+production/session parent. C07 cargo, general city/civilization scheduling,
+generated human/AI game acceptance, the undefined F04 government-score and
+best-shield formulas, and independent original-game evidence remain open.
+Browser, cross-platform and network execution are deferred; M4 remains active.

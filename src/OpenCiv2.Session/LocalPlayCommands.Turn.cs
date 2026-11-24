@@ -112,7 +112,7 @@ public static partial class LocalPlayCommands
         private int cityOwner;
         private CityHumanMaintenance? cityMaintenance;
         private ResearchOperation? research;
-        private CityProduction.Operation? production;
+        private CityProductionOperation? production;
         private CityRetirementOperation? retirement;
         private CityFoodOperation? foodTurn;
         private CityFood? food;
@@ -275,14 +275,13 @@ public static partial class LocalPlayCommands
                 }
                 if (production is not null)
                 {
-                    pendingResearch = production.Resume(reply);
-                    reply = null;
-                    if (pendingResearch is { } choice)
+                    var step = production.Resume(context, input);
+                    if (!step.Status.Terminal())
                     {
-                        return ResearchPrompt(context, choice);
+                        return step;
                     }
-                    if (!production.Finished)
-                    { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
+
+                    RememberFailure(step);
                     var result = production.Result!;
                     production.Dispose();
                     production = null;
@@ -566,7 +565,7 @@ public static partial class LocalPlayCommands
                     : throw new InvalidOperationException("The authored profile has no other decision recipient"));
         }
 
-        private CityProduction.Operation AfterFood(OperationContext context, CitySlot slot)
+        private CityProductionOperation AfterFood(OperationContext context, CitySlot slot)
         {
             var world = context.World;
             ref var city = ref world.Entities.Cities.At(slot);
@@ -580,7 +579,12 @@ public static partial class LocalPlayCommands
 
             LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
             foodSurplus = food!.Accumulate(slot, previousFood);
-            return CreateProduction(context).Begin(slot, $"local-production/{world.Globals.Turn}/{slot.Value}");
+            var stacks = new StackOperations(world, new(1000000, 64));
+            var effects = new CityTurnEffects(context);
+            return new(CreateProduction(context).Begin(slot, $"local-production/{world.Globals.Turn}/{slot.Value}",
+                effects.Elimination(), CreateIncidents(context, stacks)),
+                owner => owner == context.Actor.Civilization.Value ? context.Actor.Participant
+                    : throw new InvalidOperationException("The authored profile has no other decision recipient"));
         }
 
         private CityRetirementOperation AfterProduction(OperationContext context, CitySlot slot, CityProductionResult production)

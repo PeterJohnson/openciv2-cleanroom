@@ -11,7 +11,7 @@ public static partial class FoundationSuite
 {
     private sealed class UnitProductionFixture : ICityUnitProductionContinuations, ICityUnitProductionEffects
     {
-        public EliminationFixture Lifecycle { get; } = new();
+        public EliminationFixture Lifecycle { get; }
         public RevelationFixture Data => Lifecycle.Data;
         public GameState World => Data.World;
         public CityUnitProduction Production { get; }
@@ -25,8 +25,9 @@ public static partial class FoundationSuite
         public Action<UnitSlot>? Cargo;
         public List<AlmostWonderNotice> AlmostWonders { get; } = [];
 
-        public UnitProductionFixture()
+        public UnitProductionFixture(EliminationFixture? lifecycle = null)
         {
+            Lifecycle = lifecycle ?? new();
             Data.AddCity(0, 1, new(10, 10), 3);
             World.Civilizations[1].CityCount = 1;
             World.Civilizations[1].Government = Government.Monarchy;

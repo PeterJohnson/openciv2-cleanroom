@@ -11,7 +11,7 @@ public static partial class FoundationSuite
 {
     private sealed class CityProductionFixture : ICityProductionEffects, ISpaceshipConstructionEffects
     {
-        public UnitProductionFixture Units { get; } = new();
+        public UnitProductionFixture Units { get; }
         public ResearchFlowFixture Research { get; }
         public GameState World => Units.World;
         public RuleTables Rules => Units.Data.Rules;
@@ -24,8 +24,9 @@ public static partial class FoundationSuite
         public bool WindowShown { get; set; }
         public Action? OnBuilt, OnDraw;
         public Func<CitySlot, int>? OnChoose;
-        public CityProductionFixture(bool retainGrants = false)
+        public CityProductionFixture(bool retainGrants = false, UnitProductionFixture? units = null)
         {
+            Units = units ?? new();
             Research = new(new GrantFixture(Units.Data), retainGrants);
             Rules.Cosmic = Rules.Cosmic with { SpaceshipMassThrustParadigm = 75 };
             var orders = new ProductionOrders(World, Rules, c => { Choices.Add(c); return OnChoose?.Invoke(c) ?? NextItem; }, n => Events.Add("wonder-change"));

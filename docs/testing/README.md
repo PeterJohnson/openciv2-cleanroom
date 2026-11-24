@@ -34,6 +34,13 @@ or resetting the surviving city's food stock. Private routing, cancel/timeout,
 bounded search and disposal/failure prefixes run through real lifecycle children.
 The desktop caller awaits food processing before its first recalculation and
 production; general city-turn composition remains open.
+C06's retained unit branch now asks before abandoning a size-one city, then
+waits through actual deletion, city removal and elimination before its second
+creation and completion notices. Full production/session cases route the city
+owner's choice and a nested foreign victim's decision independently; cancel,
+timeout, disposal, failure and Darwin's research sequence retain their ordering.
+Desktop production uses this adapter. Trade cargo remains a required owning
+callback, and the authored desktop profile still excludes settler production.
 V06 incident cases compose actual war, stance and Anarchy transitions. They cover
 directed treaty gates, live mission retention, human pretext without expulsion,
 leniency and senate draw order, scenario/autoplay gates and retained failures.

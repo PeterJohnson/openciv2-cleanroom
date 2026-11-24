@@ -2390,10 +2390,11 @@
       "id": "city-unit-production",
       "status": "partial",
       "contract": "C06 unit-at-entry local production: shield accumulation, upgrading, creation/veterans, settler consequences, AI diplomats and common tail",
-      "publicSurface": "CityUnitProduction.Run; ICityUnitProductionContinuations; ICityUnitProductionEffects; local desktop unit-production phase and shared unit availability",
-      "review": "Actual U01 creation/deletion, C01 removal and V01 elimination cover signed costs/stocks, disorder and barbarian accumulation, first upgrade without availability or chaining, veteran rules, transport counters and ordered city-disband recreation. AI diplomat creation retains the unusual distance comparison and safely omits the failed-creation veteran write; first nuclear-type creation resets incoming contacts. Tests cover required cargo and chooser boundaries; the AI common tail now runs actual C06 purchasing with retained failure effects. Alder Valley uses the shared production path and unit availability, with direct/console stock overflow, capacity failure and save/resume cases. The city-production, player-production and ai-city-production families provide the nonunit parent, transactions and A02 policy. C07 cargo policy, general production UI and generated-game turn integration remain pending.",
+      "publicSurface": "CityUnitProduction.Run/Begin; SettlerAbandonment; UnitProductionLifecycle; required production/cargo continuations; desktop unit-production phase",
+      "review": "Actual U01 creation/deletion, C01 removal and V01 elimination cover signed costs/stocks, disorder and barbarian accumulation, first upgrade without availability or chaining, veteran rules, transport counters and ordered city-disband recreation. AI diplomat creation retains the unusual distance comparison and safely omits the failed-creation veteran write; first nuclear-type creation resets incoming contacts. Tests cover required cargo and chooser boundaries; the AI common tail now runs actual C06 purchasing with retained failure effects. Alder Valley uses the shared production path and unit availability, with direct/console stock overflow, capacity failure and save/resume cases. The city-production, player-production and ai-city-production families provide the nonunit parent, transactions and A02 policy. C07 cargo policy, general production UI and generated-game turn integration remain pending. The shared retained unit sequence now suspends for GhostTown abandonment and actual U01/C01/V01 children before its second creation and completion notices. Tests through the full C06 parent and private session preserve paid/created prefixes, both early settler gates, cancellation, terminal failure/disposal, captured choices and a foreign victim decision. Cargo selection remains a required callback and has not been replaced by this continuation.",
       "sources": [
         "src/OpenCiv2.Core/City/AiProductionPurchase.cs",
+        "src/OpenCiv2.Core/City/CityUnitProduction.Operation.cs",
         "src/OpenCiv2.Core/City/CityUnitProduction.cs",
         "src/OpenCiv2.Core/City/UnitAvailability.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
@@ -2402,9 +2403,14 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/CityUnitProductionCases.cs",
-        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
+        "tests/OpenCiv2.FoundationCases/UnitProductionContinuationCases.cs"
       ],
       "sharedGroups": [
+        "C06.production-retained-abandonment",
+        "C06.production-retained-cancel-research",
+        "C06.production-retained-nested-removal",
+        "C06.production-retained-private-session",
         "C06.unit-ai-diplomat-nuclear",
         "C06.unit-disorder-barbarian",
         "C06.unit-first-upgrade",
@@ -2720,8 +2726,8 @@
     {
       "id": "city-production",
       "contract": "C06 local production parent and nonunit completion; C08 buildings/wonders; V03 Darwin; V07 spaceship; W03 Apollo",
-      "publicSurface": "CityProduction resumable local dispatch; retained CompletedImprovement; desktop production choices/turn/load for Temple and Library",
-      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open.",
+      "publicSurface": "CityProduction resumable local dispatch with lifecycle-service overload; CityProductionOperation; retained CompletedImprovement; desktop production choices/turn/load",
+      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open. The lifecycle-service overload retains the unit child and exposes its pending abandonment/lifecycle decision alongside research. CityProductionOperation privately routes both forms, reports deferred child presentation failures and drives desktop upkeep before support retirement. The city-unit-production family covers the full-parent cross-recipient cases; general cargo/space interactions remain open.",
       "status": "partial",
       "sharedGroups": [
         "C06.city-production-ai-spaceship-retarget",
@@ -2756,6 +2762,7 @@
         "src/OpenCiv2.Core/City/CityUnitProduction.cs",
         "src/OpenCiv2.Core/City/ProductionOrders.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/CityProductionOperation.cs",
         "src/OpenCiv2.Session/LocalGame.cs",
         "src/OpenCiv2.Session/LocalGameRules.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.City.cs",
