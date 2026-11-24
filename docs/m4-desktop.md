@@ -6052,3 +6052,53 @@ composition remain open, together with the recorded F04 formulas, relation-revie
 input gap, complete turn orchestration and generated human/AI end-condition
 acceptance. Browser, cross-platform qualification and network execution remain
 deferred.
+
+
+## V05 complete local audience controller — 2026-11-23
+
+`DiplomaticAudience` now joins V05 §6 entry and opening requests/threats to the
+actual mode-one technology exchange, opening treaties and conversation/cleanup.
+Entry runs S02 negotiation permission with a required action executor, performs
+actual A08 evaluation, captures prior ceasefire/contact state and preserves the
+different player/AI initiation rules. Scenario denial exits without ordinary
+cleanup; later audience termination reaches the common cleanup service.
+
+War requests execute actual mediated declarations. Tribute payments read the live
+demand; technology demands retain actual V03 grants and fresh post-grant valuation,
+including a second demanded advance. Allied demand easing, fixed classic technology
+identities, historical target overrides, captured-city suppression, conditional
+reconsideration and ordered threats follow the repository specification. Required
+failures preserve the accepted prefix; cosmetic failures remain diagnostics.
+
+The Session adapter routes nested emissary, exchange, grant, treaty and conversation
+choices privately. The conversation interaction adapter is shared with its direct
+caller. Cancellation keeps each child's acceptance convention, including opening
+treaties where zero accepts. Tests compose real gameplay children; controlled live
+changes occur at retained player decisions. The S02 fixture executes real money
+actions; other authored-action domains still require their owning implementations.
+
+Twelve new groups cover scenario entry/failure, player rejection, refused reception,
+technology identities, live tribute/technology demands, war and dismissal, threat
+failure prefixes, reconsideration/protection, repeated exchanges, historical/dead
+targets, private grants, disposal and cancellation. Initial runs exposed fixture
+assumptions about intervening treaty offers, a replaced captured-city flag, and an
+omitted command result schema; corrected fixtures pass.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1626 of 1628**, with two existing
+platform/audio skips. The shared probe passed all **1593 groups** across 176
+coverage families; identity verified **807 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. This is Core/Session
+integration and an App build; no new graphical input-driver run was performed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-audience-native.json` | `ad1306d837d7558864a4f07a7512a1b626d91c1c114b4e1cf7a0a50897a03a94` |
+| `m4-audience-identity.json` | `b9b59918bbfc114f99a730cc41b33ced7431a556e795755d401c57747995fd3c` |
+
+General V04 contact dispatch and production desktop audience composition remain
+open, together with the recorded F04 formulas, relation-review input gap, complete
+turn orchestration and generated human/AI end-condition acceptance. There is still
+specified implementation work available on Linux. Original MGE observations on
+Windows remain useful for resolving the evidence gaps. Browser, cross-platform
+qualification and network execution remain deferred; M4 is not complete.

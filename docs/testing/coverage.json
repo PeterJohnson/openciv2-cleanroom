@@ -5354,7 +5354,7 @@
       "status": "partial",
       "contract": "V04 section5 negotiated alliance/peace/ceasefire; V05 section5 alliance and peace bargaining",
       "publicSurface": "NegotiatedTreaties.FormAlliance/SignPeace/AgreeCeasefire; TreatyNegotiation.Begin/PeaceWillingness/GoldPrice; TreatyNegotiationOperation",
-      "review": "Actual A08 willingness/evaluation, V03 retained grants and V04 mediated war. Payment conditions, live post-grant valuation, wonder-compelled peace, cached gold and solidarity refusal preserve ordered state. Treaty wrappers retain attitude gates, contact/request updates and post-notice ceasefire cleanup. Session routes payment/solidarity and nested government choices privately. Full audience integration remains open; network, browser and cross-platform work deferred.",
+      "review": "Actual A08 willingness/evaluation, V03 retained grants and V04 mediated war. Payment conditions, live post-grant valuation, wonder-compelled peace, cached gold and solidarity refusal preserve ordered state. Treaty wrappers retain attitude gates, contact/request updates and post-notice ceasefire cleanup. Session routes payment/solidarity and nested government choices privately. General contact and desktop audience integration remain open; network, browser and cross-platform work deferred.",
       "sources": [
         "src/OpenCiv2.Core/NegotiatedTreaties.cs",
         "src/OpenCiv2.Core/TreatyNegotiation.cs",
@@ -5382,7 +5382,7 @@
       "status": "partial",
       "contract": "V05 section5 proposal options/response dispatch, aid, tribute and withdrawal",
       "publicSurface": "DiplomaticDemands.Begin; DiplomaticProposals.Options/BeginResponse; DiplomaticProposalOperation; DiplomacyWorkspace.HadCeasefire",
-      "review": "Real A08 patience/stance, U01 relocation, C01 nearest cities, V03 grants, V05 allied exchange/treaty negotiation and V04 alliance cancellation. Counter capture, conditional draws, protection, tribute arithmetic, request modes, payment and provocation order preserve their live-state boundaries. Private Session routes nested treaty/exchange/grant decisions. Full audience entry/loop and desktop acceptance remain open; browser/cross-platform and network execution deferred.",
+      "review": "Real A08 patience/stance, U01 relocation, C01 nearest cities, V03 grants, V05 allied exchange/treaty negotiation and V04 alliance cancellation. Counter capture, conditional draws, protection, tribute arithmetic, request modes, payment and provocation order preserve their live-state boundaries. Private Session routes nested treaty/exchange/grant decisions. The local audience now composes entry/loop; general contact and desktop acceptance remain open; browser/cross-platform and network execution deferred.",
       "sources": [
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
         "src/OpenCiv2.Core/DiplomaticDemands.cs",
@@ -5436,7 +5436,7 @@
       "id": "diplomatic-conversation",
       "contract": "V05 section6 main conversation and common cleanup with actual V04 senate/relations/borders and V05 responses",
       "publicSurface": "DiplomaticConversation.Begin/BeginCleanup/Operation; AudienceConclusion; DiplomaticConversationOperation",
-      "review": "Actual emissary, gift, favor, map, negotiated proposal and grant continuations; bare forced treaties, live direction-sensitive gates, later-tie denunciation including dead third parties, city-index border text and regions1-62. Cleanup preserves signed request increments, bounded progress with fresh patience, required notices, cosmetic close diagnostics, separate AI-active state and post-reset intelligence/tutorial reads. Private actor/recipient/actor routing, cancellation/timeout, report caching, disposal and failure prefixes are exercised. Entry/opening, S02 admission, full desktop audience composition and complete-game acceptance remain open; browser/cross-platform/network execution deferred.",
+      "review": "Actual emissary, gift, favor, map, negotiated proposal and grant continuations; bare forced treaties, live direction-sensitive gates, later-tie denunciation including dead third parties, city-index border text and regions1-62. Cleanup preserves signed request increments, bounded progress with fresh patience, required notices, cosmetic close diagnostics, separate AI-active state and post-reset intelligence/tutorial reads. Private actor/recipient/actor routing, cancellation/timeout, report caching, disposal and failure prefixes are exercised. The local audience now composes entry/opening and S02 admission; general contact dispatch, full desktop audience composition and complete-game acceptance remain open; browser/cross-platform/network execution deferred.",
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
@@ -5466,7 +5466,7 @@
       "id": "opening-treaties",
       "contract": "V05 section6 opening alliance, ceasefire, peace and concessions with actual V03/V04 children",
       "publicSurface": "OpeningTreaties.Begin/Operation/PeaceThreshold/ConcessionGold; OpeningTreatyInputs/Result; OpeningTreatyOperation",
-      "review": "Alliance admission and later target ties without alive filtering, target zero and actual mediated war, failed solidarity retaining treaty-made. Ceasefire and peace retain distinct acceptance conventions, senate/wonder short-circuit sampling, concession roll gates, signed cash and unsigned strength arithmetic. Actual government grants preserve live wanted technology and grovel treasury/knowledge scanning; payment offers retain cached cash. Required notice failures preserve signed treaties and no later effects; cosmetic refresh failures are diagnostics. Native private grant/cancel/timeout cases cover zero-accepts treaty choices. Audience entry, earlier requests/demands/threats, parent composition and complete desktop acceptance remain open. Browser/cross-platform/network execution deferred.",
+      "review": "Alliance admission and later target ties without alive filtering, target zero and actual mediated war, failed solidarity retaining treaty-made. Ceasefire and peace retain distinct acceptance conventions, senate/wonder short-circuit sampling, concession roll gates, signed cash and unsigned strength arithmetic. Actual government grants preserve live wanted technology and grovel treasury/knowledge scanning; payment offers retain cached cash. Required notice failures preserve signed treaties and no later effects; cosmetic refresh failures are diagnostics. Native private grant/cancel/timeout cases cover zero-accepts treaty choices. The local audience now composes entry, earlier requests/demands/threats and these treaty children. General contact dispatch and complete desktop acceptance remain open. Browser/cross-platform/network execution deferred.",
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/OpeningTreaties.cs",
@@ -5486,6 +5486,35 @@
         "V05.opening-private-grant",
         "V05.opening-senate-wonder-draws",
         "V05.opening-technology-concession"
+      ]
+    },
+    {
+      "id": "diplomatic-audience",
+      "contract": "V05 section6 local audience entry, requests, threats, opening treaties and conversation cleanup; S02 negotiation admission",
+      "publicSurface": "DiplomaticAudience.Begin/Operation/TechnologyGap; DiplomaticAudienceOperation",
+      "review": "Actual A08 evaluation, V05 emissaries and repeated mode-one technology exchanges, V03 grants, V04 war/alliance changes, opening treaties and conversation. Covers scenario denial without ordinary cleanup, initiation/refusal ordering, live tribute payment and second technology demand, fixed advance identities, target filtering, historical mode, aggression reconsideration/protection, threat failure prefixes and private nested government decisions. Shared Session adapters preserve zero-accepts treaty cancellation versus one-accepts demands. Controlled live changes occur only at retained player decisions. Full S02 action domains require owning adapters. General V04 contact dispatch and graphical audience integration remain open; browser, cross-platform and network execution deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomaticAudience.cs",
+        "src/OpenCiv2.Session/DiplomaticAudienceOperation.cs",
+        "src/OpenCiv2.Session/DiplomaticConversationOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticAudienceCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.audience-exchange-loop-targets",
+        "V05.audience-initiation-refused-reception",
+        "V05.audience-player-entry-rejections",
+        "V05.audience-private-grant-disposal",
+        "V05.audience-reconsider-protection",
+        "V05.audience-scenario-entry-failure",
+        "V05.audience-session-cancel-treaties",
+        "V05.audience-technology-gap-identities",
+        "V05.audience-technology-second-demand",
+        "V05.audience-threat-order-failure",
+        "V05.audience-tribute-live-payment-variants",
+        "V05.audience-war-request-dismissal"
       ]
     }
   ]

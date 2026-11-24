@@ -19,6 +19,8 @@ public static partial class FoundationSuite
         public GameState World => F.World;
         public RevelationFixture Data => F.Data;
         public DiplomaticConversation Conversation { get; }
+        public DiplomaticStance Stance { get; }
+        public EmissaryReception Emissaries { get; }
         public List<ConversationNotice> Notices { get; } = [];
         public int Closed, Refreshed, MapAccepted, Published;
         public bool FailClose, FailRefresh;
@@ -28,8 +30,8 @@ public static partial class FoundationSuite
             F = new(choices, data);
             var government = new GovernmentChanges(World, Data.Process.Rules, Data.Stacks,
                 _ => throw new InvalidOperationException("Unexpected government choice"), _ => throw new InvalidOperationException("Unexpected rates"), _ => { });
-            var stance = new DiplomaticStance(World, Data.Process.Rules, new(World, Data.Process.Rules, government, F.T.T.Random));
-            var emissaries = new EmissaryReception(World, Data.Rules, F.T.T.Random, stance, this);
+            var stance = Stance = new DiplomaticStance(World, Data.Process.Rules, new(World, Data.Process.Rules, government, F.T.T.Random));
+            var emissaries = Emissaries = new EmissaryReception(World, Data.Rules, F.T.T.Random, stance, this);
             var gifts = new DiplomaticGifts(World, Data.Process.Rules, F.T.T.Random, F.T.Service, F.T.T.Research, Data.Stacks, this);
             var favors = new DiplomaticFavors(World, Data.Process.Rules, F.T.T.Random, stance, F.T.Service, F.T.T.Research,
                 new(World, this), FoundationSuite.War(Data, F.F.WarEffects, F.T.T.Random), this);

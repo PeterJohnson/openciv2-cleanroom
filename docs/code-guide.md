@@ -1158,15 +1158,16 @@ treaty-negotiation callers remain open.
 wrappers, including actual stance evaluation. `Core/TreatyNegotiation` owns V05
 §5's willingness, payment and solidarity stages and composes real grants, war and
 treaty effects. `Session/TreatyNegotiationOperation` routes actor choices and nested
-recipient research decisions. Full audience callers remain open.
+recipient research decisions. The local audience composes these services; general
+contact and desktop callers remain open.
 
 `Core/DiplomaticDemands` owns V05 §5 aid, tribute, withdrawal and provocation;
 `DiplomaticProposals` supplies proposal options and response dispatch through real
 treaty/demand children. Its cancellation branch runs actual stance and expulsion.
 `DiplomacyWorkspace.HadCeasefire` is the retained meeting input whose capture belongs
-to the future audience entry. `Session/DiplomaticProposalOperation` routes private
+to `DiplomaticAudience` entry. `Session/DiplomaticProposalOperation` routes private
 nested choices; treaty interactions are shared with direct negotiation. The
-audience entry/opening remains with the enclosing controller.
+audience entry/opening is composed by `DiplomaticAudience`.
 
 `Core/DiplomaticConversation` owns V05 §6 main conversation and common cleanup,
 consuming explicit opening outcomes. It joins actual emissary reception, senate
@@ -1175,8 +1176,9 @@ treaties use bare V04 primitives; cleanup retains bounded request increments,
 post-reset intelligence/tutorial reads and the separate AI-meeting-active flag.
 `Session/DiplomaticConversationOperation` privately routes actor menus, nested
 recipient choices and intelligence. Direct and conversation callers share the
-gift, favor and proposal interaction adapters. Entry/opening negotiation, S02
-admission and full desktop audience composition remain open.
+gift, favor, proposal and conversation interaction adapters. The full local
+audience composes this continuation; general contact and desktop composition
+remain open.
 
 `Core/OpeningTreaties` owns V05 §6's opening alliance, ceasefire and peace offers,
 separately from player-initiated bargaining. Explicit opening inputs carry paid,
@@ -1186,4 +1188,15 @@ treaty-made, concession, senate-blocked and audience-termination outcomes to the
 enclosing controller. Concessions retain live technology and grovel inputs versus
 cached cash amounts. `Session/OpeningTreatyOperation` supplies private choices with
 the specified zero-accepts treaty replies and decline-on-cancel behavior. Audience
-entry, earlier demands/threats and final parent composition remain open.
+entry and earlier demands/threats are composed by `DiplomaticAudience`.
+
+`Core/DiplomaticAudience` owns V05 §6 local audience entry, S02 negotiation
+permission, A08 opening evaluation, opening war/tribute/technology requests and
+threats. It composes the real mode-one exchange, grants, war/alliance changes,
+opening treaties and conversation/cleanup. Scenario action execution is a required
+owning adapter, not an assumed-success default. Replies retain live demand and
+technology reads; required failures preserve committed effects and cosmetic
+failures remain diagnostics. `Session/DiplomaticAudienceOperation` forwards private
+emissary, exchange, grant, treaty and conversation choices, sharing their existing
+interaction adapters. V04 general contact dispatch and production desktop audience
+composition remain open.

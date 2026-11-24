@@ -1142,8 +1142,8 @@ later-tie denunciation and border/region notices. Cleanup cases cover fresh pati
 across bounded yields, direction-specific hostility, ceasefire expiration,
 ambassador intelligence, post-reset tutorial reads and required/cosmetic failures.
 Session cases verify actor-to-recipient-to-actor privacy, cancellation, timeout and
-single intelligence-window creation. Entry/opening negotiation and full desktop
-audience acceptance remain open.
+single intelligence-window creation. The local audience now composes entry and
+opening; general contact and full desktop audience acceptance remain open.
 
 V05 opening-treaty groups cover alliance gates and later target ties without alive
 filtering, solidarity against slot zero, refused-solidarity outcomes, conditional
@@ -1151,5 +1151,15 @@ concession/senate/wonder draws, unsigned peace thresholds and signed cash arithm
 Actual government grants suspend before treaty publication; grovel grants scan live
 knowledge after earlier decisions. Tests verify cached versus live payments,
 required-notice failure after signed treaties, private grant routing and the distinct
-zero-accepts cancellation defaults. Full audience entry and parent composition
-remain open.
+zero-accepts cancellation defaults. The local audience now supplies entry and
+parent composition; general contact and full desktop integration remain open.
+
+V05 audience groups now join actual scenario permission/actions, stance, emissary,
+mode-one technology exchange, opening requests/threats, treaties and common cleanup.
+They cover initiation and refusal ordering, live tribute/technology operands,
+conditional sampling, historical targets, private grant routing and cancellation
+across different reply conventions. Controlled state changes occur at retained
+player decisions, not at formatting callbacks. The authored S02 action adapter
+executes the real money action; the remaining action domains are still required
+owning implementations. Native Core/Session coverage and the App build do not
+claim general contact dispatch or graphical audience acceptance.

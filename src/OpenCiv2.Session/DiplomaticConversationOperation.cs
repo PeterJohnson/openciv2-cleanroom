@@ -21,11 +21,11 @@ public sealed class DiplomaticConversationOperation(DiplomaticConversation.Opera
         try
         {
             var previous = pending;
-            pending = operation.Resume(Reply(input));
+            pending = operation.Resume(DiplomaticConversationInteraction.Reply(pending, input));
             if (!ReferenceEquals(previous, pending))
             { window = null; }
             if (pending is not null)
-            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: Prompt(context, pending)); }
+            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: DiplomaticConversationInteraction.Prompt(context, pending, recipient, intelligence, ref window)); }
             if (!operation.Completed)
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             context.Effect("diplomacy.conversation.completed", new([]));
@@ -34,7 +34,12 @@ public sealed class DiplomaticConversationOperation(DiplomaticConversation.Opera
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
-    private ResearchReply? Reply(OperationInput input) => pending switch
+    public void Dispose() => operation.Dispose();
+}
+
+internal static class DiplomaticConversationInteraction
+{
+    public static ResearchReply? Reply(DiplomaticConversationDecision? pending, OperationInput input) => pending switch
     {
         DiplomaticConversationDecision.Proposal proposal => DiplomaticProposalInteraction.Reply(proposal.Decision, input),
         DiplomaticConversationDecision.Favor favor => DiplomaticFavorInteraction.Reply(favor.Decision, input),
@@ -43,7 +48,8 @@ public sealed class DiplomaticConversationOperation(DiplomaticConversation.Opera
         _ => input.Kind == OperationInputKind.Choice && input.Choice is { } choice ? new(choice)
             : input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout ? new(0) : null
     };
-    private InteractionSpec Prompt(OperationContext context, DiplomaticConversationDecision decision)
+    public static InteractionSpec Prompt(OperationContext context, DiplomaticConversationDecision decision,
+        Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec> intelligence, ref InteractionSpec? window)
     {
         switch (decision)
         {
@@ -67,5 +73,4 @@ public sealed class DiplomaticConversationOperation(DiplomaticConversation.Opera
                 throw new InvalidOperationException("Unknown conversation decision");
         }
     }
-    public void Dispose() => operation.Dispose();
 }
