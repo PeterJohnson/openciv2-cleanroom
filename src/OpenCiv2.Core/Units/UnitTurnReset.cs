@@ -56,7 +56,7 @@ public sealed class UnitTurnReset(GameState world, RuleTables rules, Civilizatio
     {
         private readonly UnitTurnReset parent;
         private readonly IEnumerator<LifecycleDecision?> steps;
-        private int? reply;
+        private ResearchReply? reply;
         private bool disposed, faulted;
         public bool Completed { get; internal set; }
         public LifecycleDecision? Pending { get; private set; }
@@ -66,8 +66,9 @@ public sealed class UnitTurnReset(GameState world, RuleTables rules, Civilizatio
             this.parent = parent;
             steps = parent.Execute(this, selector, call).GetEnumerator();
         }
-        internal int? TakeReply() { var answer = reply; reply = null; return answer; }
-        public LifecycleDecision? Resume(int? answer = null)
+        internal ResearchReply? TakeDecision() { var result = reply; reply = null; return result; }
+        public LifecycleDecision? Resume(int? answer = null) => ResumeDecision(answer is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? answer = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -147,7 +148,7 @@ public sealed class UnitTurnReset(GameState world, RuleTables rules, Civilizatio
             using var child = lifecycle.BeginEscape(i, 0, unchecked((sbyte)world.Entities.Units.Storage[i].Counter), call + "/expiry-" + i, incidents);
             while (child.Result is null)
             {
-                var pending = child.Resume(op.TakeReply());
+                var pending = child.ResumeDecision(op.TakeDecision());
                 if (child.Result is null)
                 {
                     yield return pending;

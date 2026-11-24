@@ -85,7 +85,7 @@ public sealed class CombatContinuation(GameState world, RuleTables rules, Combat
         using var child = lifecycle.BeginDelete(actor.Value, true, call, incidents);
         while (child.Result is null)
         {
-            if (child.Resume(operation.TakeReply()?.Selected) is { } pending)
+            if (child.ResumeDecision(operation.TakeReply()) is { } pending)
             { yield return new CombatContinuationDecision.Lifecycle(pending); }
             else if (child.Result is null)
             { yield return null; }
@@ -142,7 +142,7 @@ public sealed class CombatContinuation(GameState world, RuleTables rules, Combat
         using var child = nuclear.Begin(combat.AttackerOwner, combat.Target, true, call + "/nuclear");
         while (child.Result is null)
         {
-            if (child.Resume(operation.TakeReply()?.Selected) is { } pending)
+            if (child.ResumeDecision(operation.TakeReply()) is { } pending)
             { yield return new CombatContinuationDecision.Lifecycle(pending); }
             else if (child.Result is null)
             { yield return null; }

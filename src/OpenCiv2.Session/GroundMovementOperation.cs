@@ -21,7 +21,7 @@ public sealed class GroundMovementOperation(GroundMovementPlanner.Operation oper
         { return completed; }
         try
         {
-            pending = operation.Resume(UnitMissionInteraction.Reply(pending, input));
+            pending = operation.ResumeDecision(UnitMissionInteraction.Reply(pending, input));
             if (pending is not null)
             {
                 context.Publish();

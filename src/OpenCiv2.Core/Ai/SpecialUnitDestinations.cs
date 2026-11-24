@@ -39,7 +39,8 @@ public sealed partial class SpecialUnitDestinations(GameState world, RuleTables 
         public SpecialUnitChoice? Result { get; private set; }
         internal Operation(SpecialUnitDestinations parent, UnitTacticsContext context, string call, bool caravan)
         { this.parent = parent; this.context = context; this.call = call; this.caravan = caravan; }
-        public LifecycleDecision? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -58,7 +59,7 @@ public sealed partial class SpecialUnitDestinations(GameState world, RuleTables 
                     { return null; }
                     child = parent.Destroy(context, call);
                 }
-                var pending = child!.Resume(reply);
+                var pending = child!.ResumeDecision(reply);
                 if (pending is not null)
                 { return pending; }
                 if (child.Result is null)

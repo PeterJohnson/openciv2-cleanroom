@@ -65,7 +65,7 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
     {
         private readonly CombatCasualties parent;
         private readonly IEnumerator<LifecycleDecision?> steps;
-        private int? reply;
+        private ResearchReply? reply;
         private bool faulted, disposed;
         public bool Completed { get; private set; }
         public LifecycleDecision? Pending { get; private set; }
@@ -75,9 +75,10 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
             this.parent = parent;
             steps = parent.Execute(this, loser, opponent, battle, call, stack).GetEnumerator();
         }
-        internal int? TakeReply() { int? answer = reply; reply = null; return answer; }
+        internal ResearchReply? TakeDecision() { var result = reply; reply = null; return result; }
         /// <summary>Null without completion yields between casualties or during bounded lifecycle work.</summary>
-        public LifecycleDecision? Resume(int? response = null)
+        public LifecycleDecision? Resume(int? response = null) => ResumeDecision(response is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? response = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -123,7 +124,7 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
             {
                 while (child.Result is null)
                 {
-                    if (child.Resume(operation.TakeReply()) is { } pending)
+                    if (child.ResumeDecision(operation.TakeDecision()) is { } pending)
                     { yield return pending; }
                     else if (child.Result is null)
                     { yield return null; }

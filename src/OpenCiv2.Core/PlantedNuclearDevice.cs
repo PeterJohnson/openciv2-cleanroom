@@ -40,8 +40,10 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
             steps = Execute(mission, call).GetEnumerator();
         }
         /// <summary>Null with Completed=false is a bounded nested lifecycle slice.</summary>
-        public CityEspionageDecision? Resume(int? reply = null)
+        public CityEspionageDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public CityEspionageDecision? ResumeDecision(ResearchReply? fullReply = null)
         {
+            int? reply = fullReply?.Selected;
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
             {
@@ -61,7 +63,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                     return pending;
                 }
 
-                int? childReply = pending is CityEspionageDecision.Lifecycle ? reply : null;
+                ResearchReply? childReply = pending is CityEspionageDecision.Lifecycle ? fullReply : null;
                 if (pending is CityEspionageDecision.Question)
                 {
                     answer = reply!.Value;
@@ -72,7 +74,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                 {
                     if (capture is not null)
                     {
-                        var incident = capture.Resume(childReply);
+                        var incident = capture.ResumeDecision(childReply);
                         childReply = null;
                         if (incident is not null)
                         {
@@ -90,7 +92,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                     }
                     if (explosion is not null)
                     {
-                        var incident = explosion.Resume(childReply);
+                        var incident = explosion.ResumeDecision(childReply);
                         childReply = null;
                         if (incident is not null)
                         {

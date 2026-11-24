@@ -16,7 +16,10 @@ public abstract record FoundingDecision
 }
 /// <summary>Zero accepts naming; nonzero cancels. Lifecycle replies retain their own choice values.
 /// Any reply closes the final city visit. Omitted name accepts the retained initial text.</summary>
-public readonly record struct FoundingReply(int Choice, string? Name = null);
+public readonly record struct FoundingReply(int Choice, string? Name = null, ResearchReply? Research = null)
+{
+    public ResearchReply Decision => Research ?? new(Choice);
+}
 public interface ICityFoundingEffects
 {
     void StopBlinking();
@@ -103,7 +106,7 @@ public sealed partial class CityFounding(GameState world, ProcessContext process
         using var child = lifecycle.BeginDelete(unit.Value, true, call + "/delete", incidents);
         while (child.Result is null)
         {
-            var pending = child.Resume(operation.TakeReply()?.Choice);
+            var pending = child.ResumeDecision(operation.TakeReply()?.Decision);
             if (pending is not null)
             {
                 yield return new FoundingDecision.Lifecycle(pending);

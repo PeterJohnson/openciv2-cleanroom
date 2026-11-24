@@ -21,7 +21,10 @@ public sealed class SpecialUnitDestinationOperation(SpecialUnitDestinations.Oper
         { return completed; }
         try
         {
-            pending = operation.Resume(pending is null ? null : LifecycleInteraction.Reply(pending, input));
+            var previous = pending;
+            pending = operation.ResumeDecision(pending is null ? null : LifecycleInteraction.ResearchReply(pending, input));
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -29,7 +32,7 @@ public sealed class SpecialUnitDestinationOperation(SpecialUnitDestinations.Oper
                     Interaction: LifecycleInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence));
             }
             if (operation.Result is not { } result)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var values = new OwnedList<NamedValue>([new("route", new CommandValue.Integer((int)result.Route)),
                 new("direction", new CommandValue.Integer(result.Direction))]);
             context.Effect("ai.special_destination", values);

@@ -301,10 +301,13 @@ adapters during migration. Captured technology, theft, huts and research complet
 use the continuation. Civilization catch-up retains each grant before the next
 advance test, alive-bit restoration, counter reset or placement. Creation is
 disposable; elimination and civil war own and release their creation children.
-`LifecycleDecision` carries actual espionage pretexts or research decisions through
-loss, combat, city missions and movement; session adapters route the concrete
-recipient and cancellation semantics. `CivilizationCreationOperation` exposes the
-same private choices for an admitted standalone creation.
+`LifecycleDecision` carries actual espionage pretexts, research decisions and
+placement contact through loss, combat, city missions and movement. Creation
+retains U01 revelation before capital assignment, extra-unit admission and final
+exploration. Lifecycle parents use full `ResearchReply` values so nested technology
+help does not become a selection; scalar entry points remain compatibility wrappers.
+Session adapters route the concrete recipient and cancellation semantics.
+`CivilizationCreationOperation` exposes the same private choices for an admitted standalone creation.
 `ResearchOperation` is disposable and returns selection or acquisition decisions.
 Completion retains its grant and final government prompt; accumulation waits for
 completion before its free-advance check. Darwin retains both sequential completions

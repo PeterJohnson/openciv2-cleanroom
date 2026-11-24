@@ -116,7 +116,7 @@ public sealed partial class GroundMovementPlanner
         using var child = espionage.Bribe(target.Value, owner, call + "/bribe/" + direction);
         while (child.Result is null)
         {
-            var pending = child.Resume(operation.TakeReply());
+            var pending = child.ResumeDecision(operation.TakeReply());
             if (child.Result is null)
             { yield return pending; }
         }

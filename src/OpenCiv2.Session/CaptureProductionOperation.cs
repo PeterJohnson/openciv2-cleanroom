@@ -32,9 +32,13 @@ public sealed class CaptureProductionOperation(CaptureProduction.Operation opera
             OperationInputKind.Cancel or OperationInputKind.Timeout => 0,
             _ => null
         };
+        ResearchReply? answer = LifecycleInteraction.Selection(reply);
         if (pending is CaptureProductionDecision.Lifecycle lifecycle)
-        { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
-        pending = operation.Resume(pending is null ? null : reply);
+        { answer = LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
+        var previous = pending;
+        pending = operation.ResumeDecision(pending is null ? null : answer);
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
         if (pending is not null)
         {
             context.Publish();
@@ -47,7 +51,7 @@ public sealed class CaptureProductionOperation(CaptureProduction.Operation opera
             return new(CommandStatus.AwaitingInteraction, Interaction: interaction);
         }
         if (!operation.Completed)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         context.Effect("city.capture.production.completed", new([]));
         return completed = new();
     }

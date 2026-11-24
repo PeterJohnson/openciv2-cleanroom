@@ -19,14 +19,14 @@ public sealed class MovementInteraction(Func<int, ParticipantId> recipient,
         return pending switch
         {
             MovementDecision.Land { Decision: LandEntryDecision.City city } => CityMissionInteraction.Reply(city.Decision, input),
-            MovementDecision.Land { Decision: LandEntryDecision.Unit unit } => Reply(UnitMissionInteraction.Reply(unit.Decision, input)),
+            MovementDecision.Land { Decision: LandEntryDecision.Unit unit } => UnitMissionInteraction.Reply(unit.Decision, input),
             MovementDecision.ForeignUnit unit => ForeignUnitInteraction.Reply(unit.Decision, input),
             MovementDecision.Finish { Decision: MovementCompletionDecision.Contact contact } => DiplomaticContactInteraction.Reply(contact.Decision, input),
             MovementDecision.Finish { Decision: MovementCompletionDecision.Capture city } => CityCaptureInteraction.Reply(city.Decision, input),
             MovementDecision.Finish { Decision: MovementCompletionDecision.Grant grant } => ResearchGrantInteraction.ResearchReply(grant.Decision, input),
             MovementDecision.Finish { Decision: MovementCompletionDecision.Lifecycle lifecycle } => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
             MovementDecision.ForeignCity { Decision: ForeignCityDecision.Lifecycle lifecycle } => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
-            MovementDecision.Land { Decision: LandEntryDecision.Caravan caravan } => Reply(CaravanInteraction.Reply(caravan.Decision, input)),
+            MovementDecision.Land { Decision: LandEntryDecision.Caravan caravan } => CaravanInteraction.Reply(caravan.Decision, input),
             null => null,
             _ => Reply(AttackConfirmationInteraction.Reply(input))
         };

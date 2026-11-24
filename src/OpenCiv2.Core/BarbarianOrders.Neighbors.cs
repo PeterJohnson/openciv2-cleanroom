@@ -33,7 +33,7 @@ public sealed partial class BarbarianOrders
                         using var child = ransom.Begin(c.Unit, point, c.City, call + "/ransom-" + d);
                         while (child.Result is null)
                         {
-                            var pending = child.Resume(op.TakeReply());
+                            var pending = child.ResumeDecision(op.TakeDecision());
                             if (pending is not null)
                             { yield return new BarbarianOrderDecision.Ransom(pending); }
                             else if (child.Result is null)

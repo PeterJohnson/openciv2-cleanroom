@@ -56,7 +56,8 @@ public sealed class SettlerPopulationReturn(GameState world, UnitLoss loss, Civi
         internal Operation(SettlerPopulationReturn parent, UnitTacticsContext context, string call)
         { this.parent = parent; this.context = context; this.call = call; }
         internal void Present(Action action) { try { action(); } catch (Exception error) { failures.Add(error); } }
-        public LifecycleDecision? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -86,7 +87,7 @@ public sealed class SettlerPopulationReturn(GameState world, UnitLoss loss, Civi
                     child = parent.Destroy(context, call);
                     reply = null;
                 }
-                var pending = child!.Resume(reply);
+                var pending = child!.ResumeDecision(reply);
                 if (child.Result is null)
                 {
                     return pending;

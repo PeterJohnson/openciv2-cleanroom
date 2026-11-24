@@ -24,22 +24,25 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
     public sealed class Operation : IDisposable
     {
         private readonly CivilWar service;
-        private readonly IEnumerator<ResearchGrantDecision?> steps;
+        private readonly IEnumerator<LifecycleDecision?> steps;
         private int candidateBudget;
-        private int? reply;
-        public ResearchGrantDecision? Pending { get; private set; }
-        private int? TakeReply() { var answer = reply; reply = null; return answer; }
+        private ResearchReply? reply;
+        public LifecycleDecision? Pending { get; private set; }
+        private ResearchReply? TakeReply() { var answer = reply; reply = null; return answer; }
         private bool faulted, disposed;
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         public int? Result { get; private set; }
         internal Operation(CivilWar service, int parent)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(parent);
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(parent, EntityLimits.Civilizations);
             this.service = service;
-            steps = service.Execute(parent, () => candidateBudget, TakeReply, result => Result = result).GetEnumerator();
+            steps = service.Execute(parent, () => candidateBudget, TakeReply, presentationFailures.AddRange, result => Result = result).GetEnumerator();
         }
         /// <summary>Null is a bounded creation search or a completed fallback city transfer; resume without restarting.</summary>
-        public int? Advance(int candidateBudget = 64, int? answer = null)
+        public int? Advance(int candidateBudget = 64, int? answer = null) => AdvanceDecision(candidateBudget, answer is { } value ? new(value) : null);
+        public int? AdvanceDecision(int candidateBudget = 64, ResearchReply? answer = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateBudget);
@@ -75,7 +78,7 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
         public void Dispose() { disposed = true; steps.Dispose(); }
     }
 
-    private IEnumerable<ResearchGrantDecision?> Execute(int parent, Func<int> budget, Func<int?> takeReply, Action<int> complete)
+    private IEnumerable<LifecycleDecision?> Execute(int parent, Func<int> budget, Func<ResearchReply?> takeReply, Action<IEnumerable<Exception>> report, Action<int> complete)
     {
         if (!ScenarioPermissions.AllowSchism(world, parent, executeEvent))
         { complete(0); yield break; }
@@ -113,10 +116,11 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
         { complete(0); yield break; }
         world.Globals.CivsAlive = world.Globals.CivsAlive.With(rebel, false);
         using var creation = create(rebel);
-        while (creation.Advance(budget(), takeReply()) is null)
+        while (creation.AdvanceDecision(budget(), takeReply()) is null)
         {
             yield return creation.Pending;
         }
+        report(creation.PresentationFailures);
 
         if (creation.Result == 0)
         { complete(0); yield break; }

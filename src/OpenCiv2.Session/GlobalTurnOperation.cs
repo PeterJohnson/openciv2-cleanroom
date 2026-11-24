@@ -29,7 +29,7 @@ public sealed class GlobalTurnOperation(GlobalTurn.Operation operation, Func<int
         {
             GlobalTurnReply? reply = pending switch
             {
-                GlobalTurnDecision.Lifecycle choice when LifecycleInteraction.Reply(choice.Choice, input) is { } value => new GlobalTurnReply.Lifecycle(value),
+                GlobalTurnDecision.Lifecycle choice when LifecycleInteraction.ResearchReply(choice.Choice, input) is { } value => new GlobalTurnReply.Lifecycle(value),
                 GlobalTurnDecision.Throne choice when !choice.Upgrade.ActorCurrent || input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout => new GlobalTurnReply.Throne(null),
                 GlobalTurnDecision.Throne when input.Kind == OperationInputKind.Choice && input.Choice is { } value => new GlobalTurnReply.Throne(ThroneInteraction.Selection(value)),
                 GlobalTurnDecision.History or GlobalTurnDecision.Landing when OutcomeText.Acknowledged(input) => new GlobalTurnReply.Acknowledge(),

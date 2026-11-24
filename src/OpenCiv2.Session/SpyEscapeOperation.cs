@@ -26,15 +26,18 @@ public sealed class SpyEscapeOperation(CivilizationElimination lifecycle, Espion
     {
         if (completed is not null)
         { return completed; }
-        int? reply = LifecycleInteraction.Reply(pending, input);
-        pending = operation.Resume(reply);
+        var reply = LifecycleInteraction.ResearchReply(pending, input);
+        var previous = pending;
+        pending = operation.ResumeDecision(reply);
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
         if (pending is { } decision)
         {
             context.Publish();
             return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context, decision, recipient, ref intelligenceWindow, intelligence));
         }
         if (operation.Result is null)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var result = new OwnedList<NamedValue>([new("lost", new CommandValue.Boolean(operation.Result == 1))]);
         context.Effect("espionage.escape.completed", result);
         return completed = new(Result: result);

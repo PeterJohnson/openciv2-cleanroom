@@ -20,7 +20,10 @@ public sealed class ForeignCityOperation(ForeignCityMovement.Operation operation
         { return completed; }
         try
         {
-            pending = operation.Resume(pending is ForeignCityDecision.Lifecycle lifecycle ? LifecycleInteraction.Reply(lifecycle.Decision, input) : pending is null ? null : AttackConfirmationInteraction.Reply(input));
+            var previous = pending;
+            pending = operation.ResumeDecision(pending is ForeignCityDecision.Lifecycle lifecycle ? LifecycleInteraction.ResearchReply(lifecycle.Decision, input) : pending is null ? null : LifecycleInteraction.Selection(AttackConfirmationInteraction.Reply(input)));
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -33,7 +36,7 @@ public sealed class ForeignCityOperation(ForeignCityMovement.Operation operation
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result!.Value)),
                 new("proceed", new CommandValue.Boolean(operation.Result.Proceed))]);
             context.Effect("movement.foreign-city", result);

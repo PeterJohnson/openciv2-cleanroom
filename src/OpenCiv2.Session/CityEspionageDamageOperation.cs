@@ -29,9 +29,13 @@ public sealed class CityEspionageDamageOperation(CityEspionageDamage.Operation o
             OperationInputKind.Cancel or OperationInputKind.Timeout => pending is CityEspionageDecision.Lifecycle ? 0 : -1,
             _ => null
         };
+        ResearchReply? answer = LifecycleInteraction.Selection(reply);
         if (pending is CityEspionageDecision.Lifecycle lifecycle)
-        { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
-        pending = operation.Resume(pending is null ? null : reply);
+        { answer = LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
+        var previous = pending;
+        pending = operation.ResumeDecision(pending is null ? null : answer);
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
         if (pending is not null)
         {
             context.Publish();
@@ -58,7 +62,7 @@ public sealed class CityEspionageDamageOperation(CityEspionageDamage.Operation o
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (!operation.Completed)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         context.Effect("espionage.city-damage.completed", new([]));
         return completed = new();
     }

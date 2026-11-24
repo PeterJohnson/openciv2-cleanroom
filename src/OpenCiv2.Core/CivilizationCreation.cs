@@ -16,7 +16,7 @@ public sealed record CivilizationCreationServices(
     Func<int, UnitType, bool> CanBuildUnit);
 
 /// <summary>V01 §§2–5 local civilization creation. Advance bounds only the candidate search;
-/// Pending identifies a retained catch-up choice. The owning session serializes gameplay
+/// Pending identifies a retained catch-up or placement contact choice. The owning session serializes gameplay
 /// and pins the world across pending calls.</summary>
 public sealed class CivilizationCreation : IDisposable
 {
@@ -31,12 +31,12 @@ public sealed class CivilizationCreation : IDisposable
     private short oldTribe;
     private int blocked;
     private bool started, faulted, disposed;
-    private IEnumerator<ResearchGrantDecision?>? initialization;
-    private int? reply;
+    private IEnumerator<LifecycleDecision?>? initialization, placement;
+    private ResearchReply? reply;
     private readonly List<Exception> presentationFailures = [];
-    public ResearchGrantDecision? Pending { get; private set; }
+    public LifecycleDecision? Pending { get; private set; }
     public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
-    private int? TakeReply() { var answer = reply; reply = null; return answer; }
+    private ResearchReply? TakeReply() { var answer = reply; reply = null; return answer; }
 
     public int? Result { get; private set; }
     public StartingSite? Site { get; private set; }
@@ -60,7 +60,9 @@ public sealed class CivilizationCreation : IDisposable
         this.services = services;
     }
 
-    public int? Advance(int candidateBudget, int? answer = null)
+    public int? Advance(int candidateBudget, int? answer = null) => AdvanceDecision(candidateBudget, answer is { } value ? new(value) : null);
+
+    public int? AdvanceDecision(int candidateBudget, ResearchReply? answer = null)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateBudget);
@@ -92,6 +94,8 @@ public sealed class CivilizationCreation : IDisposable
                 initialization.Dispose();
                 initialization = null;
             }
+            if (placement is not null)
+            { return AdvancePlacement(); }
             if (Result is not null || search!.Advance(candidateBudget) is not { } site)
             {
                 return Result;
@@ -115,8 +119,8 @@ public sealed class CivilizationCreation : IDisposable
                 || blocked == 0 && (world.Globals.Turn == 0 || !world.Globals.Rules.NoRestart)
                     && world.Globals.Turn <= 350 - 35 * unchecked((byte)world.Globals.Difficulty))
             {
-                Place(site.Position);
-                return Result = 1;
+                placement = Place(site.Position).GetEnumerator();
+                return AdvancePlacement();
             }
             world.Globals.CivsAlive = world.Globals.CivsAlive.With(civilization, false);
             civ.Tribe = oldTribe;
@@ -135,13 +139,22 @@ public sealed class CivilizationCreation : IDisposable
         {
             faulted = true;
             initialization?.Dispose();
+            placement?.Dispose();
             throw;
         }
     }
 
-    public void Dispose() { disposed = true; initialization?.Dispose(); }
+    private int? AdvancePlacement()
+    {
+        if (placement!.MoveNext())
+        { Pending = placement.Current; return null; }
+        placement.Dispose();
+        placement = null;
+        return Result = 1;
+    }
+    public void Dispose() { disposed = true; initialization?.Dispose(); placement?.Dispose(); }
 
-    private IEnumerable<ResearchGrantDecision?> Begin()
+    private IEnumerable<LifecycleDecision?> Begin()
     {
         if (world.Globals.HumanPlayers.Contains(civilization) && world.Globals.Turn != 0)
         {
@@ -169,7 +182,7 @@ public sealed class CivilizationCreation : IDisposable
                         using var grant = research.Begin(civilization, advance, civilization, false, call + "/catch-up/" + advance);
                         while (!grant.Completed)
                         {
-                            if (grant.Resume(TakeReply()) is { } decision)
+                            if (grant.Resume(TakeReply()?.Selected) is { } decision)
                             { yield return decision; }
                             else if (!grant.Completed)
                             { yield return null; }
@@ -305,10 +318,9 @@ public sealed class CivilizationCreation : IDisposable
         return true;
     }
 
-    private void Place(MapPoint point)
+    private IEnumerable<LifecycleDecision?> Place(MapPoint point)
     {
-        ref var civ = ref world.Civilizations[civilization];
-        civ.NumAdvances = 1;
+        world.Civilizations[civilization].NumAdvances = 1;
         for (int slot = world.Entities.Units.End - 1; slot >= 0; --slot)
         {
             ref readonly var unit = ref world.Entities.Units.Storage[slot];
@@ -322,15 +334,18 @@ public sealed class CivilizationCreation : IDisposable
         {
             world.Views[0] = world.Views[0] with { Center = point };
         }
-        services.Units.Create(new(0), new((byte)civilization), point);
-        civ.CapitalX = unchecked((short)point.X);
+        foreach (var decision in Create(0, point, "first"))
+        { yield return decision; }
+        world.Civilizations[civilization].CapitalX = unchecked((short)point.X);
         if (world.Globals.Turn > 20 && blocked == 0
             && !world.Map.TileAt(point).RevealedTo.Intersects(world.Globals.HumanPlayers))
         {
-            services.Units.Create(new(0), new((byte)civilization), point);
+            foreach (var decision in Create(0, point, "second"))
+            { yield return decision; }
             if (world.Globals.Turn > 40 && services.CanBuildUnit(civilization, new(3)))
             {
-                services.Units.Create(new(3), new((byte)civilization), point);
+                foreach (var decision in Create(3, point, "defender"))
+                { yield return decision; }
             }
         }
         for (int i = 0; i <= 20; ++i)
@@ -342,4 +357,16 @@ public sealed class CivilizationCreation : IDisposable
             }
         }
     }
+    private IEnumerable<LifecycleDecision?> Create(int type, MapPoint point, string name)
+    {
+        using var child = services.Units.Begin(new((byte)type), new((byte)civilization), point, call + "/placement/" + name);
+        while (!child.Completed)
+        {
+            var decision = child.Resume(TakeReply());
+            if (!child.Completed)
+            { yield return decision is null ? null : new LifecycleContact(decision); }
+        }
+        presentationFailures.AddRange(child.PresentationFailures);
+    }
+
 }

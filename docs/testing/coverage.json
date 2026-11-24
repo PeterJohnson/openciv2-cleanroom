@@ -1968,7 +1968,7 @@
       "id": "civilization-starting-setup",
       "contract": "V01 \u00a7\u00a72\u20135 local creation; C06 unit eligibility; F05 \u00a75/\u00a78 generated initialization and compensation",
       "publicSurface": "CivilizationCreation resumable operation; UnitAvailability; StartingSites.Compensate; GeneratedGameInitialization polling; actual WorldEntry default starting children",
-      "review": "Partial reset retains selected research/future-techs/regions; ordered goal refresh and catch-up; inactive/no-leader returns, leader override/reuse, late hints, admission deadlines and pending conquest. Real U01/W03 placement and C06 eligibility; real V03/A08 starting compensation. Actual W02-to-V01/F05 joins cover preset/custom maps, both topologies, fresh replacement, poll-budget invariance, cancellation and child failure. Catch-up now requires the actual ResearchGrants service; restart consequences are covered by civilization-restart-research; full revival diplomacy/elimination, acceleration, desktop generated-game play and end sequences are pending.",
+      "review": "Partial reset retains selected research/future-techs/regions; ordered goal refresh and catch-up; inactive/no-leader returns, leader override/reuse, late hints, admission deadlines and pending conquest. Real U01/W03 placement and C06 eligibility; real V03/A08 starting compensation. Actual W02-to-V01/F05 joins cover preset/custom maps, both topologies, fresh replacement, poll-budget invariance, cancellation and child failure. Catch-up now requires the actual ResearchGrants service; restart consequences are covered by civilization-restart-research; Actual retained placement contact now delays capital/extra-unit/final-exploration work, with full nested research replies and private restart routing. Acceleration, full desktop generated-game play and end sequences remain pending.",
       "sharedGroups": [
         "C06.unit-build-eligibility",
         "F05.generated-civilization-integration",
@@ -1979,6 +1979,10 @@
         "V01.creation-catch-up",
         "V01.creation-early-returns-and-leaders",
         "V01.creation-hints-and-rejection",
+        "V01.creation-placement-contact-failure",
+        "V01.creation-placement-contact-order",
+        "V01.creation-placement-nested-research-help",
+        "V01.creation-placement-private-restart",
         "V01.creation-reset",
         "V01.creation-revival-placement",
         "V01.creation-search-rescue"
@@ -1987,15 +1991,21 @@
       "sources": [
         "src/OpenCiv2.Core/City/UnitAvailability.cs",
         "src/OpenCiv2.Core/CivilizationCreation.cs",
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/LifecycleDecision.cs",
         "src/OpenCiv2.Core/StartingSites.cs",
         "src/OpenCiv2.Core/State/GameState.cs",
         "src/OpenCiv2.Core/State/GameStatus.cs",
+        "src/OpenCiv2.Session/CivilizationCreationOperation.cs",
+        "src/OpenCiv2.Session/CivilizationEliminationOperation.cs",
         "src/OpenCiv2.Session/GeneratedGameInitialization.cs",
+        "src/OpenCiv2.Session/LifecycleInteraction.cs",
         "src/OpenCiv2.Session/NewGameInitialization.cs",
         "src/OpenCiv2.Session/WorldEntry.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/CivilizationCreationCases.cs",
+        "tests/OpenCiv2.FoundationCases/CreationContactCases.cs",
         "tests/OpenCiv2.FoundationCases/GeneratedInitializationCases.cs"
       ]
     },

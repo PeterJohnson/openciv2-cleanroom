@@ -26,9 +26,13 @@ public sealed class PlayerAirliftOperation(PlayerAirlift.Operation operation, Fu
                 OperationInputKind.Cancel or OperationInputKind.Timeout => pending is AirliftDecision.Destination ? -1 : 0,
                 _ => null
             };
+            ResearchReply? answer = LifecycleInteraction.Selection(reply);
             if (pending is AirliftDecision.Lifecycle lifecycle)
-            { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
-            pending = operation.Resume(pending is null ? null : reply);
+            { answer = LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
+            var previous = pending;
+            pending = operation.ResumeDecision(pending is null ? null : answer);
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -44,7 +48,7 @@ public sealed class PlayerAirliftOperation(PlayerAirlift.Operation operation, Fu
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("transferred", new CommandValue.Boolean(operation.Transferred)), new("shotDown", new CommandValue.Boolean(operation.ShotDown))]);
             context.Effect("movement.airlift.completed", result);
             return completed = new(Result: result);

@@ -65,7 +65,7 @@ public sealed partial class CityFounding
             using var child = lifecycle.BeginRemoveCity(removal, city.Value, call + "/cancel", incidents);
             while (child.Result is null)
             {
-                var pending = child.Resume(operation.TakeReply()?.Choice);
+                var pending = child.ResumeDecision(operation.TakeReply()?.Decision);
                 if (pending is not null)
                 {
                     yield return new FoundingDecision.Lifecycle(pending);

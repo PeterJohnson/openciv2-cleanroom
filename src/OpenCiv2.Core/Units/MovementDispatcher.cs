@@ -196,7 +196,7 @@ public sealed class MovementDispatcher(GameState world, RuleTables rules, StackO
                         using var entry = services.ForeignCity.Begin(original, movement, step, iterationCall + "/foreign-city");
                         while (!entry.Completed)
                         {
-                            if (entry.Resume(operation.TakeReply()?.Selected) is { } pending)
+                            if (entry.ResumeDecision(operation.TakeReply()) is { } pending)
                             { yield return new MovementDecision.ForeignCity(pending); }
                             else if (!entry.Completed)
                             { yield return null; }

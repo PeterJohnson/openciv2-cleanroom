@@ -25,8 +25,8 @@ public sealed class LandEntryOperation(LandEntry.Operation operation, Func<int, 
             ResearchReply? reply = pending switch
             {
                 LandEntryDecision.City city => CityMissionInteraction.Reply(city.Decision, input),
-                LandEntryDecision.Unit unit => UnitMissionInteraction.Reply(unit.Decision, input) is { } value ? new(value) : null,
-                LandEntryDecision.Caravan caravan => CaravanInteraction.Reply(caravan.Decision, input) is { } value ? new(value) : null,
+                LandEntryDecision.Unit unit => UnitMissionInteraction.Reply(unit.Decision, input),
+                LandEntryDecision.Caravan caravan => CaravanInteraction.Reply(caravan.Decision, input),
                 _ => null
             };
             pending = operation.Resume(reply);

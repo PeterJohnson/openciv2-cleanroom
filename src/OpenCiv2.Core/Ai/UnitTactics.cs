@@ -22,7 +22,10 @@ public abstract record UnitTacticsDecision
     public sealed record Mission(UnitMissionDecision Decision) : UnitTacticsDecision;
     public sealed record Pillage(AttackWarning Warning) : UnitTacticsDecision;
 }
-public sealed record UnitTacticsReply(int? Choice = null, FoundingReply? Founding = null, ResearchReply? Research = null);
+public sealed record UnitTacticsReply(int? Choice = null, FoundingReply? Founding = null, ResearchReply? Research = null)
+{
+    public ResearchReply? Decision => Research ?? (Choice is { } value ? new(value) : null);
+}
 
 /// <summary>A04 shared active-unit chooser. Captured context survives specialized children,
 /// transport retry and pending decisions. U04 executes the selected orders afterwards.</summary>
@@ -115,7 +118,7 @@ public sealed partial class UnitTactics(GameState world, RuleTables rules, UnitT
             using var child = services.Barbarians.Begin(unit, call + "/barbarian");
             while (child.Result is null)
             {
-                var pending = child.Resume(op.TakeReply()?.Choice);
+                var pending = child.ResumeDecision(op.TakeReply()?.Decision);
                 if (pending is not null)
                 { yield return new UnitTacticsDecision.Barbarian(pending); }
                 else if (child.Result is null)
@@ -197,7 +200,7 @@ public sealed partial class UnitTactics(GameState world, RuleTables rules, UnitT
                     {
                         while (!child.Completed)
                         {
-                            var pending = child.Resume(op.TakeReply()?.Choice);
+                            var pending = child.ResumeDecision(op.TakeReply()?.Decision);
                             if (pending is not null)
                             { yield return new UnitTacticsDecision.Mission(pending); }
                             else if (!child.Completed)

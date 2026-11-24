@@ -39,7 +39,7 @@ public sealed class PlayerAirlift(GameState world, RuleTables rules, StackOperat
     {
         private readonly PlayerAirlift parent;
         private readonly IEnumerator<AirliftDecision?> steps;
-        private int? answer;
+        private ResearchReply? answer;
         private bool disposed, faulted;
         public bool Completed { get; private set; }
         public bool Transferred { get; internal set; }
@@ -51,8 +51,10 @@ public sealed class PlayerAirlift(GameState world, RuleTables rules, StackOperat
             this.parent = parent;
             steps = (transfer is null ? parent.Command(this, call) : parent.Execute(this, transfer, call)).GetEnumerator();
         }
-        internal int? TakeReply() { int? result = answer; answer = null; return result; }
-        public AirliftDecision? Resume(int? reply = null)
+        internal ResearchReply? TakeDecision() { var result = answer; answer = null; return result; }
+        internal int? TakeReply() => TakeDecision()?.Selected;
+        public AirliftDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public AirliftDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -163,7 +165,7 @@ public sealed class PlayerAirlift(GameState world, RuleTables rules, StackOperat
                 using var child = lifecycle.BeginDelete(actor.Value, true, call + "/loss", incidents);
                 while (child.Result is null)
                 {
-                    if (child.Resume(operation.TakeReply()) is { } pending)
+                    if (child.ResumeDecision(operation.TakeDecision()) is { } pending)
                     { yield return new AirliftDecision.Lifecycle(pending); }
                     else if (child.Result is null)
                     { yield return null; }

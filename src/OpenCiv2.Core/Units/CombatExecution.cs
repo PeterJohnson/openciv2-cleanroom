@@ -109,7 +109,7 @@ public sealed class CombatExecution(GameState world, CombatWorkspace state, Comb
         using var resolution = services.Resolution.Begin(combat, won, call + "/resolution");
         while (!resolution.Completed)
         {
-            if (resolution.Resume(operation.TakeReply()?.Selected) is { } pending)
+            if (resolution.ResumeDecision(operation.TakeReply()) is { } pending)
             { yield return new CombatDecision.Lifecycle(pending); }
             else if (!resolution.Completed)
             { yield return null; }

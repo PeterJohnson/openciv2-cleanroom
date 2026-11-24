@@ -27,7 +27,7 @@ public sealed class UnitTurnResetOperation(UnitTurnReset.Operation operation, Fu
 
         try
         {
-            var next = operation.Resume(pending is null ? null : LifecycleInteraction.Reply(pending, input));
+            var next = operation.ResumeDecision(pending is null ? null : LifecycleInteraction.ResearchReply(pending, input));
             if (!ReferenceEquals(next, pending))
             {
                 intelligenceWindow = null;

@@ -31,7 +31,7 @@ public sealed class CapturePopulationOperation(CapturePopulationLoss.Operation o
             return completed;
         }
 
-        var decision = operation.Resume(LifecycleInteraction.Reply(pending, input));
+        var decision = operation.ResumeDecision(LifecycleInteraction.ResearchReply(pending, input));
         pending = decision;
         if (decision is not null)
         {
@@ -40,7 +40,7 @@ public sealed class CapturePopulationOperation(CapturePopulationLoss.Operation o
                 Interaction: LifecycleInteraction.Prompt(context, decision, recipient, ref intelligenceWindow, intelligence));
         }
         if (!operation.Completed)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var result = new OwnedList<NamedValue>([new("city", new CommandValue.Integer(operation.RemainingCity?.Value ?? -1))]);
         context.Effect("city.capture.population.completed", result);
         return completed = new(Result: result);

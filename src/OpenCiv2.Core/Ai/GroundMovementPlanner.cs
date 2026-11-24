@@ -28,7 +28,7 @@ public sealed partial class GroundMovementPlanner(GameState world, RuleTables ru
     {
         private readonly GroundMovementPlanner parent;
         private readonly IEnumerator<UnitMissionDecision?> steps;
-        private int? reply;
+        private ResearchReply? reply;
         private bool faulted, disposed;
         public GroundMoveChoice? Result { get; internal set; }
         public bool Completed => Result is not null;
@@ -39,8 +39,9 @@ public sealed partial class GroundMovementPlanner(GameState world, RuleTables ru
             this.parent = parent;
             steps = parent.Execute(this, context, call).GetEnumerator();
         }
-        internal int? TakeReply() { var answer = reply; reply = null; return answer; }
-        public UnitMissionDecision? Resume(int? answer = null)
+        internal ResearchReply? TakeReply() { var answer = reply; reply = null; return answer; }
+        public UnitMissionDecision? Resume(int? answer = null) => ResumeDecision(answer is { } value ? new(value) : null);
+        public UnitMissionDecision? ResumeDecision(ResearchReply? answer = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)

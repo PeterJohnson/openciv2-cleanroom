@@ -142,7 +142,7 @@ public sealed class CityIncitement(GameState world, CivilizationElimination life
         {
             while (escape.Result is null)
             {
-                if (escape.Resume(op.TakeReply()?.Selected) is { } incident)
+                if (escape.ResumeDecision(op.TakeReply()) is { } incident)
                 { yield return new RevoltDecision.Lifecycle(incident); }
                 else if (escape.Result is null)
                 { yield return null; }

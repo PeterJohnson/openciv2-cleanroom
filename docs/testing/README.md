@@ -1195,3 +1195,10 @@ MoveUnit cases preserve slot-based selection, descending counts, signed eligibil
 rectangle comparisons and destination narrowing without immediate movement. Private
 Session replies, cancellation/timeout and failure/disposal preserve allocated units.
 These cases do not close full event dispatch or desktop scenario integration.
+
+V01 placement/contact groups retain real U01/W03/V04 children before capital
+assignment and extra-unit admission. They cover live human exploration, disposal,
+required failures, cancellation/timeout diagnostics, and private last-city restart
+replies. Nested technology help preserves its full reply through Session, lifecycle,
+creation and contact without granting an advance or continuing placement. These
+native cases do not establish generated desktop or graphical audience acceptance.

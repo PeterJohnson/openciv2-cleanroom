@@ -21,14 +21,17 @@ public sealed class SpecialMovementOperation(SpecialMovementFinish.Operation ope
         { return completed; }
         try
         {
-            pending = operation.Resume(LifecycleInteraction.Reply(pending, input));
+            var previous = pending;
+            pending = operation.ResumeDecision(LifecycleInteraction.ResearchReply(pending, input));
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
                 return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence));
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("stopped", new CommandValue.Boolean(operation.Stopped))]);
             context.Effect("movement.special-finish.completed", result);
             return completed = new(Result: result);

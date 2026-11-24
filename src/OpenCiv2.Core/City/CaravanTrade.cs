@@ -61,7 +61,7 @@ public sealed class CaravanTrade(GameState world, RuleTables rules, GameplayRand
         private readonly CaravanTrade parent;
         private readonly IEnumerator<CaravanDecision?> steps;
         private readonly List<Exception> presentationFailures = [];
-        private int? reply;
+        private ResearchReply? reply;
         private bool disposed, faulted;
         public int? Result { get; internal set; }
         public bool Completed => Result is not null;
@@ -75,9 +75,11 @@ public sealed class CaravanTrade(GameState world, RuleTables rules, GameplayRand
             this.parent = parent;
             steps = (entry ? parent.Enter(this, unit, city, call) : parent.Deliver(this, unit, city, call)).GetEnumerator();
         }
-        internal int? TakeReply() { int? value = reply; reply = null; return value; }
+        internal ResearchReply? TakeDecision() { var result = reply; reply = null; return result; }
+        internal int? TakeReply() => TakeDecision()?.Selected;
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
-        public CaravanDecision? Resume(int? answer = null)
+        public CaravanDecision? Resume(int? answer = null) => ResumeDecision(answer is { } value ? new(value) : null);
+        public CaravanDecision? ResumeDecision(ResearchReply? answer = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -106,7 +108,7 @@ public sealed class CaravanTrade(GameState world, RuleTables rules, GameplayRand
         using var child = lifecycle.BeginDelete(unit.Value, true, call, incidents);
         while (child.Result is null)
         {
-            if (child.Resume(operation.TakeReply()) is { } pending)
+            if (child.ResumeDecision(operation.TakeDecision()) is { } pending)
             { yield return new CaravanDecision.Lifecycle(pending); }
             else if (child.Result is null)
             { yield return null; }

@@ -49,10 +49,10 @@ internal sealed class UnitTacticsInteraction(Func<int, ParticipantId> recipient,
     private InteractionSpec? visit, intelligenceWindow;
     internal UnitTacticsReply? Reply(UnitTacticsDecision? pending, OperationInput input) => pending switch
     {
-        UnitTacticsDecision.Barbarian barb => BarbarianOrderInteraction.Reply(barb.Decision, input) is { } b ? new(b) : null,
-        UnitTacticsDecision.Lifecycle life => LifecycleInteraction.Reply(life.Decision, input) is { } l ? new(l) : null,
+        UnitTacticsDecision.Barbarian barb => BarbarianOrderInteraction.Reply(barb.Decision, input) is { } b ? new(Research: b) : null,
+        UnitTacticsDecision.Lifecycle life => LifecycleInteraction.ResearchReply(life.Decision, input) is { } l ? new(Research: l) : null,
         UnitTacticsDecision.Founding found => CityFoundingInteraction.Reply(found.Decision, input) is { } f ? new(Founding: f) : null,
-        UnitTacticsDecision.Mission mission => UnitMissionInteraction.Reply(mission.Decision, input) is { } m ? new(m) : null,
+        UnitTacticsDecision.Mission mission => UnitMissionInteraction.Reply(mission.Decision, input) is { } m ? new(Research: m) : null,
         UnitTacticsDecision.Pillage => AttackConfirmationInteraction.Reply(input) is { } p ? new(p) : null,
         UnitTacticsDecision.Paradrop drop => DropReply(drop.Decision, input),
         _ => null

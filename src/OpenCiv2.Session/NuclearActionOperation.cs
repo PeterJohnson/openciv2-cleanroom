@@ -23,15 +23,18 @@ public sealed class NuclearActionOperation(NuclearEffects.Operation operation, F
     {
         if (completed is not null)
         { return completed; }
-        int? reply = LifecycleInteraction.Reply(pending, input);
-        pending = operation.Resume(pending is null ? null : reply);
+        var reply = LifecycleInteraction.ResearchReply(pending, input);
+        var previous = pending;
+        pending = operation.ResumeDecision(pending is null ? null : reply);
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
         if (pending is not null)
         {
             context.Publish();
             return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence));
         }
         if (operation.Result is null)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result.Value))]);
         context.Effect("nuclear.completed", result);
         return completed = new(Result: result);

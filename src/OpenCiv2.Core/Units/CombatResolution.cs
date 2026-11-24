@@ -34,7 +34,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
     {
         private readonly CombatResolution parent;
         private readonly IEnumerator<LifecycleDecision?> steps;
-        private int? reply;
+        private ResearchReply? reply;
         private bool disposed, faulted;
         public LifecycleDecision? Pending { get; private set; }
         public ResolvedCombat? Result { get; internal set; }
@@ -45,8 +45,9 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
             this.parent = parent;
             steps = parent.Execute(this, combat, won, call).GetEnumerator();
         }
-        internal int? TakeReply() { int? answer = reply; reply = null; return answer; }
-        public LifecycleDecision? Resume(int? response = null)
+        internal ResearchReply? TakeReply() { var answer = reply; reply = null; return answer; }
+        public LifecycleDecision? Resume(int? response = null) => ResumeDecision(response is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? response = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -107,7 +108,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
     {
         while (child.Result is null)
         {
-            if (child.Resume(operation.TakeReply()) is { } pending)
+            if (child.ResumeDecision(operation.TakeReply()) is { } pending)
             { yield return pending; }
             else if (child.Result is null)
             { yield return null; }
@@ -138,7 +139,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
         {
             while (!casualties.Completed)
             {
-                if (casualties.Resume(operation.TakeReply()) is { } pending)
+                if (casualties.ResumeDecision(operation.TakeReply()) is { } pending)
                 { yield return pending; }
                 else if (!casualties.Completed)
                 { yield return null; }

@@ -20,8 +20,11 @@ public sealed class BarbarianOrderOperation(BarbarianOrders.Operation operation,
         { return completed; }
         try
         {
-            int? answer = BarbarianOrderInteraction.Reply(pending, input);
-            pending = operation.Resume(answer);
+            var answer = BarbarianOrderInteraction.Reply(pending, input);
+            var previous = pending;
+            pending = operation.ResumeDecision(answer);
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -41,11 +44,11 @@ public sealed class BarbarianOrderOperation(BarbarianOrders.Operation operation,
 
 internal static class BarbarianOrderInteraction
 {
-    internal static int? Reply(BarbarianOrderDecision? pending, OperationInput input) => pending switch
+    internal static ResearchReply? Reply(BarbarianOrderDecision? pending, OperationInput input) => pending switch
     {
-        BarbarianOrderDecision.Lifecycle life => LifecycleInteraction.Reply(life.Decision, input),
+        BarbarianOrderDecision.Lifecycle life => LifecycleInteraction.ResearchReply(life.Decision, input),
         BarbarianOrderDecision.Ransom ransom => BarbarianRansomInteraction.Reply(ransom.Decision, input),
-        BarbarianOrderDecision.Pillage => AttackConfirmationInteraction.Reply(input),
+        BarbarianOrderDecision.Pillage => LifecycleInteraction.Selection(AttackConfirmationInteraction.Reply(input)),
         _ => null
     };
     internal static InteractionSpec Prompt(OperationContext context, BarbarianOrderDecision pending, Func<int, ParticipantId> recipient,

@@ -23,13 +23,16 @@ public sealed class CivilWarOperation(CivilWar.Operation operation, Func<int, Pa
         int? result;
         try
         {
-            result = operation.Advance(answer: ResearchGrantInteraction.Reply(operation.Pending, input));
+            var previous = operation.Pending;
+            result = operation.AdvanceDecision(answer: LifecycleInteraction.ResearchReply(previous, input));
+            if (!ReferenceEquals(previous, operation.Pending))
+            { intelligenceWindow = null; }
             if (operation.Pending is { } decision)
             {
                 context.Publish();
-                return new(CommandStatus.AwaitingInteraction, Interaction: ResearchGrantInteraction.Prompt(context,
-                    decision, recipient ?? (_ => throw new InvalidOperationException("Civil-war research requires participant routing")),
-                    intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow));
+                return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context,
+                    decision, recipient ?? (_ => throw new InvalidOperationException("Civil-war decisions require participant routing")),
+                    ref intelligenceWindow, intelligence));
             }
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
@@ -37,7 +40,8 @@ public sealed class CivilWarOperation(CivilWar.Operation operation, Func<int, Pa
         { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var values = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(result.Value))]);
         context.Effect("civilization.civil-war.completed", values);
-        return completed = new(Result: values);
+        return completed = operation.PresentationFailures.Count == 0 ? new(Result: values)
+            : new(CommandStatus.Failed, values, "civilization_civil_war_presentation_failed");
     }
     public void Dispose() => operation.Dispose();
 }

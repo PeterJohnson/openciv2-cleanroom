@@ -128,7 +128,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
             using var trade = services.Caravans.BeginEntry(movement.Unit, tradeCity, call + "/caravan");
             while (!trade.Completed)
             {
-                if (trade.Resume(operation.TakeReply()?.Selected) is { } pending)
+                if (trade.ResumeDecision(operation.TakeReply()) is { } pending)
                 { yield return new LandEntryDecision.Caravan(pending); }
                 else if (!trade.Completed)
                 { yield return null; }
@@ -159,7 +159,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
             using var unitMission = services.Units.Mission(movement.Unit.Value, step.DestinationUnit?.Value ?? -1, owner, call + "/unit");
             while (unitMission.Result is null)
             {
-                if (unitMission.Resume(operation.TakeReply()?.Selected) is { } pending)
+                if (unitMission.ResumeDecision(operation.TakeReply()) is { } pending)
                 { yield return new LandEntryDecision.Unit(pending); }
                 else if (unitMission.Result is null)
                 { yield return null; }

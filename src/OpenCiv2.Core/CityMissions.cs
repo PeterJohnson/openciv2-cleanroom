@@ -148,7 +148,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                     {
                         while (!child.Completed)
                         {
-                            if (child.Resume(op.TakeReply()?.Selected) is { } pending)
+                            if (child.ResumeDecision(op.TakeReply()) is { } pending)
                             { yield return new CityMissionDecision.Mission(pending); }
                             else if (!child.Completed)
                             { yield return null; }
@@ -175,7 +175,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                     {
                         while (!child.Completed)
                         {
-                            if (child.Resume(op.TakeReply()?.Selected) is { } pending)
+                            if (child.ResumeDecision(op.TakeReply()) is { } pending)
                             { yield return new CityMissionDecision.Mission(pending); }
                             else if (!child.Completed)
                             { yield return null; }
@@ -187,7 +187,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                     {
                         while (!child.Completed)
                         {
-                            if (child.Resume(op.TakeReply()?.Selected) is { } pending)
+                            if (child.ResumeDecision(op.TakeReply()) is { } pending)
                             { yield return new CityMissionDecision.Mission(pending); }
                             else if (!child.Completed)
                             { yield return null; }

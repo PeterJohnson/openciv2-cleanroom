@@ -21,14 +21,17 @@ public sealed class CombatCasualtyOperation(CombatCasualties.Operation operation
         { return completed; }
         try
         {
-            pending = operation.Resume(LifecycleInteraction.Reply(pending, input));
+            var previous = pending;
+            pending = operation.ResumeDecision(LifecycleInteraction.ResearchReply(pending, input));
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
                 return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence));
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             context.Effect("combat.casualties.completed", new([]));
             return completed = new();
         }

@@ -32,7 +32,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
         private readonly ForeignCityMovement parent;
         private readonly IEnumerator<ForeignCityDecision?> steps;
         private readonly List<Exception> presentationFailures = [];
-        private int? reply;
+        private ResearchReply? reply;
         private bool disposed, faulted;
         public ForeignCityResult? Result { get; internal set; }
         public bool Completed => Result is not null;
@@ -46,10 +46,12 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
             this.parent = parent;
             steps = parent.Execute(this, original, movement, step, call).GetEnumerator();
         }
-        internal int? TakeReply() { var answer = reply; reply = null; return answer; }
+        internal ResearchReply? TakeDecision() { var result = reply; reply = null; return result; }
+        internal int? TakeReply() => TakeDecision()?.Selected;
         internal void RememberFailures(IEnumerable<Exception> failures) => presentationFailures.AddRange(failures);
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
-        public ForeignCityDecision? Resume(int? answer = null)
+        public ForeignCityDecision? Resume(int? answer = null) => ResumeDecision(answer is { } value ? new(value) : null);
+        public ForeignCityDecision? ResumeDecision(ResearchReply? answer = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -92,7 +94,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
                 using var delivery = nuclear.Begin(owner, step.To, true, call + "/nuclear");
                 while (delivery.Result is null)
                 {
-                    if (delivery.Resume(operation.TakeReply()) is { } pending)
+                    if (delivery.ResumeDecision(operation.TakeDecision()) is { } pending)
                     { yield return new ForeignCityDecision.Lifecycle(pending); }
                     else if (delivery.Result is null)
                     { yield return null; }
@@ -103,7 +105,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
                     using var removed = lifecycle.BeginDestroy(loss, movement.Unit.Value, call + "/intercept", incidents);
                     while (removed.Result is null)
                     {
-                        if (removed.Resume(operation.TakeReply()) is { } pending)
+                        if (removed.ResumeDecision(operation.TakeDecision()) is { } pending)
                         { yield return new ForeignCityDecision.Lifecycle(pending); }
                         else if (removed.Result is null)
                         { yield return null; }

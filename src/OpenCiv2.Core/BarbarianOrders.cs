@@ -52,7 +52,7 @@ public sealed partial class BarbarianOrders(GameState world, RuleTables rules, G
         private readonly IEnumerator<BarbarianOrderDecision?> steps;
         private readonly List<Exception> failures = [];
         private bool disposed, faulted;
-        private int? answer;
+        private ResearchReply? answer;
         public int? Result { get; internal set; }
         public BarbarianOrderDecision? Pending { get; private set; }
         public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
@@ -62,10 +62,12 @@ public sealed partial class BarbarianOrders(GameState world, RuleTables rules, G
             this.parent = parent;
             steps = parent.Execute(this, actor, call).GetEnumerator();
         }
-        internal int? TakeReply() { var reply = answer; answer = null; return reply; }
+        internal ResearchReply? TakeDecision() { var result = answer; answer = null; return result; }
+        internal int? TakeReply() => TakeDecision()?.Selected;
         internal void Present(Action action) { try { action(); } catch (Exception error) { failures.Add(error); } }
         internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
-        public BarbarianOrderDecision? Resume(int? reply = null)
+        public BarbarianOrderDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public BarbarianOrderDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -117,7 +119,7 @@ public sealed partial class BarbarianOrders(GameState world, RuleTables rules, G
             : lifecycle.BeginDestroy(loss, c.Unit.Value, call, incidents);
         while (child.Result is null)
         {
-            var pending = child.Resume(op.TakeReply());
+            var pending = child.ResumeDecision(op.TakeDecision());
             if (pending is not null)
             { yield return new BarbarianOrderDecision.Lifecycle(pending); }
             else if (child.Result is null)

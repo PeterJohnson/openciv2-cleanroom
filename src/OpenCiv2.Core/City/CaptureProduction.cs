@@ -106,7 +106,8 @@ public sealed class CaptureProduction(GameState world, RuleTables rules, StackOp
         }
         /// <summary>Any window reply closes it. Incident replies go only to their pending child.
         /// Null without completion or a decision means bounded lifecycle work remains.</summary>
-        public CaptureProductionDecision? Resume(int? reply = null)
+        public CaptureProductionDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public CaptureProductionDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -127,7 +128,7 @@ public sealed class CaptureProduction(GameState world, RuleTables rules, StackOp
                 }
                 if (!started)
                 { started = true; child = parent.Support(city, oldOwner, call); }
-                var incident = child!.Resume(pending is CaptureProductionDecision.Lifecycle ? reply : null);
+                var incident = child!.ResumeDecision(pending is CaptureProductionDecision.Lifecycle ? reply : null);
                 if (incident is not null)
                 { return pending = new CaptureProductionDecision.Lifecycle(incident); }
                 pending = null;

@@ -105,6 +105,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         private EspionageIncidents.Operation? incident;
         private CivilizationCreation? creation;
         private bool faulted, disposed;
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         public int? Result { get; private set; }
 
         private Operation(CivilizationElimination parent, EspionageIncidents incidents, int candidateBudget,
@@ -141,7 +143,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
 
         /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
         /// Result remains null during search. A reply is consumed only by the currently pending incident or catch-up grant.</summary>
-        public LifecycleDecision? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -156,15 +159,16 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
                 {
                     if (creation is not null)
                     {
-                        var result = creation.Advance(candidateBudget, reply);
+                        var result = creation.AdvanceDecision(candidateBudget, reply);
                         reply = null;
                         if (result is null)
                         { return creation.Pending; }
+                        presentationFailures.AddRange(creation.PresentationFailures);
                         creation = null; // The suspended frame owns disposal.
                     }
                     if (incident is not null)
                     {
-                        var decision = incident.Resume(reply);
+                        var decision = incident.Resume(reply?.Selected);
                         reply = null;
                         if (decision is not null)
                         { return decision; }

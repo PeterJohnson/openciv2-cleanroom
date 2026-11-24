@@ -62,7 +62,8 @@ public sealed class CapturePopulationLoss(GameState world, GameplayRandom random
             RemainingCity = city;
         }
         /// <summary>A pending incident or null; Completed=false with null means bounded lifecycle work remains.</summary>
-        public LifecycleDecision? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -90,7 +91,7 @@ public sealed class CapturePopulationLoss(GameState world, GameplayRandom random
                     { Completed = true; return null; }
                     reply = null;
                 }
-                var pending = child!.Resume(reply);
+                var pending = child!.ResumeDecision(reply);
                 if (pending is not null)
                 {
                     return pending;

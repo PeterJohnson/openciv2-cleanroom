@@ -139,3 +139,10 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 | emissary-and-ally-help | V05 reception, nuclear greeting, intelligence decisions and ally help with actual stance/wonders/war/expulsion; joined by U06 final notices; full audience and desktop callers pending | partial | [EmissaryReception.cs](../../src/OpenCiv2.Core/EmissaryReception.cs), [AllyHelp.cs](../../src/OpenCiv2.Core/AllyHelp.cs), [EmissaryOperation.cs](../../src/OpenCiv2.Session/EmissaryOperation.cs), [AllyHelpOperation.cs](../../src/OpenCiv2.Session/AllyHelpOperation.cs), [AllyHelpCases.cs](../../tests/OpenCiv2.FoundationCases/AllyHelpCases.cs) |
 
 The [JSON inventory](coverage.json) contains the complete file lists, review notes and shared test IDs. Keep admitted domains and failure/resume paths explicit when extending it. A partial host row does not claim complete map rendering, menus or gameplay. See the [M4 desktop work record](../m4-desktop.md) for the remaining parent integrations and platform deferrals.
+
+V01 creation now retains actual placement contact before capital assignment,
+additional starting units and final exploration. Last-city restart and all lifecycle
+reply forwarding preserve research-help values; private Session cases cover
+recipient isolation, cancellation, timeout and diagnostic completion. See
+[CreationContactCases.cs](../../tests/OpenCiv2.FoundationCases/CreationContactCases.cs).
+Full generated desktop composition and graphical acceptance remain open.

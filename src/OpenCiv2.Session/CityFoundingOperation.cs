@@ -50,7 +50,7 @@ internal static class CityFoundingInteraction
 {
     internal static FoundingReply? Reply(FoundingDecision? pending, OperationInput input) => pending switch
     {
-        FoundingDecision.Lifecycle life => LifecycleInteraction.Reply(life.Decision, input) is { } choice ? new(choice) : null,
+        FoundingDecision.Lifecycle life => LifecycleInteraction.ResearchReply(life.Decision, input) is { } choice ? new(choice.Selected, Research: choice) : null,
         FoundingDecision.Name => input.Kind switch
         {
             OperationInputKind.Choice => new(input.Choice ?? 1, input.Text),

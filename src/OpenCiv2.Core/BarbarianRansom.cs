@@ -39,7 +39,7 @@ public sealed class BarbarianRansom(GameState world, StackOperations stacks, Uni
         private readonly IEnumerator<BarbarianRansomDecision?> steps;
         private readonly List<Exception> failures = [];
         private bool disposed, faulted;
-        private int? answer;
+        private ResearchReply? answer;
         public CitySlot? City { get; internal set; }
         public BarbarianRansomOutcome? Result { get; internal set; }
         public BarbarianRansomDecision? Pending { get; private set; }
@@ -51,9 +51,11 @@ public sealed class BarbarianRansom(GameState world, StackOperations stacks, Uni
             City = nearest;
             steps = parent.Execute(this, actor, neighbor, call).GetEnumerator();
         }
-        internal int? TakeReply() { var reply = answer; answer = null; return reply; }
+        internal ResearchReply? TakeDecision() { var result = answer; answer = null; return result; }
+        internal int? TakeReply() => TakeDecision()?.Selected;
         internal void Present(Action action) { try { action(); } catch (Exception error) { failures.Add(error); } }
-        public BarbarianRansomDecision? Resume(int? reply = null)
+        public BarbarianRansomDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public BarbarianRansomDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -122,7 +124,7 @@ public sealed class BarbarianRansom(GameState world, StackOperations stacks, Uni
             using var child = lifecycle.BeginEraseStack(loss, first, call + "/stack-" + i, incidents);
             while (child.Result is null)
             {
-                var decision = child.Resume(operation.TakeReply());
+                var decision = child.ResumeDecision(operation.TakeDecision());
                 if (decision is not null)
                 { yield return new BarbarianRansomDecision.Lifecycle(decision); }
                 else if (child.Result is null)

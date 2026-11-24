@@ -20,7 +20,10 @@ public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int,
         { return completed; }
         try
         {
-            pending = operation.Resume(CaravanInteraction.Reply(pending, input));
+            var previous = pending;
+            pending = operation.ResumeDecision(CaravanInteraction.Reply(pending, input));
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -28,7 +31,7 @@ public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int,
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result!.Value))]);
             context.Effect("trade.caravan", result);
             return completed = new(Result: result);
@@ -40,10 +43,10 @@ public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int,
 
 internal static class CaravanInteraction
 {
-    internal static int? Reply(CaravanDecision? pending, OperationInput input) => pending switch
+    internal static ResearchReply? Reply(CaravanDecision? pending, OperationInput input) => pending switch
     {
-        CaravanDecision.Lifecycle lifecycle => LifecycleInteraction.Reply(lifecycle.Decision, input),
-        CaravanDecision.Menu => AttackConfirmationInteraction.Reply(input),
+        CaravanDecision.Lifecycle lifecycle => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
+        CaravanDecision.Menu => LifecycleInteraction.Selection(AttackConfirmationInteraction.Reply(input)),
         _ => null
     };
     internal static InteractionSpec Prompt(OperationContext context, CaravanDecision decision, Func<int, ParticipantId> recipient, ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)

@@ -27,7 +27,9 @@ public sealed class CivilizationEliminationOperation(CivilizationElimination.Ope
         if (completed is not null)
         { return completed; }
         LifecycleDecision? decision;
-        decision = operation.Resume(LifecycleInteraction.Reply(pending, input));
+        decision = operation.ResumeDecision(LifecycleInteraction.ResearchReply(pending, input));
+        if (!ReferenceEquals(pending, decision))
+        { intelligenceWindow = null; }
         pending = decision;
         if (decision is not null)
         {
@@ -38,11 +40,12 @@ public sealed class CivilizationEliminationOperation(CivilizationElimination.Ope
         if (operation.Result is null)
         {
             context.Publish();
-            return new(CommandStatus.Pending);
+            return new(CommandStatus.Pending) { ReadyToContinue = true };
         }
         var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result.Value))]);
         context.Effect("civilization.elimination.completed", result);
-        return completed = new(Result: result);
+        return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+            : new(CommandStatus.Failed, result, "civilization_elimination_presentation_failed");
     }
 
     public void Dispose() => operation.Dispose();

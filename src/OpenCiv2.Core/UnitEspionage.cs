@@ -90,7 +90,8 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
 
         /// <summary>Result is V06's movement stop flag: sabotage returns 1 regardless of spy fate; bribery returns 0.
         /// Null decision with null Result means a nested lifecycle search yielded its session slice.</summary>
-        public UnitMissionDecision? Resume(int? reply = null)
+        public UnitMissionDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public UnitMissionDecision? ResumeDecision(ResearchReply? fullReply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -98,12 +99,13 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
             if (Result is not null)
             { return null; }
             try
-            { MapKnowledge.RequireLocal(parent.World); return Advance(reply); }
+            { MapKnowledge.RequireLocal(parent.World); return Advance(fullReply); }
             catch { faulted = true; escape?.Dispose(); throw; }
         }
 
-        private UnitMissionDecision? Advance(int? reply)
+        private UnitMissionDecision? Advance(ResearchReply? fullReply)
         {
+            int? reply = fullReply?.Selected;
             var w = parent.World;
             while (true)
             {
@@ -128,6 +130,7 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
                         { return pending; }
                         int choice = reply.Value;
                         reply = null;
+                        fullReply = null;
                         pending = null;
                         if (choice < 0)
                         { return Finish(0); }
@@ -180,7 +183,7 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
                         { Transfer(); }
                         return Finish(0);
                     case Phase.Escape:
-                        var pretext = escape!.Resume(pending is UnitMissionDecision.Lifecycle ? reply : null);
+                        var pretext = escape!.ResumeDecision(pending is UnitMissionDecision.Lifecycle ? fullReply : null);
                         if (pretext is not null)
                         { return pending = new UnitMissionDecision.Lifecycle(pretext); }
                         pending = null;

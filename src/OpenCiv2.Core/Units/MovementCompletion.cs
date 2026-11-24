@@ -140,7 +140,7 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
             using var aircraft = services.Special.BeginAircraft(movement, step.To, call + "/aircraft");
             while (!aircraft.Completed)
             {
-                if (aircraft.Resume(operation.TakeReply()?.Selected) is { } question)
+                if (aircraft.ResumeDecision(operation.TakeReply()) is { } question)
                 { yield return new MovementCompletionDecision.Lifecycle(question); }
                 else if (!aircraft.Completed)
                 { yield return null; }
@@ -153,7 +153,7 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
         {
             while (!coast.Completed)
             {
-                if (coast.Resume(operation.TakeReply()?.Selected) is { } question)
+                if (coast.ResumeDecision(operation.TakeReply()) is { } question)
                 { yield return new MovementCompletionDecision.Lifecycle(question); }
                 else if (!coast.Completed)
                 { yield return null; }

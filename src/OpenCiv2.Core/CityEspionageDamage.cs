@@ -73,8 +73,10 @@ public sealed class CityEspionageDamage(GameState world, RuleTables rules, Gamep
 
         /// <summary>Null with Completed=false is a bounded nested lifecycle slice. Decisions consume
         /// one reply only; failures/disposal retain committed effects and cannot restart the operation.</summary>
-        public CityEspionageDecision? Resume(int? reply = null)
+        public CityEspionageDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public CityEspionageDecision? ResumeDecision(ResearchReply? fullReply = null)
         {
+            int? reply = fullReply?.Selected;
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
             { throw new InvalidOperationException("A failed city mission cannot resume"); }
@@ -85,7 +87,7 @@ public sealed class CityEspionageDamage(GameState world, RuleTables rules, Gamep
                 MapKnowledge.RequireLocal(parent.World);
                 if (pending is not null && reply is null)
                 { return pending; }
-                int? childReply = pending is CityEspionageDecision.Lifecycle ? reply : null;
+                ResearchReply? childReply = pending is CityEspionageDecision.Lifecycle ? fullReply : null;
                 if (pending is CityEspionageDecision.Question)
                 { answer = reply!.Value; }
                 pending = null;
@@ -93,7 +95,7 @@ public sealed class CityEspionageDamage(GameState world, RuleTables rules, Gamep
                 {
                     if (child is not null)
                     {
-                        var incident = child.Resume(childReply);
+                        var incident = child.ResumeDecision(childReply);
                         childReply = null;
                         if (incident is not null)
                         { return pending = new CityEspionageDecision.Lifecycle(incident); }

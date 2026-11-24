@@ -28,7 +28,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
     {
         private readonly SpecialMovementFinish parent;
         private readonly IEnumerator<LifecycleDecision?> steps;
-        private int? answer;
+        private ResearchReply? answer;
         private readonly List<Exception> presentationFailures = [];
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
@@ -42,8 +42,9 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
             this.parent = parent;
             steps = parent.Execute(this, movement, destination, owner, coast, call).GetEnumerator();
         }
-        internal int? TakeReply() { int? result = answer; answer = null; return result; }
-        public LifecycleDecision? Resume(int? reply = null)
+        internal ResearchReply? TakeDecision() { var result = answer; answer = null; return result; }
+        public LifecycleDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -134,7 +135,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
             : lifecycle.BeginDelete(slot, true, call + "/loss", incidents);
         while (child.Result is null)
         {
-            if (child.Resume(operation.TakeReply()) is { } pending)
+            if (child.ResumeDecision(operation.TakeDecision()) is { } pending)
             { yield return pending; }
             else if (child.Result is null)
             { yield return null; }

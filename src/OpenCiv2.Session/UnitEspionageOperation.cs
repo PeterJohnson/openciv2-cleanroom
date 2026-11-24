@@ -25,8 +25,11 @@ public sealed class UnitEspionageOperation(UnitEspionage.Operation operation, Fu
     {
         if (completed is not null)
         { return completed; }
-        int? reply = UnitMissionInteraction.Reply(pending, input);
-        pending = operation.Resume(pending is null ? null : reply);
+        var reply = UnitMissionInteraction.Reply(pending, input);
+        var previous = pending;
+        pending = operation.ResumeDecision(pending is null ? null : reply);
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
         if (pending is not null)
         {
             context.Publish();
@@ -34,7 +37,7 @@ public sealed class UnitEspionageOperation(UnitEspionage.Operation operation, Fu
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (operation.Result is null)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var result = new OwnedList<NamedValue>([new("stop", new CommandValue.Boolean(operation.Result == 1))]);
         context.Effect("unit.mission.completed", result);
         return completed = new(Result: result);
@@ -45,16 +48,16 @@ public sealed class UnitEspionageOperation(UnitEspionage.Operation operation, Fu
 
 internal static class UnitMissionInteraction
 {
-    internal static int? Reply(UnitMissionDecision? decision, OperationInput input)
+    internal static ResearchReply? Reply(UnitMissionDecision? decision, OperationInput input)
     {
         if (decision is UnitMissionDecision.Lifecycle lifecycle)
-        { return LifecycleInteraction.Reply(lifecycle.Decision, input); }
-        return input.Kind switch
+        { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
+        return LifecycleInteraction.Selection(input.Kind switch
         {
             OperationInputKind.Choice => input.Choice,
             OperationInputKind.Cancel or OperationInputKind.Timeout => decision is UnitMissionDecision.Menu ? -1 : 0,
             _ => null
-        };
+        });
     }
     internal static InteractionSpec Prompt(OperationContext context, UnitMissionDecision decision, Func<int, ParticipantId> recipient, ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {

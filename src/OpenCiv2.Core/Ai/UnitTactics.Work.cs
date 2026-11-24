@@ -75,7 +75,7 @@ public sealed partial class UnitTactics
         {
             while (child.Result is null)
             {
-                var pending = child.Resume(op.TakeReply()?.Choice);
+                var pending = child.ResumeDecision(op.TakeReply()?.Decision);
                 if (pending is not null)
                 { yield return new UnitTacticsDecision.Lifecycle(pending); }
                 else if (child.Result is null)

@@ -6268,3 +6268,45 @@ creation callers also need to forward contact decisions. Desktop service graph,
 audience presentation, full turn orchestration and generated-game acceptance
 remain open. Recorded original-observation gaps are unchanged. Browser,
 cross-platform qualification and network execution remain deferred; M4 is ongoing.
+
+
+## V01 retained placement contact and lifecycle replies — 2026-11-23
+
+Civilization creation now retains actual U01/W03/V04 placement contact. The first
+settler is allocated before its meeting; capital assignment waits for completion.
+The live turn and human-exploration gates then control additional settlers and the
+fixed Phalanx, followed by the explicit exploration pass. Disposal and required
+failures preserve the allocated unit without running the remaining placement work.
+
+`LifecycleContact` carries these choices through restart, civil war, capture,
+unit loss, missions, movement and global reset. Full research replies now pass
+through those parents and the corresponding private Session interactions; a
+research-help request cannot silently become a technology selection. Existing
+integer entry points wrap scalar choices for bounded callers. Creation, restart
+and civil-war adapters expose their collected child presentation diagnostics after
+committed completion, and bounded lifecycle searches remain schedulable.
+
+Four new groups exercise actual placement/contact ordering, live exploration,
+disposal and required failures, private last-city restart replies, cancellation and
+timeout, and nested technology help during restart. The help case verifies that
+no advance is granted and capital assignment remains pending until the actual
+technology choice and audience complete. These are specification-derived native
+Core/Session cases, not original-game comparison or graphical acceptance.
+
+Root/App formatting and verification passed, and both Release builds completed
+with zero warnings/errors. Native tests passed **1664 of 1666**, with the two
+existing platform/audio skips. All **1631 shared groups** passed across 179 coverage
+families. Identity verified **816 compiled inputs**; the 43-project graph, eight
+identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-creation-placement-native.json` | `82a5c4b8d3c8c2502cf34ce4c41dc766f291cb7a82b98dd838af962ae6164449` |
+| `m4-creation-placement-identity.json` | `bc98b1a095a1d490bcf86903f62a76478bc90ac1394d47d9e1877eed935a88e7` |
+
+The original MGE installation remains available for independent observations;
+this slice required no executable inspection or Windows execution. F04's missing
+formulas and the recorded A08 relation delta remain unresolved. Other U01 creation
+callers, full S02 dispatch, generated desktop composition and graphical/end-game
+acceptance remain open. Browser, cross-platform and network execution remain
+deferred; M4 is ongoing.

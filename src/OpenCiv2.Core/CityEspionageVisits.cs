@@ -51,7 +51,8 @@ public sealed class CityEspionageVisits(GameState world, UnitLoss loss, Civiliza
         { this.parent = parent; this.mission = mission; this.call = call; this.embassy = embassy; }
         /// <summary>Any visit reply closes its window. Incident replies retain their separate reply1 semantics.
         /// Null without a decision/completion is a bounded nested lifecycle slice.</summary>
-        public CityEspionageDecision? Resume(int? reply = null)
+        public CityEspionageDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public CityEspionageDecision? ResumeDecision(ResearchReply? fullReply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -59,11 +60,12 @@ public sealed class CityEspionageVisits(GameState world, UnitLoss loss, Civiliza
             if (Completed)
             { return null; }
             try
-            { MapKnowledge.RequireLocal(parent.World); return Advance(reply); }
+            { MapKnowledge.RequireLocal(parent.World); return Advance(fullReply); }
             catch { faulted = true; child?.Dispose(); throw; }
         }
-        private CityEspionageDecision? Advance(int? reply)
+        private CityEspionageDecision? Advance(ResearchReply? fullReply)
         {
+            int? reply = fullReply?.Selected;
             var w = parent.World;
             var m = mission;
             while (true)
@@ -95,6 +97,7 @@ public sealed class CityEspionageVisits(GameState world, UnitLoss loss, Civiliza
                         { return pending; }
                         pending = null;
                         reply = null;
+                        fullReply = null;
                         if (m.IsSpy)
                         {
                             if (embassy || !w.Entities.Cities.At(m.City).Flags.Investigated)
@@ -109,8 +112,9 @@ public sealed class CityEspionageVisits(GameState world, UnitLoss loss, Civiliza
                         }
                         break;
                     case Phase.Loss:
-                        var decision = child!.Resume(pending is CityEspionageDecision.Lifecycle ? reply : null);
+                        var decision = child!.ResumeDecision(pending is CityEspionageDecision.Lifecycle ? fullReply : null);
                         reply = null;
+                        fullReply = null;
                         if (decision is not null)
                         { return pending = new CityEspionageDecision.Lifecycle(decision); }
                         pending = null;

@@ -45,7 +45,7 @@ public sealed partial class BarbarianSpawning(GameState world, RuleTables rules,
         private readonly IEnumerator<LifecycleDecision?> steps;
         private readonly List<Exception> failures = [];
         private bool disposed, faulted;
-        private int? answer;
+        private ResearchReply? answer;
         public bool Completed { get; private set; }
         public LifecycleDecision? Pending { get; private set; }
         public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
@@ -55,9 +55,10 @@ public sealed partial class BarbarianSpawning(GameState world, RuleTables rules,
             this.parent = parent;
             steps = parent.Execute(this, call).GetEnumerator();
         }
-        internal int? TakeReply() { var reply = answer; answer = null; return reply; }
+        internal ResearchReply? TakeReply() { var reply = answer; answer = null; return reply; }
         internal void Present(Action action) { try { action(); } catch (Exception error) { failures.Add(error); } }
-        public LifecycleDecision? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public LifecycleDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -103,7 +104,7 @@ public sealed partial class BarbarianSpawning(GameState world, RuleTables rules,
                 using var child = lifecycle.BeginEraseStack(loss, erase, call + "/raid-loss", incidents);
                 while (child.Result is null)
                 {
-                    var pending = child.Resume(operation.TakeReply());
+                    var pending = child.ResumeDecision(operation.TakeReply());
                     if (child.Result is null)
                     { yield return pending; }
                 }

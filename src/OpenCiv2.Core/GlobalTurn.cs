@@ -16,7 +16,10 @@ public abstract record GlobalTurnDecision
 }
 public abstract record GlobalTurnReply
 {
-    public sealed record Lifecycle(int Value) : GlobalTurnReply;
+    public sealed record Lifecycle(ResearchReply Value) : GlobalTurnReply
+    {
+        public Lifecycle(int value) : this(new ResearchReply(value)) { }
+    }
     public sealed record Throne(ThroneSelection? Selection) : GlobalTurnReply;
     public sealed record Acknowledge : GlobalTurnReply;
 }
@@ -36,7 +39,7 @@ public sealed class GlobalTurn(GameState world, RuleTables rules, GameplayRandom
         private readonly IEnumerator<GlobalTurnDecision?> steps;
         private readonly List<Exception> failures = [];
         private bool disposed, faulted;
-        private int? lifecycleReply;
+        private ResearchReply? lifecycleReply;
         public bool Completed { get; private set; }
         public GlobalTurnDecision? Pending { get; private set; }
         public ThroneProgressResult? Progress { get; internal set; }
@@ -48,7 +51,7 @@ public sealed class GlobalTurn(GameState world, RuleTables rules, GameplayRandom
             this.parent = parent;
             steps = parent.Execute(this, accelerationSelection, call).GetEnumerator();
         }
-        internal int? TakeLifecycleReply() { var reply = lifecycleReply; lifecycleReply = null; return reply; }
+        internal ResearchReply? TakeLifecycleReply() { var reply = lifecycleReply; lifecycleReply = null; return reply; }
         internal void AddFailures(IEnumerable<Exception> errors) => failures.AddRange(errors);
         public GlobalTurnDecision? Resume(GlobalTurnReply? reply = null)
         {
@@ -118,7 +121,7 @@ public sealed class GlobalTurn(GameState world, RuleTables rules, GameplayRandom
                 {
                     while (!child.Completed)
                     {
-                        var pending = child.Resume(operation.TakeLifecycleReply());
+                        var pending = child.ResumeDecision(operation.TakeLifecycleReply());
                         if (!child.Completed)
                         {
                             yield return pending is null ? null : new GlobalTurnDecision.Lifecycle(pending);
@@ -148,7 +151,7 @@ public sealed class GlobalTurn(GameState world, RuleTables rules, GameplayRandom
         {
             while (!child.Completed)
             {
-                var pending = child.Resume(operation.TakeLifecycleReply());
+                var pending = child.ResumeDecision(operation.TakeLifecycleReply());
                 if (!child.Completed)
                 {
                     yield return pending is null ? null : new GlobalTurnDecision.Lifecycle(pending);
