@@ -160,6 +160,13 @@ A02 city reselection uses `CityProductionChoice`; human choices/presentation rem
 C06 nonunit completion now composes these services; spaceship reports and F04
 arrival outcomes remain open.
 
+`CityPass` owns F04 §6's entry reset, captured upper scan limit and descending
+live city selection. The desktop retains it across actual production/research
+decisions, then reports each city's balance or removal. Completion updates sizes
+from the pass owner's alliances or the global Apollo marker and runs actual A08
+rates/strategic scores after doubling Despotism into Anarchy. It does not define
+the still-open support/unhappiness terms or best-shield producer.
+
 `BuildingMaintenance` owns C08's quote and ordered payment/forced-loss pass.
 The desktop city turn calls it through `CityHumanMaintenance` after research and
 actual pollution/meltdown. The wrapper tests the captured owner's current human

@@ -5132,6 +5132,28 @@
         "F04.city-pollution-before-payment",
         "F04.desktop-city-pollution"
       ]
+    },
+    {
+      "id": "city-pass",
+      "contract": "F04 \u00a76 city-pass reset, descending live traversal, returned summaries and A08 completion",
+      "publicSurface": "CityPass.Begin/Operation.NextCity/CompleteCity/Finish; desktop turn caller",
+      "review": "Defined pass boundaries with actual government policy and C01 transfer/removal/creation tests. Captured scan limit, live lower slots, removed sentinel, pass-owner alliances and global Apollo marker, signed score completion, current AI rates and terminal required failures. Full city-turn arithmetic and generated desktop integration remain open; browser/cross-platform execution deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityPass.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityPassCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.city-pass-admission-failure",
+        "F04.city-pass-ai-rates",
+        "F04.city-pass-entry-empty",
+        "F04.city-pass-live-descending",
+        "F04.city-pass-remembered-sizes",
+        "F04.city-pass-removal-reuse"
+      ]
     }
   ]
 }

@@ -5409,3 +5409,58 @@ F04's unresolved government-score and best-shield producer definitions, full
 city/civilization sequencing, generated desktop play and complete human/AI
 end-condition acceptance remain open. Browser/cross-platform qualification
 and network execution remain deferred.
+
+## F04 shared city-pass boundaries — 2026-11-23
+
+`CityPass` now owns the defined city-pass entry, traversal and completion
+contract. The desktop retains the operation through its actual city production,
+research and maintenance children. Entry resets best-shield surplus as explicitly
+specified, along with government scores, wonder notices and attitude-dirty state.
+The unresolved best-shield producer does not justify retaining a previous pass's
+summary. City memory now uses the pass civilization's alliances, including when
+an actual child transfers the selected city to another owner.
+
+The pass captures its upper scan limit once, selects current live/owned cities
+in descending order, clears airlift use before the child and skips summaries for
+an actual removed-city result. It accumulates balance/size and disorder, then
+adds twice Despotism into Anarchy with signed wrapping and runs actual A08
+rates/strategic scores, including their final wonder-notice clear. Completion
+is idempotent; required policy failure retains its committed prefix and prevents
+a second application. The two unspecified city-analysis formulas remain open.
+
+Six specification-derived groups cover empty passes and all entry resets,
+actual C01 transfer/removal/creation and lower-slot reuse, the captured upper
+limit, pass-owner alliances, global/destroyed Apollo markers, normal-observer
+limits without alive/knowledge filters, removed results, AI rate predicates,
+signed score completion, admission and required failures. These are pass-boundary
+tests, not a substitute for the still-incomplete general city-turn parent.
+
+Root/App formatting and verification passed, and both Release builds completed
+with zero warnings/errors. Native tests passed **1512 of 1514**, with two existing
+platform/audio skips. The shared probe passed **1479 groups** across 163 coverage
+families; source identity verified **763 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The unchanged isolated
+native input driver passed all **26 desktop checks**, including save/load,
+finance/government, score/Hall and retirement paths, on its first run.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-city-pass-native.json` | `6831e09d9602ca3963e86afae8de9e0b98763ef0289a7222e04ee5bf5ba54d42` |
+| `m4-city-pass-identity.json` | `1271813c8010731a3b4723b9dd2610424e2df202f9bf16fdc0a70819a8d0f8b4` |
+| `m4-city-pass-play.json` | `135baff5c3fdd100235721192fa0945d569bcd92ddc36d3699dd2ddece3e5faf` |
+
+The user supplied an original MGE installation at
+`/home/peter/project/civ2/Civ2`. Its `civ2.exe` is a PE32 Intel i386 Windows GUI
+executable with SHA-256
+`edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c`.
+Neither `wine` nor `wine64` was on this Linux host's PATH. Only file identity was
+checked; the executable was not run or analyzed, and no original-game behavior
+or version compatibility is established by this check. Best-shield surplus and
+all seven government scores have defined classic-save fields, so controlled
+original-game before/after saves can provide independent evidence for the two
+F04 formula gaps on a suitable host. The user offered a Windows handoff if
+needed; defined desktop work can still progress here and the goal remains active.
+
+Full city/civilization sequencing, generated desktop play and complete human/AI
+end-condition acceptance remain open. Browser/cross-platform qualification and
+network execution remain deferred.

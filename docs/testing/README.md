@@ -1048,3 +1048,11 @@ pollution, building credits and the remaining maintenance scan; required RNG
 and quote failures retain committed prefixes. The old synthetic InHock mutation
 case is replaced by ordinary payment/credit observations under C08/X01. Desktop
 direct/console cases run actual C03 population pollution and classic persistence.
+
+F04 city-pass groups cover entry resets, empty completion, descending live
+selection through actual C01 transfers/removal/creation, captured upper limits,
+lower-slot reuse and the removed-city result. They check pass-owner alliances,
+destroyed/global Apollo markers, observer exclusions, returned balance/size and
+disorder inputs to actual A08 rates, signed score addition and terminal required
+failures. Desktop turns retain this pass through their real city children. The
+two open parent formulas remain outside these specification-derived cases.
