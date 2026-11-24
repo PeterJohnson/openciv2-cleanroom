@@ -13,9 +13,9 @@ public static partial class FoundationSuite
     // A01 §§4–7: real V01 elimination interrupts a foreign mission, whose last-settler
     // loss enters another V01 check and leaves a human victim's real V06 choice pending.
     private static (AssessmentFixture F, IncidentFixture Incidents, GameplayRandom Restart) RetainedAssessmentFixture(
-        bool retirement, RevelationFixture? data = null)
+        bool retirement, RevelationFixture? data = null, string? lifecycleCall = null)
     {
-        string call = retirement ? "assessment/retire/2/unit/2/check" : "assessment/eliminate";
+        string call = lifecycleCall ?? (retirement ? "assessment/retire/2/unit/2/check" : "assessment/eliminate");
         var f = new AssessmentFixture(data, EscapeChoice(call + "/spy/1", 2, 0), IncidentChoice(0, call: call + "/spy/1/incident"));
         f.Ai(); f.World.Globals.CivsAlive = CivilizationSet.Only(1).With(2).With(3); f.World.Multiplayer.LocalHuman = 2;
         f.Rule(4, RuleRole.Attack); f.Rule(47, RuleRole.Settle);

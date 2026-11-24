@@ -113,6 +113,7 @@ public static partial class LocalPlayCommands
         private CityHumanMaintenance? cityMaintenance;
         private ResearchOperation? research;
         private CityProduction.Operation? production;
+        private CityRetirementOperation? retirement;
         private int foodSurplus;
         private ResearchDecision? pendingResearch;
         private InteractionSpec? researchIntelligence;
@@ -148,6 +149,8 @@ public static partial class LocalPlayCommands
             production?.Dispose();
             production = null;
             pendingResearch = null;
+            retirement?.Dispose();
+            retirement = null;
             shipPresentation?.Dispose();
             shipPresentation = null;
             postCity?.Dispose();
@@ -252,7 +255,22 @@ public static partial class LocalPlayCommands
                     var result = production.Result!;
                     production.Dispose();
                     production = null;
-                    research = AfterProduction(context, researchCity, result);
+                    retirement = AfterProduction(context, researchCity, result);
+                    input = new();
+                }
+                if (retirement is not null)
+                {
+                    var result = retirement.Resume(context, input);
+                    if (!result.Status.Terminal())
+                    {
+                        return result;
+                    }
+
+                    RememberFailure(result);
+                    retirement.Dispose();
+                    retirement = null;
+                    input = new();
+                    research = AfterRetirement(context, researchCity);
                 }
                 if (research is not null)
                 {
@@ -530,10 +548,9 @@ public static partial class LocalPlayCommands
             return CreateProduction(context).Begin(slot, $"local-production/{world.Globals.Turn}/{slot.Value}");
         }
 
-        private ResearchOperation AfterProduction(OperationContext context, CitySlot slot, CityProductionResult production)
+        private CityRetirementOperation AfterProduction(OperationContext context, CitySlot slot, CityProductionResult production)
         {
             var world = context.World;
-            var rules = context.Process.Rules.Definitions;
             ref var city = ref world.Entities.Cities.At(slot);
             CityTarget target = new(slot, city.Token);
             if (production.Unit is { Outcome: UnitProductionOutcome.Completed, Unit: { } produced })
@@ -550,8 +567,14 @@ public static partial class LocalPlayCommands
                 context.CityProductionCompleted?.Invoke(target, -improvement);
             }
 
-            RetireUnsupportedUnits(context, slot);
+            return RetireUnsupportedUnits(context, slot);
+        }
 
+        private ResearchOperation AfterRetirement(OperationContext context, CitySlot slot)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            ref var city = ref world.Entities.Cities.At(slot);
             world.Calculation.Reallocating = world.Calculation.Processing = true;
             world.Calculation.JobFound = false;
             world.Calculation.JobPriority = 0;
@@ -560,7 +583,7 @@ public static partial class LocalPlayCommands
             var moodEffects = new CityTurnEffects(context);
             var governments = CreateGovernments(context);
             new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, foodSurplus);
-            return CreateResearch(context).AddPoints(city.Owner.Value, city.Science, $"local-research/{world.Globals.Turn}/{slot.Value}");
+            return CreateResearch(context).AddPoints(cityOwner, city.Science, $"local-research/{world.Globals.Turn}/{slot.Value}");
         }
 
         private static GovernmentChanges CreateGovernments(OperationContext context) =>
@@ -591,7 +614,7 @@ public static partial class LocalPlayCommands
                 new CityEconomy(world, context.Process.Rules, new(world, new(5_000_000, 64))), researchEffects, researchEffects);
         }
 
-        private static void RetireUnsupportedUnits(OperationContext context, CitySlot city)
+        private CityRetirementOperation RetireUnsupportedUnits(OperationContext context, CitySlot city)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -600,7 +623,16 @@ public static partial class LocalPlayCommands
             var effects = new CityTurnEffects(context);
             var deletion = new UnitDeletion(world, rules, budget, effects);
             var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
-            new CityRetirement(world, rules, deletion, loss, effects).Run(city);
+            var governments = CreateGovernments(context);
+            var global = new GlobalEffects(() => Current);
+            var policy = new GovernmentPolicy(world, context.Process.Rules, governments, context.Gameplay);
+            var war = new DiplomaticWar(world, rules, stacks, new(world, rules, stacks), context.Gameplay, global);
+            var incidents = new EspionageIncidents(world, context.Gameplay, war, new(world, context.Process.Rules, policy),
+                governments, global.Incident);
+            return new(new CityRetirement(world, rules, deletion, loss, effects).Begin(city, effects.Elimination(), incidents,
+                $"local-retirement/{world.Globals.Turn}/{city.Value}"),
+                owner => owner == context.Actor.Civilization.Value ? context.Actor.Participant
+                    : throw new InvalidOperationException("The authored profile has no other decision recipient"));
         }
 
         // The admitted ordinary advances0..2 have no grant notices, emissary, Barracks or

@@ -2199,14 +2199,18 @@
     {
       "id": "city-unit-retirement",
       "contract": "C05 unsupported-unit and affordable disorder retirement with actual C05 support/U01 loss; desktop turn caller",
-      "publicSurface": "CityRetirement; LocalPlayCommands turn support retirement",
-      "review": "Captures owner/government, charges in slot order, selects by weighted distance without owner filtering, distinguishes shortage from affordable AI retirement, preserves fortress/city/role protections and restarts only after actual loss. Uses actual cargo-aware and basic deletion children. Tests include foreign/free candidates, ties, cargo, coordination scores, signed/raw-home domains, failure prefixes and loaded desktop-profile shortage/save/resume. General F04 and V01 elimination remain pending.",
+      "publicSurface": "CityRetirement.Run/Begin; CityRetirementOperation; LocalPlayCommands turn support retirement",
+      "review": "Captures owner/government, charges in slot order, selects by weighted distance without owner filtering, distinguishes shortage from affordable AI retirement, preserves fortress/city/role protections and restarts only after actual loss. Synchronous and retained paths share C05 steps; the retained path composes actual U01 cargo destruction or bare deletion, V01 elimination/recreation and private V06/research decisions before restart. Tests include foreign/free candidates, ties, cargo, coordination scores, signed/raw-home domains, live human membership after a nested decision, cancellation, disposal/failure prefixes, private session routing and loaded desktop-profile shortage/save/resume. General F04 city/civilization orchestration and original-game evidence remain pending.",
       "sharedGroups": [
         "C05.retirement-affordable-policy",
         "C05.retirement-failure-prefixes",
         "C05.retirement-foreign-restart",
         "C05.retirement-free-cargo",
         "C05.retirement-protection-domains",
+        "C05.retirement-retained-branches-failure",
+        "C05.retirement-retained-disposal-cancel",
+        "C05.retirement-retained-nested-restart",
+        "C05.retirement-retained-private-session",
         "M3.land-step-zones",
         "M3.local-food-turn",
         "M3.local-mood-turn",
@@ -2222,12 +2226,15 @@
         "M4.local-research-grant-turn"
       ],
       "sources": [
+        "src/OpenCiv2.Core/City/CityRetirement.Operation.cs",
         "src/OpenCiv2.Core/City/CityRetirement.cs",
+        "src/OpenCiv2.Session/CityRetirementOperation.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
       ],
       "status": "partial",
       "tests": [
         "tests/OpenCiv2.FoundationCases/CityRetirementCases.cs",
+        "tests/OpenCiv2.FoundationCases/CityRetirementContinuationCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
       ]
     },

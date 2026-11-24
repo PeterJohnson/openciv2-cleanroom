@@ -89,7 +89,11 @@ delivery now use `CaravanTrade`. `Units/UnitCargo` supplies U01 transport groupi
 capacity queries; `UnitLoss` composes actual grouping and basic deletion for
 whole-stack/cargo-aware loss. `StackOperations.ShipsFirst` uses the two real
 staging passes. `CityRetirement` now joins real C05 charges with U01 cargo-aware
-and basic loss, and the local desktop turn calls it. `CityRemoval` joins descending supported-unit
+and basic loss. Its synchronous and retained entry points share the C05 scan;
+`CityRetirement.Operation` waits through actual V01 elimination/recreation and
+V06/research decisions before removal presentation and restart. The session's
+`CityRetirementOperation` routes those choices privately, and desktop upkeep waits
+for it before the next calculation/mood/research stage. `CityRemoval` joins descending supported-unit
 processing, real U01 role/stack queries, cargo loss, C07 route removal and C01
 radius repair. It notifies the view owner after committed removal; the remote
 request wrapper remains separate. `CityFood` runs C05 starvation/growth before

@@ -13,17 +13,39 @@ public interface ICityRetirementEffects
 }
 
 /// <summary>C05 unsupported-unit and affordable disorder retirement. The caller owns later recalculation.</summary>
-public sealed class CityRetirement(GameState world, RuleTables rules, UnitDeletion deletion,
+public sealed partial class CityRetirement(GameState world, RuleTables rules, UnitDeletion deletion,
     UnitLoss loss, ICityRetirementEffects effects)
 {
+    private GameState World => world;
+    private UnitLoss Loss => loss;
     private CityCalculationWorkspace Work => world.Calculation;
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner & 31);
 
     public void Run(CitySlot slot)
     {
+        foreach (var action in Steps(slot))
+        {
+            if (action.Shortage)
+            {
+                loss.DestroyAndRedraw(action.Unit, true);
+            }
+            else
+            {
+                deletion.Erase(action.Unit, true);
+            }
+        }
+    }
+
+    /// <summary>Retain C05 selection and restart state through actual U01/V01 loss decisions.</summary>
+    public Operation Begin(CitySlot slot, CivilizationElimination elimination, EspionageIncidents incidents,
+        string call, int candidateBudget = 64) => new(this, slot, elimination, incidents, call, candidateBudget);
+
+    private readonly record struct Retirement(int Unit, bool Shortage);
+
+    private IEnumerable<Retirement> Steps(CitySlot slot)
+    {
         MapKnowledge.RequireLocal(world);
-        ref var city = ref world.Entities.Cities.At(slot);
-        int owner = unchecked((sbyte)city.Owner.Value);
+        int owner = unchecked((sbyte)world.Entities.Cities.At(slot).Owner.Value);
         var government = (Government)unchecked((byte)world.Civilizations[owner].Government);
         var support = new CitySupport(world, rules);
         Work.SupportedUnits = Work.ShieldSupport = 0;
@@ -36,7 +58,7 @@ public sealed class CityRetirement(GameState world, RuleTables rules, UnitDeleti
                 continue;
             }
             support.Charge(slot, new((ushort)i), government);
-            if (!(Work.Shields < Work.ShieldSupport || city.Flags.Disorder && (world.Globals.Turn + i) % 8 == 0
+            if (!(Work.Shields < Work.ShieldSupport || world.Entities.Cities.At(slot).Flags.Disorder && (world.Globals.Turn + i) % 8 == 0
                 && !Human(owner) && government > Government.Fundamentalism))
             {
                 continue;
@@ -54,7 +76,7 @@ public sealed class CityRetirement(GameState world, RuleTables rules, UnitDeleti
                 {
                     effects.SupportShortage(slot, target, world.Entities.Units.Storage[selected].Type);
                 }
-                loss.DestroyAndRedraw(selected, true);
+                yield return new(selected, true);
                 effects.UnitRemoved(slot, target, true);
             }
             else
@@ -77,7 +99,8 @@ public sealed class CityRetirement(GameState world, RuleTables rules, UnitDeleti
                     receiving.ShieldBox = unchecked((short)(receiving.ShieldBox + (short)(unchecked(cost * Work.ShieldRows) / 2)));
                 }
                 UnitTarget target = new(new((ushort)selected), world.Entities.Units.Storage[selected].Token);
-                deletion.Erase(selected, true);
+                yield return new(selected, false);
+                ref var city = ref world.Entities.Cities.At(slot);
                 city.Flags.Disorder = city.Flags.SecondDisorderTurn = city.Flags.LongDisorder = false;
                 effects.UnitRemoved(slot, target, false);
             }

@@ -23,6 +23,13 @@ join generated maps, all starting civilizations, real accelerated packages and
 the retained uniform road path, including fresh replay and cancellation. Browser
 execution and cross-platform qualification are deferred for this
 workstream; leaf tests do not close complete human/AI-game desktop acceptance.
+C05 support retirement now retains actual cargo destruction or bare deletion
+through nested civilization elimination and private incident/research decisions.
+Tests distinguish committed loss from the delayed redraw/removal/restart tail,
+captured owner/government from live human membership, private reply routing,
+cancel/timeout, disposal and terminal failure. Desktop upkeep awaits this child
+before recalculation, mood and research. Famine and general city-turn composition
+still require retained parent integration.
 V06 incident cases compose actual war, stance and Anarchy transitions. They cover
 directed treaty gates, live mission retention, human pretext without expulsion,
 leniency and senate draw order, scenario/autoplay gates and retained failures.

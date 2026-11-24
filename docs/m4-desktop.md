@@ -6883,3 +6883,59 @@ a complete generated human/AI game or independent original-game evidence. Full
 city/production/civilization orchestration and the recorded formula/evidence gaps
 remain open. Browser, cross-platform and network execution remain deferred. M4
 is ongoing.
+
+## Retained city support retirement (desktop continuation)
+
+C05's retirement scan now shares one sequence between its synchronous entry and
+`CityRetirement.Begin`. The retained operation keeps the captured owner/government,
+selected unit, shortage branch and scan restart across actual U01/V01 lifecycle
+children. Shortage uses cargo-aware destroy/redraw; affordable disorder retirement
+uses bare deletion. Removal presentation, disorder clearing where applicable and
+support-counter restart occur only after that child finishes. A pending decision
+or bounded recreation slice cannot advance the city into its next calculation.
+
+`CityRetirementOperation` routes actual lifecycle choices to their private
+recipient, retains a pending intelligence window, reports deferred child
+presentation failures and prevents completed work from replaying. Desktop upkeep
+now waits for this operation after C06 production and before the second city
+calculation, mood and research. Its existing authored-domain limits remain;
+foreign espionage and AI recreation are exercised through the shared service and
+session fixtures, not claimed as admitted Alder Valley gameplay.
+
+Four added shared groups compose a foreign homed last settler's destruction with
+actual recursive civilization elimination, espionage pretext, recreation and C05
+restart. They distinguish committed loss from delayed redraw/removal, capture
+owner/government while rereading human membership, preserve the accepted prefix
+through disposal and notice failure, and check private session reply admission,
+cancel/timeout and completion replay. Affordable retirement also proves that the
+bare-deletion notifications run without the destruction redraw wrapper. Existing
+foreign/free/cargo/tie/protection and desktop shortage/save/reload cases continue
+to execute the shared scan.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1764/1766**, with the two existing
+platform/audio skips. All **1729 shared groups** passed across **191 coverage
+families**; identity verified **863 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+The unchanged native input driver passed **27 desktop checks**, including ordinary
+turns, government/rate choices, complete save-byte comparisons, reload, outcomes,
+Hall records and spaceship launch/reload. An earlier run reached the final ship
+import and timed out with the native file picker still open. Its log and observed
+application state remain in `m4-retained-city-play-attempt1.log` and
+`m4-retained-city-play-attempt1.failure.json`; no gameplay comparison had failed.
+A fresh isolated Xvfb/private-bus run passed without source or driver changes.
+The cause of the earlier picker timeout is not established.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-retained-city-native.json` | `1f6c45c6266e87b1c227d39f65d163cfa0e17b876498c0ef5a908555ef9f2290` |
+| `m4-retained-city-identity.json` | `81f0d174b04e10fb11ad763886deeba63cc1687424f7b6fa58d07da947e780b2` |
+| `m4-retained-city-play.json` | `4094a887b7f6d6500412d930ea8928c1c79c8af2bca8a1d07baa3b6d22f392f7` |
+
+These are specification-derived shared tests and authored desktop regressions.
+They do not establish independent original-game compatibility or complete the
+human/AI city/civilization scheduler. Retained famine/removal and maintenance
+parents, F04's missing government-score and best-shield formulas, generated-game
+acceptance and the other recorded M4 gates remain open. Browser, cross-platform
+and network execution remain deferred; the M4 goal continues on this host.
