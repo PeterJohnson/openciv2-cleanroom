@@ -1022,6 +1022,15 @@ direction-zero exception. It assigns Goto but does not execute it. Full combat
 and tactical-planner callers remain pending.
 
 
+`Units/UnitSelection` composes U04 next-unit search/publication with actual W03
+revelation and retained V04 contact. It consumes the shared combat-loss flag after
+search, clears timers only for qualifying orders and preserves the captured
+selected slot through diplomacy. Contact completion precedes the live simultaneous
+input-flush gate and missing-selection presentation. `Session/UnitSelectionOperation`
+routes nested decisions privately and reports cosmetic failures after completion.
+Full focus/stack selection, human-phase scheduling and desktop command admission
+remain caller work; the authored local activation loop is still separate.
+
 `Units/CombatContinuation` owns U06's surviving-attacker and nuclear-delivery
 branches. Survive captures the current moving unit, exhausts eligible aircraft,
 uses actual resumable basic deletion for consumed units, preserves signed wrapped

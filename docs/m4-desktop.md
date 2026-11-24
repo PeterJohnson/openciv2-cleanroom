@@ -7319,3 +7319,47 @@ that consumes the wonder-suppression request remain open. M4 is active and
 incomplete; the F04 formula/original-observation gaps, generated human/AI games
 and other recorded integration gates are unchanged. Browser, cross-platform
 qualification and network execution remain deferred.
+
+
+## U04 retained next-unit activation
+
+`UnitSelection.BeginNext` now joins the existing next-unit search to actual
+W03 revelation and V04 contact. The combat-loss flag selects the search origin
+and is cleared after search; the returned slot is published before timer changes
+and revelation. No/Goto and other qualifying signed orders clear the timer;
+fortification and terrain orders retain it. Unmoved selected units reveal with
+contact enabled, retaining real audience/scenario/research decisions before the
+input-flush and final redraw tail.
+
+The operation retains its returned slot independently of the shared active unit.
+An admitted contact decision can change the shared selection or set a new
+combat-loss flag without either being overwritten at completion. Simultaneous
+mode is read after the child. Required failures and disposal retain the selection,
+timer and revelation prefix without replaying it; cosmetic focus/flush/redraw
+failures are reported separately. `UnitSelectionOperation` routes contact choices
+privately, reuses the existing contact reply semantics, and preserves completion
+when only presentation failed.
+
+Five shared groups cover loss-dependent search origin, timer/order cases,
+ordinary revelation, empty selection, actual pending contact, live tail gates,
+private/wrong/stale replies, cancel/timeout, failures and disposal. General
+focus/stack selection, human-phase scheduling and native command composition
+remain open. The authored local activation loop is still separate; no complete
+human/AI game or native contact-activation claim is made by these service cases.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1810/1812**, with the two existing
+platform/audio skips. All **1775 shared groups** passed across **196 coverage
+families**; identity verified **887 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. No native input run was
+performed because this checkpoint adds the retained core/session activation
+operation, not its general desktop command admission.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-unit-selection-native.json` | `736d13671be6d9cf8d2d21f642c86f25dcd8e4901bf24e3af4580a999d6a57d5` |
+| `m4-unit-selection-identity.json` | `8d19bb8b071129d637a683e87ab962065ad500d9525505451e8e00cf815c9461` |
+
+M4 remains active. The F04 formula/original-observation gaps, complete generated
+human/AI games and other recorded integration gates remain unresolved. Browser,
+cross-platform qualification and network execution remain deferred.

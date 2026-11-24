@@ -6088,6 +6088,27 @@
         "S02.expanded-text-process-replacement",
         "S02.expanded-text-retention"
       ]
+    },
+    {
+      "id": "retained-unit-selection",
+      "status": "partial",
+      "contract": "U04 select-and-publish next unit; actual W03 revelation and V04 contact",
+      "publicSurface": "UnitSelection.BeginNext; UnitSelectionOperation",
+      "review": "Actual next-unit search, combat-loss origin, order-sensitive timer reset, contact before final input/presentation tail, private replies and terminal failure/disposal prefixes. General focus/stack selection, human-phase scheduling and desktop command admission remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/UnitSelection.cs",
+        "src/OpenCiv2.Session/UnitSelectionOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitSelectionCases.cs"
+      ],
+      "sharedGroups": [
+        "U04.selection-failures-disposal",
+        "U04.selection-loss-origin",
+        "U04.selection-private-session",
+        "U04.selection-retained-contact",
+        "U04.selection-timers-empty"
+      ]
     }
   ]
 }

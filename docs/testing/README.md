@@ -6,6 +6,12 @@ and the browser host. Native I/O/API boundary tests are in `OpenCiv2.Base.Tests`
 Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 [implementation coverage](coverage.md) for admitted APIs and exclusions.
 
+U04 activation cases now join the next-unit search to real contact-capable W03
+revelation. They check the combat-loss origin, order-sensitive timer clearing,
+retained contact, live simultaneous-mode tail and private reply routing. Failures
+and disposal preserve the published selection/revelation prefix. These cases do
+not yet qualify general native focus/stack selection or human-phase scheduling.
+
 P04 substitution cases check token case/advancement, decimal wrap, safe HEX widths,
 selector boundaries, culture-independent numbers and captured parameter ownership.
 Actual parsed scenario text uses the adapter through private retained interactions;
