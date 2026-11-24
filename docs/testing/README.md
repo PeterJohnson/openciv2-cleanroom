@@ -1172,3 +1172,10 @@ NATO city ties, directed incidents and committed failure prefixes. Private Sessi
 cases exercise local-mode audience refusal, nested Library government decisions,
 cancel/timeout and presentation diagnostics. These service cases do not close
 production movement/turn contact integration or graphical audience acceptance.
+
+V04 turn/contact groups now compose actual contact, exchange, relation review and
+ally requests. Private Library government and ally-help choices suspend stale-contact
+cleanup and later turn work; disposal, required failures and cancellation retain
+completed effects. Session tests reject replies from the wrong participant and
+report presentation failures after cleanup. The unresolved review delta remains
+an explicit failure when needed. Movement and desktop contact composition remain open.

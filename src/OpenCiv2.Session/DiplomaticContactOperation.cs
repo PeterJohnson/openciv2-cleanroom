@@ -21,11 +21,11 @@ public sealed class DiplomaticContactOperation(DiplomaticContact.Operation opera
         try
         {
             var previous = pending;
-            pending = operation.Resume(Reply(input));
+            pending = operation.Resume(DiplomaticContactInteraction.Reply(pending, input));
             if (!ReferenceEquals(previous, pending))
             { window = null; }
             if (pending is not null)
-            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: Prompt(context, pending)); }
+            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: DiplomaticContactInteraction.Prompt(context, pending, recipient, intelligence, ref window)); }
             if (!operation.Completed)
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             context.Effect("diplomacy.contact.completed", new([]));
@@ -34,19 +34,24 @@ public sealed class DiplomaticContactOperation(DiplomaticContact.Operation opera
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
-    private ResearchReply? Reply(OperationInput input) => pending switch
+    public void Dispose() => operation.Dispose();
+}
+
+internal static class DiplomaticContactInteraction
+{
+    public static ResearchReply? Reply(DiplomaticContactDecision? pending, OperationInput input) => pending switch
     {
         DiplomaticContactDecision.Audience d => DiplomaticAudienceInteraction.Reply(d.Value, input),
         DiplomaticContactDecision.Grant d => ResearchGrantInteraction.ResearchReply(d.Value, input),
         DiplomaticContactDecision.Ally d => AllyHelpInteraction.Reply(d.Value, input) is { } reply ? new(reply) : null,
         _ => null
     };
-    private InteractionSpec Prompt(OperationContext context, DiplomaticContactDecision decision) => decision switch
-    {
-        DiplomaticContactDecision.Audience d => DiplomaticAudienceInteraction.Prompt(context, d.Value, recipient, intelligence, ref window),
-        DiplomaticContactDecision.Grant d => ResearchGrantInteraction.Prompt(context, d.Value, recipient, intelligence, ref window),
-        DiplomaticContactDecision.Ally d => AllyHelpInteraction.Prompt(d.Value, recipient, intelligence, ref window),
-        _ => throw new InvalidOperationException("Unknown contact decision")
-    };
-    public void Dispose() => operation.Dispose();
+    public static InteractionSpec Prompt(OperationContext context, DiplomaticContactDecision decision,
+        Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec> intelligence, ref InteractionSpec? window) => decision switch
+        {
+            DiplomaticContactDecision.Audience d => DiplomaticAudienceInteraction.Prompt(context, d.Value, recipient, intelligence, ref window),
+            DiplomaticContactDecision.Grant d => ResearchGrantInteraction.Prompt(context, d.Value, recipient, intelligence, ref window),
+            DiplomaticContactDecision.Ally d => AllyHelpInteraction.Prompt(d.Value, recipient, intelligence, ref window),
+            _ => throw new InvalidOperationException("Unknown contact decision")
+        };
 }

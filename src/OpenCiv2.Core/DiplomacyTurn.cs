@@ -22,6 +22,7 @@ public abstract record DiplomacyTurnDecision
     public sealed record Research(ResearchGrantDecision Decision) : DiplomacyTurnDecision;
     public sealed record WarAlly(WarAllyDecision Decision) : DiplomacyTurnDecision;
     public sealed record Review(RelationReviewDecision Decision) : DiplomacyTurnDecision;
+    public sealed record Contact(DiplomaticContactDecision Decision) : DiplomacyTurnDecision;
 }
 
 /// <summary>V04 §11 local continuation after the completed V02 government prefix.
@@ -31,6 +32,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
     private readonly AiAdvanceExchange? exchange;
     private readonly WarAllyRequests? warAllies;
     private readonly RelationReview? review;
+    private readonly DiplomaticContact? contact;
     private GameState World => world;
     public DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random,
         AiAdvanceExchange exchange, IDiplomacyTurnEffects effects) : this(world, rules, random, effects)
@@ -45,6 +47,11 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         AiAdvanceExchange exchange, WarAllyRequests warAllies, RelationReview review, IDiplomacyTurnEffects effects)
         : this(world, rules, random, exchange, warAllies, effects)
     { this.review = review; }
+
+    public DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random,
+        AiAdvanceExchange exchange, WarAllyRequests warAllies, RelationReview review, DiplomaticContact contact,
+        IDiplomacyTurnEffects effects) : this(world, rules, random, exchange, warAllies, review, effects)
+    { this.contact = contact; }
 
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
 
@@ -67,7 +74,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         private readonly DiplomacyTurn parent;
         private readonly IEnumerator<DiplomacyTurnDecision?> steps;
         private readonly List<Exception> failures = [];
-        private int? answer;
+        private ResearchReply? answer;
         private bool faulted, disposed;
         public bool Completed { get; private set; }
         public DiplomacyTurnDecision? Pending { get; private set; }
@@ -78,9 +85,11 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
             ArgumentException.ThrowIfNullOrEmpty(call);
             steps = parent.Execute(this, owner, call).GetEnumerator();
         }
-        internal int? TakeAnswer() { var result = answer; answer = null; return result; }
+        internal ResearchReply? TakeReply() { var result = answer; answer = null; return result; }
+        internal int? TakeAnswer() => TakeReply()?.Selected;
         internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
-        public DiplomacyTurnDecision? Resume(int? reply = null)
+        public DiplomacyTurnDecision? Resume(int? reply = null) => ResumeDecision(reply is { } value ? new(value) : null);
+        public DiplomacyTurnDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -243,7 +252,19 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
             }
             else
             {
-                effects.Meet(owner, other);
+                if (contact is null)
+                { effects.Meet(owner, other); }
+                else
+                {
+                    using var child = contact.Begin(owner, other, new(0, 0), call + "/contact");
+                    while (!child.Completed)
+                    {
+                        var decision = child.Resume(operation.TakeReply());
+                        if (!child.Completed)
+                        { yield return decision is null ? null : new DiplomacyTurnDecision.Contact(decision); }
+                    }
+                    operation.Report(child.PresentationFailures);
+                }
             }
         }
         else

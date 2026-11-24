@@ -6149,3 +6149,35 @@ and generated human/AI end-condition acceptance remain open. S02 full action
 domains still need owning implementations. Network contact forwarding and
 two-human network parley, browser execution and cross-platform qualification
 remain deferred. M4 remains in progress.
+
+## V04 retained contact within the diplomacy turn — 2026-11-23
+
+`DiplomacyTurn` now accepts the actual `DiplomaticContact` service for its stale
+AI contact branch. Nested private audiences, Library grants and ally-help choices
+complete before the specified Contact/RecentContact cleanup and later slots.
+The Session adapter carries full research replies and resets cached windows when
+the pending decision changes. Required failures preserve completed effects;
+cosmetic child failures remain diagnostics after turn completion.
+
+Six new groups join actual contact, exchange, relation review and ally requests.
+They cover alliance/war effects followed by stale-contact cleanup, suspended Library
+grants, disposal, required notice failures, retained ally help, recipient privacy,
+cancellation and timeout. A case reaches the unresolved A08 review input after
+contact completes and verifies that it fails without inventing an attitude delta.
+
+Root/App formatting and verification passed; both Release builds completed with
+zero warnings/errors. Native tests passed **1645 of 1647**, with two existing
+platform/audio skips. All **1612 shared groups** passed across 177 coverage families;
+identity verified **811 compiled inputs**. The 43-project graph, eight identity
+tests and three coverage tests passed. These are Core/Session integration checks
+and an App build, with no new graphical input-driver run.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-turn-contact-native.json` | `448c9dd8282eefab8af60ea9494dfdf9da78c76d9996e5dafa1a2a02a8efeeb2` |
+| `m4-turn-contact-identity.json` | `6755f0ec95726828e4deb916bfecb3585209f73af548151882e4da95d3391dd5` |
+
+Production movement/revelation and desktop contact composition remain open. The
+recorded F04 formulas and A08 input need independent evidence; complete turn and
+generated human/AI end-condition acceptance remain outstanding. Browser,
+cross-platform qualification and network execution remain deferred. M4 is ongoing.

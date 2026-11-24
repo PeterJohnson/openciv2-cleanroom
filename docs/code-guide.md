@@ -1208,6 +1208,8 @@ V04 ally-war obligations and V05 ally help. AI peace/alliance/war paths retain t
 own notice, observer, directed flag and reputation behavior. NATO city information
 uses the actual C01 nearest query; absent city information is semantic absence.
 `Session/DiplomaticContactOperation` privately forwards audience, research and ally
-help decisions through shared interaction adapters. Production movement/revelation,
-diplomacy-turn and desktop contact callers remain open; network forwarding and
+help decisions through shared interaction adapters. `DiplomacyTurn` can compose
+the actual contact child before stale-contact cleanup and later relation work;
+`DiplomacyTurnOperation` forwards full replies and private child choices. Production
+movement/revelation and desktop contact callers remain open; network forwarding and
 two-human network parley belong to the network session.

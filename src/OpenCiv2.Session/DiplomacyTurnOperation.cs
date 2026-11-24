@@ -22,14 +22,18 @@ public sealed class DiplomacyTurnOperation(DiplomacyTurn.Operation operation, Fu
         { return completed; }
         try
         {
-            int? answer = pending switch
+            ResearchReply? answer = pending switch
             {
-                DiplomacyTurnDecision.Research research => ResearchGrantInteraction.Reply(research.Decision, input),
-                DiplomacyTurnDecision.WarAlly ally => WarAllyInteraction.Reply(ally.Decision, input),
-                DiplomacyTurnDecision.Review review => RelationReviewInteraction.Reply(review.Decision, input),
+                DiplomacyTurnDecision.Research research => ResearchGrantInteraction.ResearchReply(research.Decision, input),
+                DiplomacyTurnDecision.WarAlly ally => Wrap(WarAllyInteraction.Reply(ally.Decision, input)),
+                DiplomacyTurnDecision.Review review => Wrap(RelationReviewInteraction.Reply(review.Decision, input)),
+                DiplomacyTurnDecision.Contact contact => DiplomaticContactInteraction.Reply(contact.Decision, input),
                 _ => null
             };
-            pending = operation.Resume(answer);
+            var previous = pending;
+            pending = operation.ResumeDecision(answer);
+            if (!ReferenceEquals(previous, pending))
+            { window = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -38,6 +42,7 @@ public sealed class DiplomacyTurnOperation(DiplomacyTurn.Operation operation, Fu
                     DiplomacyTurnDecision.Research research => ResearchGrantInteraction.Prompt(context, research.Decision, recipient, intelligence, ref window),
                     DiplomacyTurnDecision.WarAlly ally => WarAllyInteraction.Prompt(context, ally.Decision, recipient, intelligence, ref window),
                     DiplomacyTurnDecision.Review review => RelationReviewInteraction.Prompt(review.Decision, recipient, intelligence, ref window),
+                    DiplomacyTurnDecision.Contact contact => DiplomaticContactInteraction.Prompt(context, contact.Decision, recipient, intelligence, ref window),
                     _ => throw new InvalidOperationException("Unknown diplomacy decision")
                 };
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
@@ -51,6 +56,7 @@ public sealed class DiplomacyTurnOperation(DiplomacyTurn.Operation operation, Fu
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
+    private static ResearchReply? Wrap(int? value) => value is { } answer ? new(answer) : null;
     public void Dispose() => operation.Dispose();
 }
 
