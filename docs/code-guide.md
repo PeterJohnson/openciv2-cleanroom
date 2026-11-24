@@ -1281,5 +1281,15 @@ dispatcher. `ScenarioTriggerOperation` routes its private choices. Capture and
 casualty constructors use these triggers at their specified ownership/deletion
 boundaries; their Session adapters report retained child presentation failures
 after semantic completion. Broader enclosing diagnostic propagation remains open.
-The F04 turn passes, F06 post-load, V05 cession and foreign-minister caller hooks
-still need integration; direct trigger calls do not add those callers' gates.
+F06 post-load uses the retained workflow below. The F04 turn passes, V05 cession
+and foreign-minister caller hooks still need integration; direct trigger calls do not add those callers' gates.
+
+`Session/ClassicLoadDialog.Begin` retains the accepted-file workflow around the
+actual core loader. Its typed child factory runs after content/world installation
+so map-bound services refer to loaded storage. ScenarioLoaded decisions precede
+music/title and cleanup. `ClassicLoadedUnitCleanup` repairs the live unit scan and
+uses actual retained lifecycle deletion for invalid coordinates, including restart
+research choices. The load operation preserves its world pin until completion,
+failure or disposal and publishes at yields. `Load` keeps the synchronous
+compatibility path. A trusted host must own the cooperative mutation lane and
+route pending decisions to their participants; desktop UI composition is pending.

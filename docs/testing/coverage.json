@@ -1301,7 +1301,7 @@
       "id": "load-dialog",
       "contract": "F06 accepted-file load; S01/S02; U01",
       "publicSurface": "Accepted input selection/admission, scenario alternatives/events/options/music/title, cleanup",
-      "review": "Scaled choices/enumeration limits, changing scan bounds, current live effects, observed prefix failures and supplied S02/V01 children.",
+      "review": "Scaled choices/enumeration limits, changing scan bounds, current live effects, observed prefix failures and supplied S02/V01 children. Retained actual S02/V01 composition and world-pin lifetime are covered by retained-load-workflow; this family continues to cover the synchronous compatibility path.",
       "sharedGroups": [
         "F06.load-dialog-alternative-bounds",
         "F06.load-dialog-alternative-choices",
@@ -5735,7 +5735,7 @@
       "id": "scenario-trigger-callers",
       "contract": "S02 \u00a7\u00a77,11 ordinary trigger matching; C09 takeover and U06 casualty event boundaries",
       "publicSurface": "ScenarioTriggers; ScenarioTriggerOperation; retained CityCapture/CombatCasualties constructors and Session adapters",
-      "review": "Seven ordinary trigger kinds use live collection traversal, captured turn arguments, signed remainder, controlled primary RandomTurn rolls, sticky UnitKilled/CityTaken selectors and live city names. Technology polling captures the wildcard branch once, checks live Alive/knowledge and retains the final successful receiver, including consumed events. Actual capture pauses after owner/radius/reveal and before center-owner/announcements; casualties pause after loss/history/kill count and before actual deletion. Real recursive Library and emissary choices, appended events at player decisions, invalidation/fault/disposal prefixes, private replies, cancellation/timeout and post-completion diagnostics are covered. F04 turn-pass orchestration, F06 post-load, V05 cession and foreign-minister hooks, parser/desktop presentation composition, broader enclosing diagnostic propagation and generated complete-game/graphical acceptance remain open. Specification-derived tests are not original-game observations. Browser, cross-platform and network execution are deferred.",
+      "review": "Seven ordinary trigger kinds use live collection traversal, captured turn arguments, signed remainder, controlled primary RandomTurn rolls, sticky UnitKilled/CityTaken selectors and live city names. Technology polling captures the wildcard branch once, checks live Alive/knowledge and retains the final successful receiver, including consumed events. Actual capture pauses after owner/radius/reveal and before center-owner/announcements; casualties pause after loss/history/kill count and before actual deletion. Real recursive Library and emissary choices, appended events at player decisions, invalidation/fault/disposal prefixes, private replies, cancellation/timeout and post-completion diagnostics are covered. F04 turn-pass orchestration, V05 cession and foreign-minister hooks, parser/desktop presentation composition, broader enclosing diagnostic propagation and generated complete-game/graphical acceptance remain open. Specification-derived tests are not original-game observations. Browser, cross-platform and network execution are deferred. F06 post-load now composes actual retained triggers and cleanup in retained-load-workflow; desktop host presentation remains pending.",
       "sharedGroups": [
         "S02.capture-retained-trigger",
         "S02.casualty-retained-trigger",
@@ -5758,6 +5758,28 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/ScenarioTriggerCases.cs"
+      ]
+    },
+    {
+      "id": "retained-load-workflow",
+      "contract": "F06 \u00a711 retained accepted-file wrapper; S02 ScenarioLoaded; actual U01/V01 loaded-unit deletion/restart",
+      "publicSurface": "ClassicLoadDialog.Begin/Operation/RetainedChildren; ClassicLoadedUnitCleanup.Begin/Operation",
+      "review": "The real F06 file loader installs content/world before typed gameplay children are constructed. ScenarioLoaded retains decisions after copied options and Sound configuration, behind the live Music/Loaded gate, and before music synchronization/title/home/cleanup. Actual invalid-unit cleanup preserves host publication, stack repair, negative-coordinate deletion and live scan bounds; last-settler restart can retain real recursive Library government decisions. The standalone trusted host workflow pins world lifetime through choices and bounded work, publishes at yields, and releases on completion, failure or disposal. Cases cover real byte loading, state/projection ordering, unchanged client identity, cancellation before selection, no-event/Music gates, core status failure, invalidation, disposal before/after input, cleanup resource failure and nested restart failure prefixes. Existing synchronous load tests remain passing. Desktop participant UI, parser/media composition, complete generated-game/load acceptance and external original-game evidence remain open. The owner must retain the cooperative mutation lane while this standalone workflow is pending. Browser, cross-platform and network execution are deferred.",
+      "sharedGroups": [
+        "F06.load-retained-failure",
+        "F06.load-retained-gates",
+        "F06.load-retained-scenario",
+        "F06.loaded-cleanup-retained-admission",
+        "F06.loaded-cleanup-retained-restart",
+        "F06.loaded-cleanup-retained-scan"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicLoadDialog.cs",
+        "src/OpenCiv2.Session/ClassicLoadedUnitCleanup.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RetainedLoadCases.cs"
       ]
     }
   ]

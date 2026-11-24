@@ -6510,3 +6510,45 @@ graphical acceptance still require integration. These are specification-derived
 checks, not independent original-game observations. The recorded formula/evidence
 gaps remain; browser, cross-platform and network execution remain deferred.
 M4 is ongoing.
+
+## F06 retained post-load events and unit cleanup
+
+`ClassicLoadDialog.Begin` now retains the accepted-file workflow around the actual
+core loader. Its typed child factory runs after content/world installation, so
+map-bound services can use loaded storage. ScenarioLoaded runs behind the live
+Music/Loaded gate after option copying and sound configuration; pending event
+choices finish before music synchronization, title presentation and cleanup.
+The standalone workflow keeps the load's world pin through pending choices and
+bounded work, publishes at yields, and releases ownership on completion, failure
+or disposal. The original `Load` API shares the implementation while keeping its
+synchronous compatibility services.
+
+`ClassicLoadedUnitCleanup` performs the real local repair/deletion scan through
+retained U01/V01 children. It preserves host publication, dead-record link clearing,
+stack validation, negative-coordinate deletion and the live end bound. Actual
+last-settler restart can retain a recursive Library government decision. Completed
+effects remain visible on failure or disposal; child presentation diagnostics are
+available to the owner after completion.
+
+Six shared groups exercise real byte loading, delayed cleanup and path publication,
+unchanged client identity, pin release, option/event gates, input failure, disposal
+before/after input, invalidation, cleanup resource failure, live scan changes and
+actual restart/Library failure prefixes. Existing synchronous load tests also pass.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1714/1716**, with the
+two existing platform/audio skips. All **1681 shared groups** passed across
+**185 coverage families**; identity verified **838 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-retained-load-native.json` | `2c9f87ada1e64a9bf6c85041bc8494eb42e999421bf9fbc9219a013addccc2a4` |
+| `m4-retained-load-identity.json` | `5ab40e431cd22adedcbceda07df85fbefcea6bd1c9cea541e982d342aeaaa1ec` |
+
+The trusted host still must own the cooperative mutation lane and route pending
+choices to their participants. Desktop host UI, parser/media composition and full
+load/generated-game acceptance remain open. F04 turn passes, V05 cession and
+foreign-minister scenario hooks also remain integration work. These authored
+checks do not supply original-game evidence or resolve the recorded formula gaps.
+Browser, cross-platform and network execution remain deferred. M4 is ongoing.

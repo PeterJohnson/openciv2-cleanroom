@@ -1245,5 +1245,14 @@ wildcard bindings and technology polling through action changes. Actual C09
 capture and U06 casualty chains retain Library decisions before their later
 ownership/deletion effects. Session cases cover private/stale replies, cancel,
 timeout and diagnostics after committed gameplay. Required-failure, invalidated
-event and disposal cases preserve completed prefixes. F04/F06/V05/UI hooks and
+event and disposal cases preserve completed prefixes. F04/V05/UI hooks and
 general desktop/generated-game acceptance remain separate integration gates.
+
+Retained F06 load groups use real save decoding/install and actual S02 dispatch.
+Text decisions pause before music/title and invalid-unit cleanup while preserving
+the world pin and client identity. Tests verify option/event gates, core input
+failure, disposal, invalidation and cleanup resource-failure prefixes. Actual
+cleanup retains last-settler restart/Library decisions and observes later live
+scan bounds; separate cases check the local-mode and stack-budget boundaries.
+Existing synchronous F06 groups also run. Host participant UI and full desktop
+load acceptance remain open; these authored cases are not original-game evidence.

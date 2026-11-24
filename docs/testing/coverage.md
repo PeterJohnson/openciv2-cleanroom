@@ -174,5 +174,12 @@ The `scenario-trigger-callers` family covers [ordinary matching](../../src/OpenC
 and actual capture/casualty event boundaries. [Trigger cases](../../tests/OpenCiv2.FoundationCases/ScenarioTriggerCases.cs)
 exercise live traversal and names, persistent wildcard binding, random and
 technology polling, real nested Library/emissary decisions and private Session
-completion. Remaining turn/load/cession/UI hooks and full desktop composition
+completion. Remaining turn/cession/UI hooks and full desktop composition
 remain open.
+
+The `retained-load-workflow` family covers [F06 post-load composition](../../src/OpenCiv2.Session/ClassicLoadDialog.cs)
+and [actual lifecycle cleanup](../../src/OpenCiv2.Session/ClassicLoadedUnitCleanup.cs).
+[Integration cases](../../tests/OpenCiv2.FoundationCases/RetainedLoadCases.cs) verify
+real loaded state, retained scenario/restart choices, world-pin release and
+failure/disposal prefixes. Desktop participant UI and complete load acceptance
+remain pending.

@@ -37,8 +37,8 @@ public static partial class FoundationSuite
         public ScenarioMedia Media { get; } = new();
         public ScenarioPresentationActions Presentation { get; }
         public ScenarioPermissionActions Permissions { get; }
-        public ScenarioDispatcher Dispatcher { get; }
-        public ScenarioTriggers Triggers { get; }
+        public ScenarioDispatcher Dispatcher { get; private set; } = null!;
+        public ScenarioTriggers Triggers { get; private set; } = null!;
         public CivilWar CivilWar { get; }
         public List<OwnedList<string>> Texts { get; } = [];
         public int Suppressed, Created, MapRedraws;
@@ -50,8 +50,13 @@ public static partial class FoundationSuite
             Permissions = new(World, () => Dispatcher!);
             Contact = new(choices, Data, Permissions);
             Data.Rules.Units[10] = Data.Rules.Units[0] with { Role = RuleRole.Attack, Domain = RuleDomain.Land };
-            CivilizationCreation Create(int owner) { ++Created; return (Recreate ?? throw new InvalidOperationException("Unexpected civilization reset"))(owner); }
             Presentation = new(World, Media, lines => { Texts.Add(lines); return lines; }, () => ++Suppressed);
+            RebindDispatcher();
+            CivilWar = new(World, Data.Stacks, Create, Permissions, this);
+        }
+        private CivilizationCreation Create(int owner) { ++Created; return (Recreate ?? throw new InvalidOperationException("Unexpected civilization reset"))(owner); }
+        public void RebindDispatcher()
+        {
             var incidents = Contact.F.T.T.Damage.Incidents.Incidents;
             var removal = new CivilizationRemoval(World, Data.Rules, Data.Stacks, Life.Elimination, incidents, Create, RedrawMaps);
             var terrain = new ScenarioTerrain(World, Data.Stacks, new(World, Data.Rules, Data.Stacks, Life.Loss, _ => { }),
@@ -59,7 +64,6 @@ public static partial class FoundationSuite
             Dispatcher = new(World, new(World, Data.Rules, RetainedCreation(Contact)), terrain,
                 new(World, War(Data, new()), Contact.F.T.T.Research), new(World, removal), Presentation);
             Triggers = new(World, Contact.F.T.T.Random, () => Dispatcher);
-            CivilWar = new(World, Data.Stacks, Create, Permissions, this);
         }
         public void Schism(CivilWarNotice _) => throw new InvalidOperationException("Vetoed schism must not partition");
         public void RedrawMaps() { ++MapRedraws; if (FailMap) { throw new IOException("Map view unavailable"); } }
