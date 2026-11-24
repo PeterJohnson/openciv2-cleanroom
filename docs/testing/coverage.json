@@ -6619,6 +6619,25 @@
         "V01.presentation-destruction-failure",
         "V06.presentation-spy-escape-failure"
       ]
+    },
+    {
+      "id": "combat-presentation",
+      "status": "partial",
+      "contract": "U05/U06/U07/C09 recipient-scoped combat, capture and paradrop information with actual retained gameplay",
+      "publicSurface": "SinglePlayerCombatPresentation.Effects",
+      "review": "Actual combat promotion/casualty events, city capture/scenario decisions and nuclear delivery run through Session using scoped notices. Required promotion-notice failure retains veteran status before casualties; cosmetic nuclear notice failure preserves actual interception/blast and reports failure afterward. Captured names and explicit recipients avoid live target dereferences and initiator disclosure. Capture focus changes the local viewer rather than the actor. History colors and paradrop targeting remain required host/content ports; the generated desktop host must bind them. Sound/animation are omitted under X01/P10. Full native combat UI acceptance, remaining gameplay bindings and generated games remain open. Browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/SinglePlayerCombatPresentation.Notices.cs",
+        "src/OpenCiv2.Session/SinglePlayerCombatPresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CombatPresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "C09.presentation-capture-focus",
+        "U06.presentation-casualty-failure",
+        "U07.presentation-nuclear-recipients"
+      ]
     }
   ]
 }

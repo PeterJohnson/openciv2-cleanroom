@@ -425,6 +425,14 @@ synchronization entry points reject missing owning services rather than silently
 substituting presentation. `Effects` and `Deletion` supply the general gameplay
 factory; the authored turn also uses scoped lifecycle notices.
 
+`SinglePlayerCombatPresentation` supplies the U05/U06/U07/C09 informational and
+publication ports. Explicit recipients keep combat, promotion and nuclear notices
+private; locally gated capture/paradrop focus moves the viewer's map, not the
+actor's. History uses live civilization names and a required content color query.
+The host must also supply actual paradrop targeting; this adapter does not answer
+retained combat/capture decisions. Cosmetic audio and animation are omitted.
+The generated desktop host still needs to assemble these ports and content.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

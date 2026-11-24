@@ -38,6 +38,14 @@ permission-event replies; spy relocation precedes notice and promotion follows
 it. Destruction announcements precede history and spaceship reset. Required
 notice failures retain those exact prefixes and delivered private histories.
 
+Combat presentation cases run actual combat, capture and nuclear delivery through
+Session. They verify promotion before retained casualty events, content-supplied
+history colors/names, capture announcements after scenario decisions, local-viewer
+focus and nuclear notices to distinct participants. Required promotion-notice
+failure preserves its prefix; a failed nuclear notice is reported after the
+actual interception or blast completes. General native combat UI acceptance and
+the generated host's color/targeting bindings remain open.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

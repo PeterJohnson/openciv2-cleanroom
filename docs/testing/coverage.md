@@ -357,3 +357,10 @@ the initiating command's private effects, bounded, and cleared at session
 replacement. See [PlayerNoticeCases.cs](../../tests/OpenCiv2.FoundationCases/PlayerNoticeCases.cs).
 The desktop displays recent notices; general movement/diplomacy presentation
 and full authored reference/tutorial content remain open.
+
+Combat presentation uses actual U06 casualty events, C09 capture and U07 nuclear
+delivery with private Session notices. Required promotion-notice failure retains
+its committed prefix; nuclear-notice failure preserves the interception/blast.
+The adapter accepts explicit casualty-color content and paradrop-targeting ports;
+generated desktop host binding and native gameplay acceptance remain open. See
+[CombatPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/CombatPresentationCases.cs).

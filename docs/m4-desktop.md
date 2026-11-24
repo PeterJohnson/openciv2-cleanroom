@@ -8522,3 +8522,49 @@ generated human/AI games remain open. Browser/cross-platform execution is deferr
 | --- | --- |
 | `m4-lifecycle-presentation-native.json` | `c512e8e88ffb8aa3dd85efa8fe7b0175985abb7d2a30819ecb3166682d3dd54a` |
 | `m4-lifecycle-presentation-identity.json` | `726d7e0aff9f88f971fff8e8041f6a8f228fa64cb5f7c71cac9f7d1131f30b43` |
+
+## Combat information for general desktop gameplay
+
+`SinglePlayerCombatPresentation` supplies the informational and publication ports
+for the actual U05/U06/U07/C09 combat graph. Treaty, promotion, opening, aftermath,
+nuclear and capture notices use explicit recipients. Core-gated partisan and
+paradrop announcements use the local viewer. Captured payload names remain usable
+after a unit/city changes or disappears. No private notice is copied into the
+initiating command's effects. Capture/paradrop focus addresses the viewer rather
+than the actor operand, while opening presentation uses its explicit recipient.
+
+History retains the live opponent civilization name and a required content color
+query. The general host must bind that query to selected casualty-history color
+data; the RGB-only map-art interface is not substituted for it. Paradrop targeting
+is another required host input port. Retained attack, capture, contact and city
+window choices remain with their existing session operations. Repaints and local
+combat synchronization publish current observations. Cosmetic sound and animation
+are omitted under X01/P10; their omission does not skip Core placement, visibility,
+casualty, interception or blast effects.
+
+Three shared groups join this adapter to actual gameplay through Session. Combat
+promotion precedes the retained UnitKilled scenario event and history captures the
+supplied opponent color/name once. A required promotion-notice failure retains
+veteran status before casualties. Capture waits for local scenario text before
+its final notice and focuses the victim's view without moving the captor's view.
+The winner's captured-city window then requires its own private acknowledgment
+before the capture tail completes. Nuclear delivery preserves its custom
+Land-domain amphibious opening, sends use and interception notices to the proper
+participants, and completes actual damage
+or interception even when a nuclear notice fails. The caller then reports that
+presentation failure. Unanswered decisions do not duplicate notices or mutations.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1937/1939**, with the two existing
+platform/audio skips. All **1902 shared groups** passed across **216 coverage
+families**; compiled identity verified **946 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua and widget sources
+are unchanged. This checkpoint makes no new native combat UI acceptance claim.
+General desktop host assembly, content/targeting bindings, the recorded gameplay
+formula/report gaps and complete generated human/AI games remain open. Browser
+and cross-platform execution remain deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-combat-presentation-native.json` | `5f0a1a4bd85a4a799817c811cb488ad719458a4e3845b471e0905f0c2be82537` |
+| `m4-combat-presentation-identity.json` | `20d252898162962c12958fccf9862d1e21f6ea30975d3b6b1fcaadb6c75e626b` |

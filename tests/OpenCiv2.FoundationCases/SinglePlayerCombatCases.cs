@@ -22,7 +22,8 @@ public static partial class FoundationSuite
         public SinglePlayerCombat Services { get; }
         public bool FailOpening;
         public int Published, Opened;
-        public SinglePlayerCombatFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public SinglePlayerCombatFixture(List<Choice>? choices = null, RevelationFixture? data = null,
+            SinglePlayerCombatEffects? presentation = null)
         {
             Life = new(choices, data); F = new(data: Life.Data);
             World.Civilizations[1].Treaties[2] = World.Civilizations[2].Treaties[1] = default;
@@ -33,7 +34,7 @@ public static partial class FoundationSuite
             Services = new(World, Data.Rules, Life.Random, Data.Stacks, new(World, Data.Rules, Data.Stacks),
                 Life.Services, Life.Diplomacy.Grant.Services, Life.Diplomacy.Services, Life.Diplomacy.Production,
                 new(World, Data.Rules, capture.Upgrades.Add, capture.Redraw),
-                new(capture, capture, capture, F.F.Drop, F.F, F.F, new RoundEffects(), F.F, F, F.F,
+                presentation ?? new(capture, capture, capture, F.F.Drop, F.F, F.F, new RoundEffects(), F.F, F, F.F,
                     _ => F.Calls.Add("treaty"), _ => F.Calls.Add("promotion"),
                     _ => { ++Opened; if (FailOpening) throw new IOException("Combat display unavailable"); }, () => ++Published));
         }
