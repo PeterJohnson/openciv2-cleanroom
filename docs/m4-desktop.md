@@ -8479,3 +8479,46 @@ cross-platform execution remain deferred.
 | --- | --- |
 | `m4-diplomacy-presentation-native.json` | `026269da79600fe949c7999d848b4545fb1666e208edc6e6e5de8f354b941926` |
 | `m4-diplomacy-presentation-identity.json` | `69096ae3bf81c5e0358d1874bd3263922d0fc8d4d6718642cb1a174a33a91dc9` |
+
+## Lifecycle presentation for general desktop gameplay
+
+`SinglePlayerLifecyclePresentation` supplies the local lifecycle graph's creation,
+revelation, loss, escape, elimination and civil-war presentation ports, together
+with the basic deletion presentation bundle. Repaint/publication hooks expose the
+existing state through the scoped observation channel. They do not implement
+revelation or diplomacy. Missing legacy synchronous revelation/contact children
+and network synchronization are explicit errors; the general factory supplies
+the actual retained gameplay children and local play never requires transport.
+
+Creation guides and observer announcements use the host viewer. Spy notices
+address the captured owner and use the captured type to resolve installed unit
+names, including after deletion. Incidents address the acting civilization and
+retain the supplied leniency category. Destruction, ship loss/return and civil
+war preserve their supplied civilization names without adding disclosure gates.
+Required decisions remain in existing retained operations.
+
+The authored turn now sends spy, destruction, spaceship and incident notices
+through the same feed. Legacy command effects are emitted only when the notice
+recipient is the command initiator. This preserves the existing authored scope;
+general movement/combat/mission presentation and generated-game host admission
+remain open.
+
+Three shared groups exercise actual recursive S02 creation/W03 contact/V04
+permission/V03 grant decisions before the creation tutorial; real V06 relocation,
+notice and promotion; and real V01 destruction with V07 ship loss/reset. Failure
+after a notice is delivered retains its private history and exact gameplay
+prefix. No repaint invents a contact, repeats a choice or advances gameplay.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1934/1936**, with the two existing
+platform/audio skips. All **1899 shared groups** passed across **215 coverage
+families**; compiled identity verified **943 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua and widget source are
+unchanged; this checkpoint makes no new native full-game UI acceptance claim.
+General desktop gameplay binding, the recorded formula/report gaps and complete
+generated human/AI games remain open. Browser/cross-platform execution is deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-lifecycle-presentation-native.json` | `c512e8e88ffb8aa3dd85efa8fe7b0175985abb7d2a30819ecb3166682d3dd54a` |
+| `m4-lifecycle-presentation-identity.json` | `726d7e0aff9f88f971fff8e8041f6a8f228fa64cb5f7c71cac9f7d1131f30b43` |

@@ -25,13 +25,14 @@ public static partial class FoundationSuite
         public List<EspionageIncidentNotice> Incidents { get; } = [];
         public List<CityTarget> Removed { get; } = [];
         public RestartWarEffects War { get; } = new();
-        public SinglePlayerLifecycleFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public SinglePlayerLifecycleFixture(List<Choice>? choices = null, RevelationFixture? data = null,
+            SinglePlayerLifecycleEffects? presentation = null)
         {
             Diplomacy = new(choices, CreationFixture(data));
             Services = new(World, Data.Process, Random, Data.Stacks, new(World, Data.Rules, Data.Stacks), Life.Deletion,
                 new(), Diplomacy.Grant.Setter, Diplomacy.Grant.Services, Diplomacy.Services, Diplomacy.Events.Permissions,
                 new ScenarioTerrainEncoding(World.Map, new(World.Map)), Diplomacy.Events.Presentation,
-                new(Data, Data, Life, Life, Life, War, Incidents.Add, Removed.Add, Life.RedrawTile, Life.RedrawMaps));
+                presentation ?? new(Data, Data, Life, Life, Life, War, Incidents.Add, Removed.Add, Life.RedrawTile, Life.RedrawMaps));
             Diplomacy.Events.UseDispatcher(Services.Events, Services.Triggers);
         }
         public void Restart(int owner = 2)

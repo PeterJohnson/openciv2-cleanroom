@@ -32,6 +32,12 @@ and wonder names, and Core's observer gates for alliance cancellation. Separate
 payload cases retain signed payments, custom technology/wonder names and third
 party/city context without exposing private notices through command effects.
 
+Lifecycle presentation tests use actual recursive scenario creation/contact,
+spy escape and civilization destruction. Creation guides wait for retained
+permission-event replies; spy relocation precedes notice and promotion follows
+it. Destruction announcements precede history and spaceship reset. Required
+notice failures retain those exact prefixes and delivered private histories.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

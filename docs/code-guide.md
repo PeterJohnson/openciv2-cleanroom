@@ -417,6 +417,13 @@ Attack permission remains distinct from war declaration. Names, signed amounts,
 technology/wonder identities and supplied city/third-party context remain visible.
 The authored turn's war effects also publish scoped notices and retain legacy
 command effects only when their recipient is the initiating civilization.
+`SinglePlayerLifecyclePresentation` binds creation guides, spy outcomes,
+destruction, spaceship loss, civil war and espionage incidents. Spy outcomes and
+incidents use their owner/actor; observer announcements use the host viewer.
+Repaint hooks publish existing state. Legacy revelation/contact and network
+synchronization entry points reject missing owning services rather than silently
+substituting presentation. `Effects` and `Deletion` supply the general gameplay
+factory; the authored turn also uses scoped lifecycle notices.
 
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each

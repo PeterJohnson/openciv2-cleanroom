@@ -513,9 +513,16 @@ public static partial class LocalPlayCommands
             public void RedrawMaps(int localHuman) => current().Effect("map.refresh", new([]));
             public void MoveCursor(MapPoint point) => current().World.Views[current().World.Multiplayer.LocalHuman] =
                 current().World.Views[current().World.Multiplayer.LocalHuman] with { Center = point };
-            public void Incident(EspionageIncidentNotice notice) => current().Effect("diplomacy.incident", new([
-                new("kind", new CommandValue.Text(notice.Kind.ToString())), new("actor", new CommandValue.Integer(notice.Actor.Civilization)),
-                new("victim", new CommandValue.Integer(notice.Victim.Civilization))]));
+            public void Incident(EspionageIncidentNotice notice)
+            {
+                new SinglePlayerLifecyclePresentation(current, () => current().World.Multiplayer.LocalHuman).Incident(notice);
+                if (current().Actor.Civilization.Value == notice.Actor.Civilization)
+                {
+                    current().Effect("diplomacy.incident", new([
+                        new("kind", new CommandValue.Text(notice.Kind.ToString())), new("actor", new CommandValue.Integer(notice.Actor.Civilization)),
+                        new("victim", new CommandValue.Integer(notice.Victim.Civilization))]));
+                }
+            }
             public void CenterPrimary(MapPoint point) => MoveCursor(point);
             public void EnsureVisible(MapPoint point, int owner) => CenterPrimary(point);
             public void AnimateNuclear(MapPoint point) => Animate(point);
@@ -892,14 +899,34 @@ public static partial class LocalPlayCommands
                 }
                 return elimination;
             }
-            public void Notice(SpyNotice notice) => context.Effect("unit.spy_fate", new([
-                new("unit", new CommandValue.Unit(notice.Unit)), new("fate", new CommandValue.Text(notice.Fate.ToString()))]));
+            private SinglePlayerLifecyclePresentation LifecyclePresentation => new(() => context, () => context.World.Multiplayer.LocalHuman);
+            private void LifecycleEffect(int recipient, string name, params NamedValue[] values)
+            {
+                if (recipient == context.Actor.Civilization.Value)
+                {
+                    context.Effect(name, new(values));
+                }
+            }
+            public void Notice(SpyNotice notice)
+            {
+                LifecyclePresentation.Notice(notice);
+                LifecycleEffect(notice.Owner, "unit.spy_fate", new("unit", new CommandValue.Unit(notice.Unit)),
+                    new("fate", new CommandValue.Text(notice.Fate.ToString())));
+            }
             public void Redraw(MapPoint position) => RedrawTile(position);
-            public void Destroyed(CivilizationDestroyedNotice notice) => context.Effect("civilization.destroyed", new([
-                new("civilization", new CommandValue.Integer(notice.Civilization)), new("killer", new CommandValue.Integer(notice.Killer)),
-                new("adjective", new CommandValue.Text(notice.Adjective)), new("killerName", new CommandValue.Text(notice.KillerName))]));
-            public void SpaceshipLost(SpaceshipLossNotice notice) => context.Effect("spaceship.lost", new([
-                new("civilization", new CommandValue.Integer(notice.Civilization)), new("returning", new CommandValue.Boolean(notice.Returning))]));
+            public void Destroyed(CivilizationDestroyedNotice notice)
+            {
+                LifecyclePresentation.Destroyed(notice);
+                LifecycleEffect(context.World.Multiplayer.LocalHuman, "civilization.destroyed",
+                    new("civilization", new CommandValue.Integer(notice.Civilization)), new("killer", new CommandValue.Integer(notice.Killer)),
+                    new("adjective", new CommandValue.Text(notice.Adjective)), new("killerName", new CommandValue.Text(notice.KillerName)));
+            }
+            public void SpaceshipLost(SpaceshipLossNotice notice)
+            {
+                LifecyclePresentation.SpaceshipLost(notice);
+                LifecycleEffect(context.World.Multiplayer.LocalHuman, "spaceship.lost",
+                    new("civilization", new CommandValue.Integer(notice.Civilization)), new("returning", new CommandValue.Boolean(notice.Returning)));
+            }
             public void RedrawMaps() => context.Effect("map.refresh", new([]));
             public void SynchronizeLoss(MapPoint? redraw) => throw new InvalidOperationException("Transport is unavailable");
             public void SynchronizeDeletion(MapPoint position, CitySlot? home) => throw new InvalidOperationException("Transport is unavailable");

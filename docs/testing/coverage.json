@@ -6600,6 +6600,25 @@
         "V05.presentation-conversation",
         "V05.presentation-payloads-recipients"
       ]
+    },
+    {
+      "id": "lifecycle-presentation",
+      "status": "partial",
+      "contract": "U01/V01/V06/V07 recipient-scoped lifecycle information with real revelation/contact, escape and destruction children",
+      "publicSurface": "SinglePlayerLifecyclePresentation.Effects and Deletion; authored turn spy/destruction/ship/incident notices",
+      "review": "Creation/revelation retain actual gameplay children; legacy synchronous revelation/contact and network synchronization are explicitly unavailable in this local presentation adapter. Repaints publish existing state. Spy and incident notices address their owner/actor, while destruction, spaceship and civil-war announcements use the host viewer. Actual scenario creation waits through recursive contact/permission grants before its tutorial, spy escape preserves relocation/notice/promotion order, and civilization destruction preserves notice/history/ship reset order. Required notice failure preserves delivered histories and state prefixes without replay or initiator disclosure. Generated-game presentation assembly and full native-game acceptance remain open; browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/SinglePlayerLifecyclePresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LifecyclePresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "U01.presentation-retained-creation",
+        "V01.presentation-destruction-failure",
+        "V06.presentation-spy-escape-failure"
+      ]
     }
   ]
 }
