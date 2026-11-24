@@ -21,6 +21,7 @@ public static partial class FoundationSuite
         public List<MapPoint> Neighbors { get; } = [];
         public List<CapturePartisansNotice> Notices { get; } = [];
         public int Sounds;
+        public bool FailPartisanSound, FailPartisanRedraw, FailPartisanNotice;
         public CaptureContinuationFixture(List<Choice>? choices = null, RevelationFixture? data = null)
         {
             Loss = new(choices, data); World.Entities.Cities.Storage[0].Owner = new(1);
@@ -38,9 +39,9 @@ public static partial class FoundationSuite
             new CapturePartisans(World, Data.Rules, new(World, Data.Process, Data.Stacks, Data), Loss.Lifecycle.Random, this)
                 .Create(new(0), 1, 2, center ?? new(10, 10), mode, "Original name", "partisans");
         public void RedrawNeighbors(MapPoint point) => Neighbors.Add(point);
-        public void Redraw(MapPoint point) => Draws.Add(point);
-        public void InfantrySound() => ++Sounds;
-        public void Notice(CapturePartisansNotice notice) => Notices.Add(notice);
+        public void Redraw(MapPoint point) { Draws.Add(point); if (FailPartisanRedraw) throw new IOException("Partisan redraw unavailable"); }
+        public void InfantrySound() { ++Sounds; if (FailPartisanSound) throw new IOException("Partisan sound unavailable"); }
+        public void Notice(CapturePartisansNotice notice) { Notices.Add(notice); if (FailPartisanNotice) throw new IOException("Partisan notice unavailable"); }
     }
 
     private static void CaptureProductionHumanRepairAndWindow()

@@ -42,6 +42,13 @@ money/text effects. Denial, failure, disposal, repeated polls and stale/private
 replies preserve their prefixes. This qualifies the shared composition;
 desktop movement admission and generated-game UI acceptance remain open.
 
+Retained partisan tests use that diplomacy graph to pause U01 creation inside a
+scenario contact. They check delayed fortification/veteran draws, retained count
+and threshold, live later placement, allocation failure and presentation failure
+handling. A complete C09 capture routes the contact to a separate participant
+and delays its final city fields until that participant replies. These joins
+remove the synchronous-creation blocker in the movement/capture dependency graph.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

@@ -7863,3 +7863,48 @@ M4 remains active and incomplete. The next work connects the lifecycle/scenario
 and combat/capture dependencies needed by the full movement dispatcher.
 Generated human/AI scheduling, complete-game evidence and the original-observation
 gaps remain open. Browser and cross-platform work remain deferred.
+
+## Retained partisan creation inside capture
+
+Wiring the contact-enabled service graph exposed a concrete C09 blocker:
+`CapturePartisans` called synchronous U01 creation, whose retained composition
+rejects that entry. `CapturePartisans.Begin` now holds each actual U01/W03/V04
+creation until contact completes. Only then does it play the first-unit sound,
+fortify, sample Veteran, mark visibility and redraw. The computed count and
+threshold remain fixed; later placement scans use the live map. The most recent
+creation result still becomes null when a later allocation fails.
+
+`CityCapture` now awaits that operation and wraps its contact decisions in the
+existing `LifecycleContact` union. Private replies flow through the actual
+capture/session adapter. The final founder, capture-turn and Leonardo tail waits
+until partisan creation finishes. Cosmetic child/sound/redraw failures are
+reported after remaining gameplay; required notices remain terminal failures.
+Disposal releases the pending creation without fortification or later attempts.
+The explicit synchronous helper retains its existing synchronous U01 contract.
+
+Four shared groups use the production diplomacy graph and actual S02 text
+permissions. They exercise pending-contact identity, retained count/threshold,
+live later placement, veteran draw timing, private/stale replies, allocation
+failure, required/cosmetic failures and disposal. The complete capture case routes
+a partisan's contact to a third participant while the captor waits, then resumes
+the city tail through the normal session lane. Its empty foreign city follows
+W03's city-contact branch; Partisans intentionally cannot initiate the
+foreign-unit contact used by the initial, corrected test fixture.
+
+The dependency audit also found synchronous unit-creation calls in `HutEntry`;
+those need migration before the full movement graph can use retained U01
+services. Lifecycle/scenario and combat/capture composition, generated turns,
+complete-game evidence and original-observation gaps remain open.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1869/1871**, with the two existing
+platform/audio skips. All **1834 shared groups** passed across **204 coverage
+families**; identity verified **913 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua suites
+were not rerun: this change adds no desktop command admission or automation
+integration; the authored profile excludes foreign-city capture.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-partisan-contact-native.json` | `266772fe24066bc638dee8e3329e8b67c92bfe98d35cda6f1c03c0dfb5a46fa0` |
+| `m4-partisan-contact-identity.json` | `728cb1230ad74a5694a1c8d0bb887069fd2dc876cfe2271154ef7fec264961ee` |

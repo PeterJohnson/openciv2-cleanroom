@@ -160,6 +160,15 @@ retained operations. A scenario dispatcher factory closes the unit-creation,
 revelation and contact cycle before execution. Movement and generated-game host
 composition remain open.
 
+`City/CapturePartisans.Begin` retains actual U01 creation through W03/V04 contact.
+Fortification, veteran sampling and visibility follow the completed child; later
+placement attempts read the live map while keeping the initial count/threshold.
+`CityCapture` wraps those contact decisions in `LifecycleContact`, so existing
+capture, mission and movement Session adapters route the correct participant
+without adding a separate decision channel. The capture founder/turn tail waits
+for all partisans. The explicit synchronous helper remains available to callers
+with synchronous creation services.
+
 `CityUnitProduction` handles C06's unit-at-entry branch with actual U01 creation,
 veteran/transport initialization, first obsolete-type replacement, stock spending
 and settler population/city-removal consequences. Its retained entry shares the

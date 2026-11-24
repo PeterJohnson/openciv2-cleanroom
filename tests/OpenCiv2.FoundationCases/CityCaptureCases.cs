@@ -29,7 +29,8 @@ public static partial class FoundationSuite
         public List<LeonardoUpgradeNotice> Upgrades { get; } = [];
         public Action<CitySlot, int, int>? OnTaken;
         public Action<CaptureNotice>? OnNotice;
-        public CityCaptureFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false, ScenarioTriggers? events = null)
+        public CityCaptureFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false,
+            ScenarioTriggers? events = null, UnitCreation? partisanCreation = null)
         {
             Theft = new(choices, data, retainGrants); Data.AddCity(1, 2, new(26, 16), 4);
             World.Civilizations[2].CityCount = 2; World.Civilizations[2].TotalCitySize = 9;
@@ -49,7 +50,7 @@ public static partial class FoundationSuite
             var services = new CityCaptureServices(FoundationSuite.War(Data, new(), Life.Random), war,
                 new(World, Life.Random, removal, Life.Elimination, incidents),
                 new(World, rules, Data.Stacks, removal, Life.Elimination, incidents, orders, this),
-                new(World, rules, new(World, Data.Process, Data.Stacks, Data), Life.Random, this),
+                new(World, rules, partisanCreation ?? new(World, Data.Process, Data.Stacks, Data), Life.Random, this),
                 Theft.Captured, Life.Elimination, incidents, orders, new(World, rules, Upgrades.Add, Redraw),
                 new(World, rules, new MovementGoalQueries(World, rules)));
             Capture = events is null

@@ -305,7 +305,16 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
                 && (world.Civilizations[o].Government is Government.Communism or Government.Democracy
                     || world.Globals.FirstDiscoverer[AdvanceIds.GuerrillaWarfare] != 0
                     || CivilizationKnowledge.KnowsAdvance(world.Civilizations, o, AdvanceIds.Communism)))
-            { services.Partisans.Create(partisanCity, n, o, center, mode, op.Name, call + "/partisans"); }
+            {
+                using var partisans = services.Partisans.Begin(partisanCity, n, o, center, mode, op.Name, call + "/partisans");
+                while (partisans.Result is null)
+                {
+                    var contact = partisans.Resume(op.TakeReply());
+                    if (partisans.Result is null)
+                    { yield return contact is null ? null : new CityCaptureDecision.Lifecycle(new LifecycleContact(contact)); }
+                }
+                op.Report(partisans.PresentationFailures);
+            }
         }
         if (op.RemainingCity is { } finalCity)
         {
