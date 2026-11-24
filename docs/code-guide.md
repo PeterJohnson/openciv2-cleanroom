@@ -1033,7 +1033,12 @@ retains activation/contact, then validates the current shared active unit.
 `Session/UnitFocusOperation` routes the nested private decisions. The authored
 `unit.select` command clears the requested unit's orders, runs focus and reveals
 the originally selected slot when unmoved. Its reactive map supplies presentation;
-foreign contact remains outside that profile. General stack chooser, human-phase
+foreign contact remains outside that profile. `Units/UnitStackSelection` owns the
+complete local stack-entry gates, validated nine-row chooser, immediate wake
+mutations and final original-slot revelation after focus. `BeginSelected` supplies
+the same accepted-selection path to the authored command. Its Session adapter
+exposes separate wake and activate choices while preserving cancellation effects
+and private nested contact. General desktop chooser admission, human-phase
 scheduling and general desktop contact admission remain caller work.
 
 `Units/CombatContinuation` owns U06's surviving-attacker and nuclear-delivery

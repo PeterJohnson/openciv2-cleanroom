@@ -70,16 +70,13 @@ public static partial class LocalPlayCommands
         var target = UnitArgument(request);
         var world = context.World;
         ref var unit = ref world.Entities.Units.At(target.Slot);
-        unit.Orders = UnitOrder.None;
-        unit.Flags.Automated = false;
-        world.Globals.ActiveUnit = target.Slot;
-        world.MovementMode = MovementMode.View;
         var rules = context.Process.Rules.Definitions;
         var stacks = new StackOperations(world, new(100000, 64));
         var revelation = new UnitRevelation(world, rules, stacks, new LocalCreation(world, rules, stacks));
         var effects = LocalSelectionPresentation.Instance;
         var focus = new UnitFocus(world, rules, new(world, rules, new(), revelation, effects), effects);
-        using (var operation = focus.Begin(unit.Position, 0, world.Multiplayer.LocalHuman, "local-select"))
+        var selection = new UnitStackSelection(world, rules, stacks, focus, revelation);
+        using (var operation = selection.BeginSelected(target.Slot, unit.Position, world.Multiplayer.LocalHuman, "local-select"))
         {
             while (!operation.Completed)
             {
@@ -87,9 +84,6 @@ public static partial class LocalPlayCommands
                 { throw new InvalidOperationException("Foreign contact is outside the authored local profile"); }
             }
         }
-        // Explicit selection reveals the originally selected slot, even if focus chose another unit.
-        if (world.Entities.Units.At(target.Slot).MovesUsed == 0)
-        { revelation.Reveal(target.Slot.Value, true); }
         return Commit(context, "unit.selected", new NamedValue("unit", new CommandValue.Unit(target)));
     }
 

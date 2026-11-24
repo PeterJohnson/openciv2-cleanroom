@@ -6094,7 +6094,7 @@
       "status": "partial",
       "contract": "U04 select-and-publish next unit; actual W03 revelation and V04 contact",
       "publicSurface": "UnitSelection.BeginNext; UnitSelectionOperation",
-      "review": "Actual next-unit search, combat-loss origin, order-sensitive timer reset, contact before final input/presentation tail, private replies and terminal failure/disposal prefixes. The separate focus family composes this service. General stack selection, human-phase scheduling and foreign-contact desktop admission remain open.",
+      "review": "Actual next-unit search, combat-loss origin, order-sensitive timer reset, contact before final input/presentation tail, private replies and terminal failure/disposal prefixes. The separate focus family composes this service. General native stack-chooser admission, human-phase scheduling and foreign-contact desktop admission remain open.",
       "sources": [
         "src/OpenCiv2.Core/Units/UnitSelection.cs",
         "src/OpenCiv2.Session/UnitSelectionOperation.cs"
@@ -6115,7 +6115,7 @@
       "status": "partial",
       "contract": "U04 focus active and explicit selected-unit activation; X01 presentation freedom",
       "publicSurface": "UnitFocus.Begin; UnitFocusOperation; LocalPlayCommands.Select",
-      "review": "Mode and original selectability capture, actual activation/contact, shared-active revalidation, private replies and failure prefixes. Authored desktop selection composes focus and original-slot revelation with direct/console/save/replay cases. General stack chooser, human-phase scheduling and foreign-contact desktop admission remain open.",
+      "review": "Mode and original selectability capture, actual activation/contact, shared-active revalidation, private replies and failure prefixes. Authored desktop selection composes focus and original-slot revelation with direct/console/save/replay cases. General native stack-chooser admission, human-phase scheduling and foreign-contact desktop admission remain open.",
       "sources": [
         "src/OpenCiv2.Core/Units/UnitFocus.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.cs",
@@ -6130,6 +6130,35 @@
         "U04.focus-private-session",
         "U04.focus-retained-revalidation",
         "U04.local-selection-focus-replay"
+      ]
+    },
+    {
+      "id": "retained-unit-stack-selection",
+      "status": "partial",
+      "contract": "U04 explicit stack selection and chooser; U01 validated traversal; actual focus/W03/V04 children",
+      "publicSurface": "UnitStackSelection.Begin/BeginSelected; UnitStackSelectionOperation; authored unit.select",
+      "review": "Mode/owner/turn gates, full-stack validation with nine captured rows, raw immediate wake and cancellation, actual focus and original selected-slot revelation with independent retained contact stages, private replies and failure prefixes. General desktop stack chooser and human-phase scheduling remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/UnitStackSelection.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.cs",
+        "src/OpenCiv2.Session/UnitStackSelectionOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitFocusCases.cs",
+        "tests/OpenCiv2.FoundationCases/UnitStackSelectionCases.cs"
+      ],
+      "sharedGroups": [
+        "U04.focus-existing",
+        "U04.focus-failure-prefixes",
+        "U04.focus-private-session",
+        "U04.focus-retained-revalidation",
+        "U04.local-selection-focus-replay",
+        "U04.stack-selection-accepted-contact",
+        "U04.stack-selection-entry-gates",
+        "U04.stack-selection-failure-prefixes",
+        "U04.stack-selection-original-slot-tail",
+        "U04.stack-selection-private-session",
+        "U04.stack-selection-rows-wake"
       ]
     }
   ]

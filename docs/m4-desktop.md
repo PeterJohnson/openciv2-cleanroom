@@ -7417,3 +7417,65 @@ This qualifies the authored local UI regression, not general native contact or
 complete generated human/AI games. M4 remains active; F04's original-observation
 formula gaps and the other recorded integration gates remain open. Browser,
 cross-platform qualification and network execution remain deferred.
+
+## U04 retained stack selection
+
+`UnitStackSelection.Begin` implements the local Move-units/View entry gates and
+actual U01 stack traversal. A lone active unit in Move-units returns unchanged;
+View selection respects local ownership and turn ownership unless map revelation
+permits it. The chooser validates the complete stack but captures only its first
+nine rows, including owner adjective, veteran state, type, home and trade cargo.
+Immediate wake actions write full orders None and clear Automated at the captured
+backed slot, without adding identity/owner/movement checks. Cancelling the chooser
+preserves these prior mutations.
+
+Acceptance publishes the original selected slot, clears its orders/automation,
+enters View, then runs actual retained focus. After focus/contact completes, the
+original slot's live movement use gates final W03 revelation with contact allowed.
+A contact-induced shared-active change is retained; a second real contact can
+pause this final revelation independently. Failure/disposal preserve the accepted
+prefix, while child cosmetic failures are accumulated after completion.
+
+`UnitStackSelectionOperation` routes chooser and nested contact decisions
+privately. Separate wake/activate choices preserve the classic immediate wake
+and optional cancellation semantics within the application's presentation freedom.
+Waking renews the interaction identity while retaining the captured rows. The
+authored desktop command uses `BeginSelected` for this same accepted-selection
+path after its ordinary target admission; it does not yet expose the general
+stack chooser or admit foreign contact.
+
+Six new shared groups cover entry gates, nine-row capture/full-tail validation,
+raw wake followed by cancellation, no-row wake without cancellation, accepted
+contact, separate focus/final-slot contact stages, private/wrong/stale replies, cancel/timeout, failures and disposal.
+The existing authored direct/console save/replay cases exercise the shared path.
+These cases and the native regression remain implementation/specification evidence,
+not independent original-game compatibility observations.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1821/1823**, with the two existing
+platform/audio skips. All **1786 shared groups** passed across **198 coverage
+families**; identity verified **893 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-stack-selection-native.json` | `18d17125dce89a98cd45b49ad4c89582d19bd834a5132af7b767dd88d719bdfe` |
+| `m4-stack-selection-identity.json` | `d46e530fe7023695f4888202ec5ca8e61a611c014f7951fcafda4f2d7b150bd6` |
+
+The first native input attempt timed out importing the intentionally invalid
+save. Its captured screenshot showed the native picker still open with the
+complete path entered; the application was waiting for the picker to finish.
+The screenshot, observed state and log were retained under
+`m4-stack-selection-play.first-failure.{png,json,log}` in `build/test-results/`.
+No gameplay or driver changes were made for the retry.
+
+The final binaries passed all **28 isolated native input checks**, including
+ordinary play, direct-client save comparisons, reload/continuation and advisor
+flows. The receipt is `m4-stack-selection-play.json`, SHA-256
+`1fc7216a14b0e222189f7c0cca618c3bd4cc05de810cc65d302cf9f3333d39e3`.
+No optional Lua run was performed; no automation code changed. This verifies the
+authored explicit-selection path, not general native stack-chooser/contact
+admission or complete generated human/AI games. M4 remains active and incomplete;
+F04's original-observation formula gaps and the other recorded integration gates
+remain open. Browser, cross-platform qualification and network execution remain
+deferred.

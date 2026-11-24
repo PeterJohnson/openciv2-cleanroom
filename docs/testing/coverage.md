@@ -245,4 +245,12 @@ later selection, and validate the live shared active unit after contact. Private
 reply, failure and disposal cases preserve accepted prefixes. The authored
 selection command uses this path; direct/console cases compare saves and replay
 when the requested unit is exhausted, with and without another eligible unit.
-General stack chooser and human-phase scheduling remain open.
+General native chooser admission and human-phase scheduling remain open.
+
+U04 stack-selection cases cover entry gates, complete stack validation with nine
+captured rows, immediate raw wake followed by cancellation, and actual retained
+focus/contact plus the originally selected slot's final revelation. Session cases
+keep wake and activation separate, reject private/stale replies and retain wake
+changes on cancel/timeout. The authored explicit selection command uses the same
+accepted path; its direct/console save/replay cases remain part of the coverage.
+General native stack-chooser admission and human-phase scheduling remain open.
