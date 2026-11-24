@@ -1372,6 +1372,17 @@ the enclosing offer's final destruction checks and desktop UI remain caller work
 `City/TransferredCityProduction` shares C09/V05's first-eligible-defender repair;
 it preserves signed cost/defense arithmetic and the zero-cost failure boundary.
 
+`Formats/Classic/ClassicEventParser` reads classic EVENTS through the shared F03
+reader into the same S02 event records. It preserves ordered append, shared
+recognition flags, numeric gates/wrap, repeated action payloads and partial helper
+failures. Name lookup uses live civilization/rule names and an explicit comparison
+profile. Direct `Read` retains earlier records/fields on a grammar failure;
+`ReadCatalog` supplies `LoadDialogServices.LoadEvents` and rejects a failed catalog
+before installation. The parser does not execute actions. Actual retained trigger
+and accepted-load cases execute parsed actions through the existing dispatcher.
+Bare THEN without IF is explicitly rejected; original DEBUG traces are not
+reproduced. Native scenario admission/error notices and media adapters remain open.
+
 `ScenarioTriggers` owns ordinary S02 matching for Turn, TurnInterval, RandomTurn,
 ScenarioLoaded, UnitKilled, CityTaken and ReceivedTechnology. It preserves live
 traversal, persistent wildcard binding and polling, and invokes the real retained

@@ -19,6 +19,15 @@ public static partial class FoundationSuite
 {
     private static readonly (string Name, Action Run)[] Cases =
     [
+        ("S02.classic-event-triggers", ClassicEventTriggers),
+        ("S02.classic-event-actions", ClassicEventActions),
+        ("S02.classic-event-shared-recognition", ClassicEventSharedRecognition),
+        ("S02.classic-event-text-failures", ClassicEventTextAndFailures),
+        ("S02.classic-event-coordinates", ClassicEventLocationsAndRectangles),
+        ("S02.classic-event-reader", ClassicEventReaderBoundaries),
+        ("S02.classic-event-dispatch", ClassicEventParsedDispatch),
+        ("S02.classic-event-load", ClassicEventParsedLoad),
+        ("S02.classic-event-live-names", ClassicEventLiveNames),
         ("F01.integer-wrap", IntegerWrap),
         ("F01.signed-division", SignedDivision),
         ("F01.clamps-and-shifts", ClampsAndShifts),

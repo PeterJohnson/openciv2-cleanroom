@@ -7226,3 +7226,51 @@ checkpoint's gameplay/native receipts remain scoped to that checkpoint.
 The user has been offered the concrete Windows handoff. Until an explicit pause,
 the goal remains active; these preparations do not complete F04 or M4. Browser,
 cross-platform qualification and network execution remain deferred.
+
+
+## Classic EVENTS grammar and retained load execution
+
+`ClassicEventParser` now reads S02 trigger/action grammar through the existing
+F03 section, line and integer reader. It appends the actual event records and
+retains shared recognition flags, ordered name resolution, reserved selectors,
+first-match ties, repeated helper behavior, numeric gates/wrap, text tails,
+coordinate holes/counts and partial helper failures. Event coordinates retain
+F06's 32-bit domain; later unit operations own their storage narrowing. Live
+civilization/rule-name lookup uses an explicit comparison profile and does not
+filter unavailable unit types or dead civilizations.
+
+Direct parsing retains previously accepted records and fields on a grammar
+failure. The catalog adapter supplies `LoadDialogServices.LoadEvents`, rejecting
+failed catalogs before installation. An outer EOF can complete an unfinished
+block; inner EOF/directives retain their specified failure boundaries. ENDEVENTS
+leaves the reader open. Bare THEN without a prior IF is explicitly rejected;
+original debug traces are presentation details and are not reproduced. The caller
+still owns native error presentation and directory handling.
+
+Nine authored groups cover the grammar and its significant repeats/failures,
+live names and stored coordinate width. Integration cases feed parsed records
+through the actual retained Turn trigger and accepted scenario-load workflow:
+money commits before the private text response, JustOnce consumes only after
+completion, and load music/unit cleanup waits for the event. These tests do not
+establish original-game behavior or general native scenario UI admission. Media,
+error-notice adapters and the remaining broader scenario callers stay open.
+
+Root and App formatting/verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1798/1800**, with the two existing
+platform/audio skips; all **1763 shared groups** passed across **194 coverage
+families**. Identity verified **882 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. No new native input run
+was performed; the existing authored desktop profile does not exercise general
+scenario loading, and the new parser is covered through the actual retained
+core/session workflow.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-classic-events-native.json` | `938e7811a272dbe12a3b4beebf0e5e66701aa039d7a5db455f28db65450ff58f` |
+| `m4-classic-events-identity.json` | `3a691ec675a43ccd9a3c43cbeb0c07909f40e4d0010f8a762c07c2c51a5cd694` |
+
+M4 remains active and incomplete. The undefined F04 government-score/best-shield
+expressions still require a precise contract or independent original-game
+observations. Complete generated human/AI games and the other recorded mechanics
+and integration gates remain open; browser/cross-platform and network execution
+remain deferred.

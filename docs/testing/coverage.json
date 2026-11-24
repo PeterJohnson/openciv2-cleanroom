@@ -6042,6 +6042,30 @@
         "C07.search-stops",
         "M4.local-commodity-search-replay"
       ]
+    },
+    {
+      "id": "classic-event-parser",
+      "status": "partial",
+      "contract": "S02 \u00a7\u00a73\u20136 classic EVENTS grammar; F03 shared reader; S02/F06 retained execution and load",
+      "publicSurface": "ClassicEventParser.Read / ReadCatalog",
+      "review": "Nominal triggers/actions, shared recognition, numeric gates, repeated text/coordinates and partial helper failure; real retained trigger and scenario-load composition. Bare THEN rejected; native scenario UI, original observations and error-notice adapter remain open.",
+      "sources": [
+        "src/OpenCiv2.Formats/Classic/EventParser.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ClassicEventParserCases.cs"
+      ],
+      "sharedGroups": [
+        "S02.classic-event-actions",
+        "S02.classic-event-coordinates",
+        "S02.classic-event-dispatch",
+        "S02.classic-event-live-names",
+        "S02.classic-event-load",
+        "S02.classic-event-reader",
+        "S02.classic-event-shared-recognition",
+        "S02.classic-event-text-failures",
+        "S02.classic-event-triggers"
+      ]
     }
   ]
 }

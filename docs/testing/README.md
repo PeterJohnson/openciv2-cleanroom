@@ -6,6 +6,13 @@ and the browser host. Native I/O/API boundary tests are in `OpenCiv2.Base.Tests`
 Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 [implementation coverage](coverage.md) for admitted APIs and exclusions.
 
+Classic EVENTS grammar cases cover S02 triggers/actions through the F03 byte
+reader, live name resolution, shared recognition flags, numeric gates, repeated
+text/coordinates and partial failure. Parsed actions also run through the retained
+turn trigger and accepted scenario-load workflow, including delayed one-shot
+consumption and cleanup. These are authored specification cases; they do not
+establish native scenario UI acceptance or original-game compatibility.
+
 The [F04 original-game observation procedure](f04-original-observations.md)
 prepares Windows save captures for the two undefined city-analysis expressions.
 Its independent packaging tool uses stored F06 inspection; it neither runs our
