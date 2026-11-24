@@ -1056,3 +1056,11 @@ destroyed/global Apollo markers, observer exclusions, returned balance/size and
 disorder inputs to actual A08 rates, signed score addition and terminal required
 failures. Desktop turns retain this pass through their real city children. The
 two open parent formulas remain outside these specification-derived cases.
+
+A08 advance-exchange groups use actual valuation and V03 grants, covering
+strict ties, disabled versus admitted prerequisites, directional gift gates,
+difficulty/count boundaries, the human-leader override, scenario suppression,
+retained government/emissary choices and required-failure prefixes. A V04 parent
+case reaches an actual Great Library grant to the human during both exchange
+paths, suspends before the second transfer and later relations, then completes
+without replaying choices or grants. Other AI diplomacy children remain open.

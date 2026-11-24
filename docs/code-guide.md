@@ -490,6 +490,12 @@ clearing stays in the F06 adapter. `DiplomacyTurn` then performs V04's entry dra
 request aging, directed relation scan and ordered AI policy calls. It retains
 recent-peace values in `DiplomacyWorkspace`; `IDiplomacyTurnEffects` names the
 unfinished A08/V04 children rather than supplying default behavior.
+`AiAdvanceExchange` supplies A08 §6's actual candidate valuation, primary draws,
+ordered V03 grants and bilateral tribute. The retained `DiplomacyTurn.Begin`
+composition uses it for both periodic and stale-contact exchanges, forwarding
+real research decisions and diagnostics before proceeding with later relations.
+Its synchronous adapter remains for callers without retained exchanges. Other
+AI policy/audience children still require their owning implementations.
 `LocalPlayCommands.Government` implements revolution and restricted selection,
 joining actual government/city recalculation and the existing rate editor.
 The local turn suspends for these decisions, then runs real human diplomacy

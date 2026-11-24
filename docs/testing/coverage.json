@@ -3077,8 +3077,8 @@
       "id": "government-diplomacy-turn",
       "status": "partial",
       "contract": "V02 sections5-6 local revolution/selection and government maintenance; V04 section11 local civilization diplomacy maintenance",
-      "publicSurface": "GovernmentTurn; DiplomacyTurn; IDiplomacyTurnEffects; civilization.revolution; desktop government/rate continuations",
-      "review": "Resumable calendar/Statue/revolution prefix acknowledges actual government children before diplomacy draws; adapter clears imported Reserved40 without inventing live semantic state. Human and AI relation scans retain signed request wrapping, directed flags, hostile draw gates, recent-peace publication, two-boundary aggression aging, stale contact and later policy order. AI negotiation/research/policy children remain required boundaries. Desktop joins real revolution, restricted selection, C03 government recalculation, rate decisions and human diplomacy maintenance; selection/output failures retain committed state. Direct/console replay and save/reload tests cover the authored Anarchy/Despotism domain. Full generated games, remaining V04/A08 children, broader government UI/domain and full F04 processing remain open.",
+      "publicSurface": "GovernmentTurn; DiplomacyTurn.Run/Begin/Operation; IDiplomacyTurnEffects; civilization.revolution; desktop government/rate continuations",
+      "review": "Resumable calendar/Statue/revolution prefix acknowledges actual government children before diplomacy draws; adapter clears imported Reserved40 without inventing live semantic state. Human and AI relation scans retain signed request wrapping, directed flags, hostile draw gates, recent-peace publication, two-boundary aggression aging, stale contact and later policy order. Retained AI advance exchange now composes actual V03 grants at both exchange sites; other AI negotiation/policy children remain required boundaries. Desktop joins real revolution, restricted selection, C03 government recalculation, rate decisions and human diplomacy maintenance; selection/output failures retain committed state. Direct/console replay and save/reload tests cover the authored Anarchy/Despotism domain. Full generated games, remaining V04/A08 children, broader government UI/domain and full F04 processing remain open.",
       "sources": [
         "src/OpenCiv2.Core/DiplomacyTurn.cs",
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
@@ -5153,6 +5153,31 @@
         "F04.city-pass-live-descending",
         "F04.city-pass-remembered-sizes",
         "F04.city-pass-removal-reuse"
+      ]
+    },
+    {
+      "id": "ai-advance-exchange",
+      "status": "partial",
+      "contract": "A08 \u00a76 ordered AI advance exchange; V03 retained grants; V04 \u00a711 periodic/stale-contact callers",
+      "publicSurface": "AiAdvanceExchange.Begin/Operation; DiplomacyTurn.Begin/Operation and retained exchange composition",
+      "review": "Actual live A08 valuation and primary candidate draws, first/strict-better selection, scenario option, one-sided directed alliance/tribute/count gates and captured human-leader override. Both ordinary V03 grants retain order across government/emissary and Great Library decisions; real tribute and first-grant prefixes survive later failures. V04 joins both exchange sites without replaying entry draws or earlier relations. Other V04/A08 audience/review/aid children and general desktop AI turns remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AiAdvanceExchange.cs",
+        "src/OpenCiv2.Core/DiplomacyTurn.cs",
+        "src/OpenCiv2.Core/ResearchGrants.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AiAdvanceExchangeCases.cs"
+      ],
+      "sharedGroups": [
+        "A08.exchange-emissary-diagnostics",
+        "A08.exchange-leading-human",
+        "A08.exchange-one-sided-gates",
+        "A08.exchange-required-failures",
+        "A08.exchange-retained-government",
+        "A08.exchange-scenario-admission",
+        "A08.exchange-selection-grants",
+        "V04.turn-actual-exchange-library"
       ]
     }
   ]

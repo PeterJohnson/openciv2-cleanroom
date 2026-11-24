@@ -5464,3 +5464,57 @@ needed; defined desktop work can still progress here and the goal remains active
 Full city/civilization sequencing, generated desktop play and complete human/AI
 end-condition acceptance remain open. Browser/cross-platform qualification and
 network execution remain deferred.
+
+## A08 technology exchange in V04 turns — 2026-11-23
+
+`AiAdvanceExchange` now scans admitted advances in order using actual A08
+valuation and primary candidate draws. It retains first/strict-better selections
+before starting either ordinary V03 grant, supports directed one-sided alliance,
+tribute and advance-count gates, and captures the specified leading-human
+exception. The scenario option uses its existing S01/F06 state: the same stored
+option excludes conquest technology and AI exchange. No extra live/alive or
+AI-only admission filter is added to this child.
+
+Both grants use retained `ResearchGrants` operations, preserving government and
+emissary decisions, Great Library propagation, ordinary acquisition effects and
+cosmetic diagnostics. Bilateral tribute is committed before a gift grant. A
+required failure preserves preceding tribute, knowledge and completed grants;
+resuming a failed operation cannot repeat the effects. Disposing a pending
+exchange preserves its first grant and does not begin the second.
+
+`DiplomacyTurn.Begin` now composes this child at both its periodic-alliance and
+stale-contact exchange sites. It retains entry draws and relation progress while
+an actual research child waits. Its existing synchronous entry remains for
+callers without retained exchanges, including the authored human desktop turn.
+Other audience, review, military-aid and war-ally policy boundaries remain
+explicit; this does not claim a complete AI diplomacy turn or generated game.
+
+Eight new specification-derived groups cover candidate ties and prerequisites,
+actual knowledge/source/research changes, both gift directions and threshold
+boundaries, each leading-human gate without an alive filter, scenario/local
+admission, retained government and emissary choices, disposal and failure
+prefixes. The V04 parent case exercises both exchange sites with a real Great
+Library grant to the human player, pauses for the resulting government choice,
+and completes the second transfer and later relations without replaying earlier
+work. The emissary case retains a failed window-close diagnostic while both
+grants complete. No synthetic presentation callback mutates gameplay inputs.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1520 of 1522**, with two existing
+platform/audio skips. The shared probe passed **1487 groups** across 164 coverage
+families; source identity verified **765 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The unchanged isolated
+native input driver passed all **26 desktop checks** on its first run. That run
+regresses the existing authored desktop playthrough; the new AI exchange and
+Great Library continuation evidence comes from the composed shared core cases.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-exchange-native.json` | `23240629bda478def7d249b368403c3028d94957090ea535353573e964f87e01` |
+| `m4-exchange-identity.json` | `27903c2e5dfaf4165fd4f68390b90b68f7a4926a49ba786e9ed54235edcf3f65` |
+| `m4-exchange-play.json` | `5431788f945872ca4685e4422f2b8500b8845106220fedeec804cd086a3651c7` |
+
+F04's open city-analysis arithmetic, full city/civilization sequencing, remaining
+AI diplomacy policies, generated desktop play and complete human/AI end-condition
+acceptance remain open. Browser/cross-platform qualification and network
+execution remain deferred.

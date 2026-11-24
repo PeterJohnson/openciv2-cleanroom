@@ -1,4 +1,5 @@
 using OpenCiv2.Base.Randomness;
+using OpenCiv2.Core.Ai;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
@@ -21,14 +22,77 @@ public interface IDiplomacyTurnEffects
 /// Actual AI policy/audience children belong to their owners; human maintenance needs none.</summary>
 public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random, IDiplomacyTurnEffects effects)
 {
+    private readonly AiAdvanceExchange? exchange;
+    private GameState World => world;
+    public DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random,
+        AiAdvanceExchange exchange, IDiplomacyTurnEffects effects) : this(world, rules, random, effects)
+    { this.exchange = exchange; }
+
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
 
     public void Run(int owner, string call)
     {
+        if (exchange is not null)
+        { throw new InvalidOperationException("Use Begin for diplomacy with retained advance exchanges"); }
+        using var operation = Begin(owner, call);
+        while (!operation.Completed)
+        {
+            if (operation.Resume() is not null)
+            { throw new InvalidOperationException("Synchronous diplomacy cannot answer a research decision"); }
+        }
+    }
+
+    public Operation Begin(int owner, string call) => new(this, owner, call);
+
+    public sealed class Operation : IDisposable
+    {
+        private readonly DiplomacyTurn parent;
+        private readonly IEnumerator<ResearchGrantDecision?> steps;
+        private readonly List<Exception> failures = [];
+        private int? answer;
+        private bool faulted, disposed;
+        public bool Completed { get; private set; }
+        public ResearchGrantDecision? Pending { get; private set; }
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal Operation(DiplomacyTurn parent, int owner, string call)
+        {
+            this.parent = parent;
+            ArgumentException.ThrowIfNullOrEmpty(call);
+            steps = parent.Execute(this, owner, call).GetEnumerator();
+        }
+        internal int? TakeAnswer() { var result = answer; answer = null; return result; }
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
+        public ResearchGrantDecision? Resume(int? reply = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
+            { throw new InvalidOperationException("A failed diplomacy turn cannot resume"); }
+            if (Completed)
+            { return null; }
+            try
+            {
+                MapKnowledge.RequireLocal(parent.World);
+                if (Pending is not null && reply is null)
+                { return Pending; }
+                answer = Pending is null ? null : reply;
+                Pending = null;
+                if (steps.MoveNext())
+                { return Pending = steps.Current; }
+                Completed = true;
+                steps.Dispose();
+                return null;
+            }
+            catch { faulted = true; steps.Dispose(); throw; }
+        }
+        public void Dispose() { disposed = true; steps.Dispose(); }
+    }
+
+    private IEnumerable<ResearchGrantDecision?> Execute(Operation operation, int owner, string call)
+    {
         MapKnowledge.RequireLocal(world);
         if (owner == 0)
         {
-            return;
+            yield break;
         }
         world.Civilizations[owner].DiploRandom = (byte)random.PrimaryModulo(new ChoiceKey("V04.turn-random", call), 100);
         if (random.PrimaryModulo(new ChoiceKey("V04.turn-senate", call), 3) == 0)
@@ -86,13 +150,15 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
             {
                 if (!relation.RecentContact)
                 {
-                    StaleContact(owner, other);
+                    foreach (var decision in StaleContact(operation, owner, other, $"{call}/{other}"))
+                    { yield return decision; }
                 }
-                relation.RecentContact = false;
+                world.Civilizations[owner].Treaties[other].RecentContact = false;
             }
             else if (world.Globals.Turn % 8 == 0 && relation.Alliance && !relation.RecentContact)
             {
-                effects.ExchangeAdvances(owner, other);
+                foreach (var decision in Exchange(operation, owner, other, $"{call}/{other}"))
+                { yield return decision; }
             }
         }
         if (!Human(owner))
@@ -118,7 +184,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         }
     }
 
-    private void StaleContact(int owner, int other)
+    private IEnumerable<ResearchGrantDecision?> StaleContact(Operation operation, int owner, int other, string call)
     {
         if (!world.Civilizations[owner].Treaties[other].Alliance)
         {
@@ -140,7 +206,8 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         }
         else
         {
-            effects.ExchangeAdvances(owner, other);
+            foreach (var decision in Exchange(operation, owner, other, call))
+            { yield return decision; }
         }
         var live = world.Civilizations[owner].Treaties[other];
         if (live.Contact && !live.Aggressor && !world.Civilizations[other].Treaties[owner].Aggressor
@@ -148,6 +215,20 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         {
             DiplomaticRelations.Clear(world, owner, other, new() { Contact = true });
         }
+    }
+
+    private IEnumerable<ResearchGrantDecision?> Exchange(Operation operation, int owner, int other, string call)
+    {
+        if (exchange is null)
+        { effects.ExchangeAdvances(owner, other); yield break; }
+        using var child = exchange.Begin(owner, other, call + "/exchange");
+        while (!child.Completed)
+        {
+            var decision = child.Resume(operation.TakeAnswer());
+            if (!child.Completed)
+            { yield return decision; }
+        }
+        operation.Report(child.PresentationFailures);
     }
 
     private bool Observed(int owner, int other)
