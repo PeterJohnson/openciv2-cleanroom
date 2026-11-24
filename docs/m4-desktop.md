@@ -8723,3 +8723,39 @@ cross-platform work remain deferred.
 | --- | --- |
 | `m4-classic-gameplay-content-native.json` | `54e7a462c68dd0648ef7c5f1beafde8fd94beee21dd020c314c9a57b403655f3` |
 | `m4-classic-gameplay-content-identity.json` | `5ded36a4925bb9f4b08a4f714646de01074cb646e3e5ef1fdf171c8db6b5672e` |
+
+## Shared unit tactics and phase execution
+
+`SinglePlayerUnitExecution` constructs U03 path/Goto services, W04 work/pillage,
+C01 founding, W06 barbarian orders/ransom and the actual A03–A07 tactical children
+around one `SinglePlayerGameplay`. It reuses that graph's combat strength and
+preparation, paradrop, city creation/removal, diplomacy, espionage, movement and
+lifecycle services. Shared goals use the production U04 movement queries. The
+bundle exposes U04 orders, automated execution and active-unit cycles, F04's
+human movement phase and A01's reverse two-pass AI scan. No gameplay child-result
+provider is supplied. Authored ransom text and semantic presentation remain host
+inputs; Hold and movement-entry selection remain explicit unresolved producers.
+
+Four shared groups qualify the joins. Actual queued Goto reaches diplomatic
+scenario contact after arrival; W03's earlier order interruption and arrival
+survive disposal, while accepting the text completes the movement tail. AI work
+passes process units in reverse order, execute W04 work and preserve both passes
+when cursor presentation fails. Human selection releases the phase for player
+input and then completes through actual fortification, including a cosmetic focus
+failure. Barbarian tactics read authored ransom text, retain the victim's offer,
+and use the shared lifecycle graph for payment and stack deletion. These are
+authored contract cases; they do not establish complete-turn or game acceptance.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1955/1957**, with the two existing
+platform/audio skips. All **1920 shared groups** passed across **221 coverage
+families**; compiled identity verified **957 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua and widget sources are
+unchanged. Concrete execution presentation, generated-host admission/scheduling,
+recorded input/formula gaps and full human/AI game acceptance remain open.
+Browser and cross-platform work remain deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-unit-execution-native.json` | `ede89e8d2a44e42aa1a983a8ce9d2d3167bbe413a2f537fd9e76450995961ac5` |
+| `m4-unit-execution-identity.json` | `f1b199a7137e584b69bd8cef023dc214311913ef3140819aba55b41c4fdc50f3` |

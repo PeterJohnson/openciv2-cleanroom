@@ -6714,6 +6714,25 @@
         "V06.gameplay-content-lazy-options",
         "V06.gameplay-content-mission-graph"
       ]
+    },
+    {
+      "id": "single-player-unit-execution",
+      "status": "partial",
+      "contract": "U03/U04/W04/W06/A01/A03-A07/F04 local unit execution composition",
+      "publicSurface": "SinglePlayerUnitExecution",
+      "review": "Constructs actual path, terrain, founding, barbarian and tactical services around one SinglePlayerGameplay; combat state, movement, missions, contact and lifecycle are shared. Exposes actual order execution, automated orders, active-unit cycles, human movement phases and reverse two-pass AI scans. Integration tests cover Goto/contact, AI terrain work, human input/fortification and authored barbarian ransom/deletion with disposal and cosmetic-failure prefixes. Host-owned presentation, full-turn scheduling and unresolved Hold/movement entry producers remain open; no complete generated game or native UI acceptance is claimed. Browser and cross-platform execution remain deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/SinglePlayerUnitExecution.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SinglePlayerUnitExecutionCases.cs"
+      ],
+      "sharedGroups": [
+        "A01.single-player-execution-work",
+        "F04.single-player-execution-human",
+        "U04.single-player-execution-contact",
+        "W06.single-player-execution-ransom"
+      ]
     }
   ]
 }

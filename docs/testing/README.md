@@ -76,6 +76,14 @@ later revolt text. Missing sections and malformed resources retain their distinc
 outcomes; malformed mission text leaves bilateral Contact committed and closes
 the reader. These are specification-derived cases, not original-game captures.
 
+Single-player unit-execution composition cases run actual Goto through retained
+contact, both AI work passes, the human input/fortification tail and barbarian
+ransom through shared lifecycle deletion. Disposal and cosmetic cursor/focus
+failures preserve the executed prefixes. The graph uses real tactics, terrain,
+combat, mission and movement children; tests supply authored state and presentation.
+General phase scheduling, unresolved Hold/entry inputs and native acceptance remain
+open; these cases do not claim a complete generated turn or game.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

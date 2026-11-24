@@ -467,6 +467,15 @@ gameplay values and the existing map compatibility object; the binding does not
 replace imported map metadata or guess label indices. Rebind after replacing
 world/rules. Native JSON text binding and the generated host remain separate work.
 
+`SinglePlayerUnitExecution` composes U03 paths/Goto, W04 work/pillage, C01 founding,
+W06 barbarian orders/ransom, the A03–A07 unit-tactics graph and U04 order/active
+execution around one `SinglePlayerGameplay`. Combat preparation/strength, missions,
+movement, contact and lifecycle services come from that shared graph. It exposes
+the F04 human movement phase and A01 two-pass AI unit scan. The host still supplies
+authored ransom text and semantic presentation, then admits phase inputs including
+the unresolved U04 Hold value. It does not construct the full civilization turn
+or infer missing movement-input producers.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

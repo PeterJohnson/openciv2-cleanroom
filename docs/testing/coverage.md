@@ -391,3 +391,10 @@ scenario/home fallback, language/filename selection and malformed/missing text,
 including actual retained mission decisions. Native JSON text and generated-host
 acceptance remain open. See
 [ClassicGameplayContentCases.cs](../../tests/OpenCiv2.FoundationCases/ClassicGameplayContentCases.cs).
+
+`SinglePlayerUnitExecution` connects actual A03–A07 tactics and U04 execution to
+the shared gameplay graph, including F04 human and A01 AI phases. Goto/contact,
+two-pass work, human input/fortification and retained barbarian ransom cases cover
+real children and failure/disposal prefixes. Full-turn scheduling and native
+acceptance remain open. See
+[SinglePlayerUnitExecutionCases.cs](../../tests/OpenCiv2.FoundationCases/SinglePlayerUnitExecutionCases.cs).
