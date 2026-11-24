@@ -510,6 +510,10 @@ contract or independent original-game observations. Do not infer missing formula
 from historical source records or claim a complete F04 city analysis from the
 already specified contributions.
 
+The [original-game observation procedure](../testing/f04-original-observations.md)
+defines controlled save captures for these gaps. Packaging a capture is not a
+formula resolution or original-compatibility conclusion.
+
 ## 7. Unit reset, recovery and movement boundaries
 
 Global reset and per-civilization recovery are separate passes:

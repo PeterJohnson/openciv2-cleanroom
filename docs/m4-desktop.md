@@ -7196,3 +7196,33 @@ evidence for its own checkpoint, not native assembly acceptance.
 M4 remains active. General F04 composition, the undefined government-score and
 best-shield formulas, complete generated human/AI games and independent
 original-game evidence remain open.
+
+
+## Original-game F04 capture handoff
+
+The [capture procedure](testing/f04-original-observations.md) now records a
+Windows workflow for the undefined government-score and best-shield expressions.
+It calls for displayed-version confirmation, reproducible turn boundaries,
+controlled one-factor comparisons and raw save/rule/action records. Final saved
+scores include other contributors; the procedure explicitly avoids inferring the
+missing parent arithmetic from consumers or unrecorded historical saves.
+
+`tools/capture_city_analysis.py` packages independently supplied before/after saves
+using the existing F06 stored inspector. It retains the original save copies,
+rules, notes, civilization/city/unit/global inspection JSON, diagnostics and
+hashes, with a compact eight-civilization summary. It hashes the executable only;
+no original code is executed or inspected. Existing destinations are refused;
+failed inspections retain an incomplete manifest. These artifacts are inputs to
+future observation review, not expected gameplay or formula conclusions.
+
+Validation compiled the Python tool and ran the actual CLI against the supplied
+historical `to_b3980.sav` on both sides of a tooling-only capture. All eight
+civilization summaries matched, every packaged hash verified, a second write to
+the destination was refused without altering its manifest, and an inspector
+failure produced an incomplete manifest. Original save/executable/rules hashes
+were unchanged. No original turn was run. No C# changes were made, so the prior
+checkpoint's gameplay/native receipts remain scoped to that checkpoint.
+
+The user has been offered the concrete Windows handoff. Until an explicit pause,
+the goal remains active; these preparations do not complete F04 or M4. Browser,
+cross-platform qualification and network execution remain deferred.

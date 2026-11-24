@@ -6,6 +6,11 @@ and the browser host. Native I/O/API boundary tests are in `OpenCiv2.Base.Tests`
 Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 [implementation coverage](coverage.md) for admitted APIs and exclusions.
 
+The [F04 original-game observation procedure](f04-original-observations.md)
+prepares Windows save captures for the two undefined city-analysis expressions.
+Its independent packaging tool uses stored F06 inspection; it neither runs our
+gameplay formulas nor establishes compatibility from existing historical saves.
+
 ## Alder Valley local play
 
 The [Linux M3 record](../validation/m3-linux-playable.md) gives the native
