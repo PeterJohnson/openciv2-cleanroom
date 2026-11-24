@@ -230,6 +230,21 @@ public sealed class ClassicStorage : IFileStorage
         }
     }
 
+    /// <summary>F04 backup rotation: move an existing regular file without replacing a destination.</summary>
+    public bool Rename(string source, string destination)
+    {
+        string? from = Resolve("", source), to = Resolve("", destination, true);
+        if (from is null || to is null || !Regular(from))
+        { return false; }
+        try
+        {
+            File.Move(from, to, overwrite: false);
+            return true;
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        { return false; }
+    }
+
     private sealed class Input(FileStream stream) : CoreInput
     {
         private bool failed;

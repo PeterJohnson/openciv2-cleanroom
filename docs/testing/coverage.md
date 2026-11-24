@@ -218,3 +218,11 @@ private human choices during another civilization's work, sequential census/fund
 gates, retained Library/elimination decisions and failure/disposal boundaries.
 The shared composition runs in the authored desktop turn; complete upkeep and
 generated-game acceptance remain open.
+
+The `civilization-autosave-boundary` family covers [F04 autosave](../../src/OpenCiv2.Session/ClassicAutosave.cs)
+through the ordinary F06 writer. [Shared cases](../../tests/OpenCiv2.FoundationCases/AutosaveCases.cs)
+exercise rotation, byte names, local gating, failure prefixes, command ownership,
+retained decisions and replay. [Native storage cases](../../tests/OpenCiv2.Base.Tests/NativeClassicTests.cs)
+verify real turn saves, backups and failed replacement. The authored desktop turn
+uses this boundary before movement; full scheduling and graphical acceptance
+remain open.

@@ -5896,6 +5896,33 @@
         "F04.post-city-private-session",
         "V02.finance-explicit-target-gates"
       ]
+    },
+    {
+      "id": "civilization-autosave-boundary",
+      "contract": "F04 \u00a79 and \u00a76 step 9; F06 \u00a75 ordinary save; F06 ordinary human leader-name restoration",
+      "publicSurface": "ClassicAutosave; ClassicAutosaveServices; LocalAutosaveTarget; ClassicStorage.Rename; desktop upkeep autosave",
+      "status": "partial",
+      "review": "Single-player end-of-upkeep autosave runs after finance, with civilization processing cleared and before unit activation. Tests cover all eight rotation residues over two cycles, every eligible invocation, local-owner gating inside scenario/home scope, byte-prefix naming with CP1252 and trimming, live default/custom ruler selection, failed delete/rename/output and retained writer effects, encoding failure cleanup, manual-save rejection during an admitted command, and replacement guards. Actual local direct/console turns wait for government/rate decisions; load/resume does not autosave; disabled options suppress output. Replay uses the same ordinary writer with in-memory files. Native cases exercise case aliases, non-overwriting rename, real turn saves/backups and failed replacement without rolling back upkeep. Authored setup now initializes its saved human ruler name so ordinary reload preserves autosave naming. The desktop host uses its configured storage directory and the authored English Auto label; generalized localized/scenario hosts remain separate. Full civilization scheduling, spaceship presentation, generated gameplay and graphical acceptance remain open. Expectations are specification-derived; browser/cross-platform/network execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Desktop/Program.cs",
+        "src/OpenCiv2.IO.Native/ClassicStorage.cs",
+        "src/OpenCiv2.Session/ClassicAutosave.cs",
+        "src/OpenCiv2.Session/ClassicGameFiles.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.Base.Tests/NativeClassicTests.cs",
+        "tests/OpenCiv2.FoundationCases/AutosaveCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.autosave-admitted-command",
+        "F04.autosave-byte-names",
+        "F04.autosave-failure-prefixes",
+        "F04.autosave-gates-directories",
+        "F04.autosave-rotation-writer",
+        "M4.local-autosave-decisions"
+      ]
     }
   ]
 }

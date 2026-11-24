@@ -17,7 +17,8 @@ public static partial class LocalPlayCommands
     public const string Research = "research.choose";
     public const string EndTurn = "turn.end";
 
-    private static void RegisterTurnCommands(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall)
+    private static void RegisterTurnCommands(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall,
+        Action<OperationContext, int>? autosave)
     {
         runtime.RegisterCommand(Define(Fortify, "Fortify an owned land unit and spend its remaining movement.",
             [new("unit", ValueKind.Unit)], [new("unit", ValueKind.Unit)], FortifyUnit, ValidateUnit));
@@ -27,7 +28,7 @@ public static partial class LocalPlayCommands
             new(1, EndTurn, "Finish the player phase and advance the local turn.",
                 AccessClass.Player, new([]), new([new("turn")])),
             (actor, _, world) => new(ValidatePhase(actor, world)),
-            _ => new EndPlayerPhase(preferences, choices, hall)));
+            _ => new EndPlayerPhase(preferences, choices, hall, autosave)));
     }
 
     private static OperationStep FortifyUnit(OperationContext context, CommandRequest request)
@@ -99,7 +100,8 @@ public static partial class LocalPlayCommands
     }
 
     /// <summary>Local F04 mode adapter. The controller supplies the end-phase and research decisions.</summary>
-    private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall) : IContinuation
+    private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall,
+        Action<OperationContext, int>? autosave) : IContinuation
     {
         private bool confirmed, movementChecked, entryFinished, postCityFinished, activated;
         private PendingOutcomeOperation? movementOutcome, finalOutcome;
@@ -294,6 +296,7 @@ public static partial class LocalPlayCommands
             {
                 world.Production.CivilizationTurnInProgress = false;
                 activeWorld = null;
+                autosave?.Invoke(context, context.Actor.Civilization.Value);
                 world.Globals.ActiveUnit = null;
                 SelectReadyUnit(context);
                 activated = true;

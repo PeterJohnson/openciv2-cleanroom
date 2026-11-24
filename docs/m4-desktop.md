@@ -6761,3 +6761,55 @@ acceptance remain open. A08's incoming attitude delta and the other recorded
 formula/evidence gaps remain unresolved; the lifecycle case excludes that missing
 path. These specification-derived cases add no original-game observations. Browser,
 cross-platform and network execution remain deferred. M4 is ongoing.
+
+## F04 desktop upkeep autosave
+
+The 2026-11-24 checkpoint adds F04 §9 autosave after post-city finance and before
+unit activation. The caller clears civilization processing first; enabled calls
+enter scenario-directory scope and return home even for another civilization.
+The local helper selects the ordinary extension, builds the name from the first
+two CP1252 bytes of the live ruler name, trims spaces/tabs and appends the supplied
+autosave label. Residues 0–3 modulo eight delete the backup and rename current to
+backup; every eligible invocation then calls the actual ordinary F06 writer.
+Delete/rename/output status failures do not roll back upkeep or suppress that write.
+
+`ClassicGameFiles` shares its existing encoding and output implementation between
+settled manual saves and the trusted upkeep command lane. Manual save admission
+and its world pin remain intact. The autosave entry requires completed
+single-player upkeep before movement; an admitted command prevents replacement
+while it writes. Preparation mutations and partial output retain F06 semantics.
+The native storage adapter adds non-overwriting rename with existing case-alias
+resolution. Desktop uses its configured storage directory; the authored English
+profile supplies `Auto`. General localized/scenario-host composition is separate.
+
+Headless play and replay use in-memory files through the same writer, preserving
+save mutations and publication. The actual authored end-turn waits for government,
+rate and financial decisions before autosave. Ordinary load/resume does not save
+again. A test exposed an authored setup omission: the displayed ruler was Cedar,
+but its persistent human name record was empty. Setup now initializes that record
+and its custom-name reference, preserving the name across ordinary F06 reload.
+No generic load-name or writer behavior was changed to accommodate the profile.
+
+Six shared groups cover rotation across two complete cycles, byte-prefix naming,
+live default/custom names, local-owner gates, directory scope, output and encoding
+failures, admitted-command saving, decisions, disabled saves, reload and replay.
+Two native tests cover real file rotation, case aliases, failed rename and an
+actual turn whose current-file replacement fails without undoing upkeep.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1753/1755**, with the
+two existing platform/audio skips. All **1718 shared groups** passed across
+**190 coverage families**; identity verified **854 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-autosave-native.json` | `0270bb799f3946c4f0caef44395522e34f7d1d5297b0f0c4a0139baeb20e8952` |
+| `m4-autosave-identity.json` | `c45914536eca3ef381132c7a9addd51b1efbfa7aa7de9554fcd6fb20fe96cdb5` |
+
+This closes the autosave boundary for the authored desktop caller, not all F04
+upkeep or civilization scheduling. Spaceship presentation, general city/production
+composition, generated human/AI games and graphical acceptance remain open. The
+recorded formula/evidence gaps are unresolved. These specification-derived tests
+add no original-game observations. Browser, cross-platform and network execution
+remain deferred. M4 is ongoing; Windows migration is not required for this checkpoint.

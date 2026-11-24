@@ -1307,3 +1307,13 @@ an AI participant. Explicit financial cases recheck live gates after population
 acknowledgment and retain milestone/preview effects on cancellation or failure.
 Private/stale replies and disposal at each stage preserve ordering. The lifecycle
 case excludes A08's recorded missing incoming-delta path; that gap remains open.
+
+F04 autosave cases cover each rotation residue, CP1252 byte-prefix names, local
+civilization gating within directory scope, retained ordinary-writer effects and
+output failures. The command case verifies that autosave can write at the trusted
+upkeep boundary while manual save and world replacement remain unavailable.
+Authored direct/console turns wait for government/rate decisions before saving;
+resume skips autosave, and headless replay preserves the same writer effects.
+Native cases exercise actual files, case aliases, backups and failed replacement.
+The authored ruler name now survives ordinary save/load. These tests do not
+establish full scheduling, general scenario-host composition or graphical acceptance.

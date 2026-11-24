@@ -25,6 +25,7 @@ public sealed class LocalGame : IDisposable
     private readonly LocalReplayRecorder? replay;
     private readonly IPreferenceWriter preferences;
     private readonly HallOfFame hall;
+    private readonly LocalAutosaveTarget autosave;
     private readonly RateDecisionPreferences rateChoices = new();
     private readonly PreferenceSnapshot? initialPreferences;
 
@@ -34,9 +35,16 @@ public sealed class LocalGame : IDisposable
     public LocalGame() : this(null) { }
 
     public LocalGame(LocalReplayRecorder? replay, IPreferenceWriter? preferences = null,
-        PreferenceSnapshot? initialPreferences = null, IFileStorage? hallStorage = null)
+        PreferenceSnapshot? initialPreferences = null, IFileStorage? hallStorage = null, LocalAutosaveTarget? autosave = null)
     {
         this.replay = replay;
+        if (autosave is null)
+        {
+            var buffer = new AutosaveBuffer();
+            autosave = new("local", new(buffer, buffer.Rename, _ => { }, () => "Auto"));
+        }
+        this.autosave = autosave;
+        ConfigureAutosaveDirectories(files);
         hall = new(hallStorage ?? new BufferedHallStorage());
         this.preferences = preferences ?? new BufferedPreferenceWriter();
         this.initialPreferences = initialPreferences;
@@ -87,7 +95,8 @@ public sealed class LocalGame : IDisposable
 
         var candidate = new SessionRuntime(process, new(nextRuntime++));
         candidate.EnableLocalPlay(replay);
-        LocalPlayCommands.Register(candidate, preferences, rateChoices, hall);
+        LocalPlayCommands.Register(candidate, preferences, rateChoices, hall,
+            (context, owner) => ClassicAutosave.Run(context, files, autosave.Services, owner));
         candidate.BeginClientSession(SessionSeeds);
         return candidate;
     }
@@ -122,6 +131,7 @@ public sealed class LocalGame : IDisposable
         ref var globals = ref world.Globals;
         globals.Rules = GameRules.Normal with { FlatWorld = true };
         globals.Turn = 1;
+        globals.GameOptions.Autosave = runtime.Process.OrdinaryPreferences.GameOptions.Autosave;
         globals.FirstLaunchTurn = -1;
         globals.Year = (short)Calendar.Year(globals.Turn, globals, world.Scenario, GameplayContent.Builtin.Values.Calendar);
         globals.PlayerCiv = globals.TurnCiv = globals.ViewCiv = globals.SavedCurrentCiv = owner;
@@ -134,6 +144,11 @@ public sealed class LocalGame : IDisposable
 
         world.Multiplayer.LocalHuman = owner;
         ref var civ = ref world.Civilizations[owner];
+        // Ordinary F06 load restores the human ruler from the civilization name record.
+        // The authored setup must initialize that same record before its first save.
+        var leader = rules.Leaders[civ.Tribe];
+        world.Names[owner].Leader = leader.LeaderName.Text;
+        leader.LeaderName = leader.LeaderName with { Custom = true };
         civ.Government = Government.Despotism;
         civ.Researching = -1;
         civ.ScienceRate = 6;
@@ -239,6 +254,7 @@ public sealed class LocalGame : IDisposable
             runtime.Dispose();
             runtime = staged;
             files = stagedFiles;
+            ConfigureAutosaveDirectories(files);
             Player = BindPlayer();
             return LocalLoadResult.Loaded;
         }
@@ -359,6 +375,12 @@ public sealed class LocalGame : IDisposable
         return true;
     }
 
+    private void ConfigureAutosaveDirectories(ClassicFileState retained)
+    {
+        retained.Text.Home = retained.Text.Working = retained.Text.Search = autosave.Directory;
+        retained.ScenarioDirectory = autosave.Directory;
+    }
+
     private static ClassicFileState NewFileState()
     {
         var retained = new ClassicFileState();
@@ -367,6 +389,28 @@ public sealed class LocalGame : IDisposable
     }
 
     public void Dispose() => runtime.Dispose();
+
+    // Headless commands and replay retain the same writer effects as the desktop host.
+    private sealed class AutosaveBuffer : IFileStorage
+    {
+        private readonly Dictionary<string, ClassicBuffer> documents = [];
+        public CoreInput? Read(string path) => documents.TryGetValue(path, out var file) ? file.Read(path) : null;
+        public CoreOutput Replace(string path)
+        {
+            var file = new ClassicBuffer();
+            documents[path] = file;
+            return file.Replace(path);
+        }
+        public bool Remove(string path) => documents.Remove(path);
+        public bool Rename(string source, string destination)
+        {
+            if (!documents.TryGetValue(source, out var file) || documents.ContainsKey(destination))
+            { return false; }
+            documents.Add(destination, file);
+            documents.Remove(source);
+            return true;
+        }
+    }
 
     private sealed class ClassicBuffer : IFileStorage
     {

@@ -159,7 +159,9 @@ public static class DesktopHost
                     throw new IOException("Could not read gameplay preferences");
                 }
                 SeamApp.ConfigureLocalGame(automation, replay, new ClassicPreferenceWriter(preferenceStorage),
-                    PreferenceFiles.Capture(preferenceState), preferenceStorage);
+                    PreferenceFiles.Capture(preferenceState), preferenceStorage,
+                    new(preferenceStorage.Working, new(preferenceStorage, preferenceStorage.Rename,
+                        preferenceStorage.ChangeDirectory, () => "Auto")));
             }
 
             if (showcase is not null)

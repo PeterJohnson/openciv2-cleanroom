@@ -540,8 +540,20 @@ actor to be the affected human; the legacy entry retains phase admission.
 assessment and financial notices in F04 order. It carries the first output failure
 through later gameplay, routes each child privately and owns their disposal.
 The authored desktop turn uses it after the city pass. This is steps 5–7 of
-civilization upkeep; spaceship presentation, autosave and full scheduling remain
-separate integration work.
+civilization upkeep; spaceship presentation and full scheduling remain separate
+integration work.
+
+`Session/ClassicAutosave` owns F04 §9 naming, rotation and scenario/home scope.
+It calls the ordinary F06 writer on the trusted command lane after upkeep clears
+civilization processing and before movement. Manual saves still require settled
+commands and pin the world. `IO.Native/ClassicStorage.Rename` preserves an existing
+destination when rotation fails. The authored desktop host saves in its configured
+storage directory; headless play/replay uses in-memory files with the same writer
+mutations. `LocalGame` initializes the human ruler's saved name during setup, as
+ordinary F06 load restores that name from the civilization record. Shared hosts
+supply the localized label and scenario directory; the authored desktop profile
+uses English `Auto` and its own storage directory. This does not complete the
+spaceship tail or general civilization scheduler.
 
 V08 arithmetic and report preparation live in `CivilizationScore`. `ScoreWorkspace`
 is world-owned scratch; `ScoreReport` is an owned presentation snapshot. Direct

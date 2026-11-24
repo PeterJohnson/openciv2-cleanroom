@@ -39,6 +39,51 @@ public sealed class NativeClassicTests : IDisposable
     }
 
     [Fact]
+    public void Autosave_rotation_uses_case_aliases_without_overwriting_failed_backups()
+    {
+        // F04 §9: remove and rename are distinct failure-preserving operations.
+        var disk = new ClassicStorage(directory);
+        Text("Ca_Auto.sav", "current"); Text("Ca_Auto2.sav", "old");
+        Assert.False(disk.Rename("CA_AUTO.SAV", "CA_AUTO2.SAV"));
+        Assert.Equal("current", File.ReadAllText(Path.Combine(directory, "Ca_Auto.sav")));
+        Assert.True(disk.Remove("CA_AUTO2.SAV")); Assert.True(disk.Rename("CA_AUTO.SAV", "Ca_Auto2.SAV"));
+        Assert.False(disk.Exists(".", "Ca_Auto.SAV")); Assert.True(disk.Exists(".", "CA_AUTO2.SAV"));
+        Assert.Equal("current", File.ReadAllText(Path.Combine(directory, "Ca_Auto2.SAV")));
+        Assert.False(disk.Rename("missing", "new")); Assert.False(disk.Rename(".", "new"));
+        Assert.False(disk.Rename("Ca_Auto2.SAV", "missing\\new"));
+    }
+
+    [Fact]
+    public void Local_turns_save_and_rotate_real_classic_files_before_movement()
+    {
+        // F04 §9 / F06 §5: actual LocalGame command, storage and decoded saves.
+        var disk = new ClassicStorage(directory);
+        using var game = new LocalGame(null, autosave: new(directory,
+            new(disk, disk.Rename, disk.ChangeDirectory, () => "Auto")));
+        void Turn()
+        {
+            var submitted = game.Player.Submit(new(LocalPlayCommands.EndTurn, new([])));
+            while (game.AdvanceOne())
+            {
+                var update = game.Player.Result(submitted.Correlation.Command)!;
+                if (update.Interaction is { } interaction)
+                    Assert.True(game.Player.Reply(interaction.Id, interaction.Spec.Prompt == "End the current player turn?" ? 1 : interaction.Spec.Choices[0]).Accepted);
+            }
+            Assert.Equal(OpenCiv2.Contracts.CommandStatus.Completed, game.Player.Result(submitted.Correlation.Command)!.Status);
+        }
+        Turn(); string current = Directory.GetFiles(directory, "*.SAV").Single();
+        byte[] first = File.ReadAllBytes(current); Assert.Equal((short)2, ClassicFiles.DecodeStoredSave(first).Globals.Turn);
+        Turn(); string backup = Path.Combine(directory, Path.GetFileNameWithoutExtension(current) + "2.SAV");
+        Assert.Equal(first, File.ReadAllBytes(backup));
+        byte[] second = File.ReadAllBytes(current); Assert.Equal((short)3, ClassicFiles.DecodeStoredSave(second).Globals.Turn);
+        Assert.Equal(LocalLoadResult.Loaded, game.LoadClassic(second)); Assert.Equal(second, File.ReadAllBytes(current));
+        Assert.Equal(first, File.ReadAllBytes(backup)); Assert.Equal(disk.Working, Path.GetFullPath(directory));
+        File.Delete(current); Directory.CreateDirectory(current);
+        Turn(); Assert.True(Directory.Exists(current)); Assert.Equal(first, File.ReadAllBytes(backup));
+        Assert.Equal(4, game.Player.ObserveLocalPlay()!.Turn); // Failed replace does not roll back upkeep.
+    }
+
+    [Fact]
     public void Binary_controls_short_prefixes_and_independent_cursors()
     {
         byte[] bytes = [0, 26, 255, 13, 10]; File.WriteAllBytes(Path.Combine(directory, "MiXeD.sAv"), bytes); var files = new ClassicStorage(directory);

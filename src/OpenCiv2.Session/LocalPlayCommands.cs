@@ -11,7 +11,8 @@ public static partial class LocalPlayCommands
     public const string Select = "unit.select";
     public const string Move = "unit.move";
 
-    internal static void Register(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences rateChoices, HallOfFame hall)
+    internal static void Register(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences rateChoices, HallOfFame hall,
+        Action<OperationContext, int>? autosave = null)
     {
         runtime.RegisterCommand(Define(Select, "Activate an owned unit.", [new("unit", ValueKind.Unit)],
             [new("unit", ValueKind.Unit)], SelectUnit, ValidateUnit));
@@ -21,7 +22,7 @@ public static partial class LocalPlayCommands
         RegisterHallCommand(runtime, hall);
         RegisterEndGameCommands(runtime, hall);
         RegisterCityCommands(runtime);
-        RegisterTurnCommands(runtime, preferences, rateChoices, hall);
+        RegisterTurnCommands(runtime, preferences, rateChoices, hall, autosave);
         RegisterWorkCommands(runtime);
         RegisterRateCommands(runtime, preferences, rateChoices);
         RegisterGovernmentCommands(runtime, preferences, rateChoices);

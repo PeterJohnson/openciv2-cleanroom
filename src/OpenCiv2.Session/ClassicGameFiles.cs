@@ -375,7 +375,26 @@ public static class ClassicGameFiles
         }
 
         using var pin = runtime.PinWorld();
-        var world = runtime.World;
+        return Write(runtime.World, runtime.Process, () => { if (runtime.Active) { runtime.Publish(); } },
+            retained, path, scenarioExport, storage);
+    }
+
+    // An admitted command owns the cooperative mutation lane. This entry is only for F04's
+    // completed-upkeep boundary; public/manual Save still requires settled commands and pins the world.
+    internal static CoreSaveStatus SaveUpkeep(OperationContext context, ClassicFileState retained,
+        string path, IFileStorage storage)
+    {
+        if (context.World.Production.CivilizationTurnInProgress || context.World.PlayerPhaseActive
+            || context.World.Globals.Multiplayer != GameMode.SinglePlayer)
+        { throw new InvalidOperationException("Autosave requires completed single-player upkeep before movement"); }
+        return Write(context.World, context.Process, context.Publish, retained, path, false, storage);
+    }
+
+    private static CoreSaveStatus Write(GameState world, ProcessContext process, Action publish,
+        ClassicFileState retained, string path, bool scenarioExport, IFileStorage storage)
+    {
+        if (path.Contains('\0'))
+        { throw new ArgumentException("Core path must not contain NUL", nameof(path)); }
         ref var globals = ref world.Globals;
         if (globals.UnitEnd < 0 || globals.CityEnd < 0 || globals.UnitEnd != world.Entities.Units.End
             || globals.CityEnd != world.Entities.Cities.End)
@@ -396,7 +415,7 @@ public static class ClassicGameFiles
                 globals,
                 world.Civilizations,
                 world.Names,
-                runtime.Process.Rules);
+                process.Rules);
             var exported = globals;
             if (exported.Multiplayer == GameMode.Hotseat)
             {
@@ -418,7 +437,7 @@ public static class ClassicGameFiles
                 Append,
                 exported,
                 world.Civilizations,
-                runtime.Process.Rules.Leaders,
+                process.Rules.Leaders,
                 retained.Cursor);
             ClassicLive.WriteHistoryLayoutItems(
                 Append,
@@ -452,16 +471,13 @@ public static class ClassicGameFiles
         {
             try
             {
-                if (runtime.Active)
-                {
-                    runtime.Publish();
-                }
+                publish();
             }
             catch { /* Preserve the original failure. */ }
 
             throw;
         }
-        runtime.Publish();
+        publish();
         using var output = storage.Replace(retained.OpenedPath);
         if (output is null)
         {
