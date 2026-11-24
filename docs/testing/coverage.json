@@ -5581,6 +5581,31 @@
         "W03.actual-contact-live-reads",
         "W03.actual-contact-order"
       ]
+    },
+    {
+      "id": "scenario-unit-actions",
+      "contract": "U01 section5 retained creation; S02 section9 CreateUnit and MoveUnit",
+      "publicSurface": "UnitCreation.Begin/Operation; ScenarioUnitActions.BeginCreate/Move; ScenarioUnitCreationOperation",
+      "review": "Scenario creation uses actual U01 initialization and retained W03/V04 contact before live veteran/home assignments. Preserves ordered location tests, sea occupancy exception, single selector resolution, first home-name match including foreign cities and byte-domain absence. MoveUnit keeps the classic slot-selector quirk, descending captured bounds, signed attack/orders and destination narrowing, rectangle comparisons and zero/negative/All quantities. Actual contact tests cover private replies, disposal, required failure and cancel/timeout diagnostics. Full retained S02 dispatch, other action domains, production desktop callers and complete-game acceptance remain open; browser/cross-platform/network execution deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/ScenarioUnitActions.cs",
+        "src/OpenCiv2.Core/Units/UnitCreation.cs",
+        "src/OpenCiv2.Session/ScenarioUnitCreationOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ScenarioUnitActionCases.cs"
+      ],
+      "sharedGroups": [
+        "S02.move-unit-eligibility",
+        "S02.move-unit-slots-counts",
+        "S02.unit-creation-actual-contact",
+        "S02.unit-creation-home-selectors",
+        "S02.unit-creation-locations",
+        "S02.unit-creation-private-session",
+        "U01.creation-retained-boundaries",
+        "U01.creation-retained-contact"
+      ]
     }
   ]
 }

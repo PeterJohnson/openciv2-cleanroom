@@ -20,7 +20,84 @@ public interface IUnitCreationEffects
 /// <summary>U01 §5 authoritative creation. Session owns remote requests and semantic publications.</summary>
 public sealed class UnitCreation(GameState world, ProcessContext process, StackOperations stacks, IUnitCreationEffects effects)
 {
+    private readonly UnitRevelation? revelation;
+    public UnitCreation(GameState world, ProcessContext process, StackOperations stacks,
+        UnitRevelation revelation, IUnitCreationEffects effects) : this(world, process, stacks, effects)
+    { this.revelation = revelation; }
+
+    public Operation Begin(UnitType type, CivilizationSlot owner, MapPoint position, string call) => new(this, type, owner, position, call);
+    public sealed class Operation : IDisposable
+    {
+        private readonly IEnumerator<DiplomaticContactDecision?> steps;
+        private readonly List<Exception> failures = [];
+        private ResearchReply? reply;
+        private bool disposed, faulted;
+        public bool Completed { get; private set; }
+        public UnitSlot? Result { get; internal set; }
+        public DiplomaticContactDecision? Pending { get; private set; }
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal Operation(UnitCreation parent, UnitType type, CivilizationSlot owner, MapPoint position, string call)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(call);
+            steps = parent.Execute(this, type, owner, position, call).GetEnumerator();
+        }
+        internal ResearchReply? TakeReply() { var answer = reply; reply = null; return answer; }
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
+        public DiplomaticContactDecision? Resume(ResearchReply? answer = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
+            { throw new InvalidOperationException("Failed unit creation cannot resume"); }
+            if (Completed)
+            { return null; }
+            try
+            {
+                if (Pending is not null && answer is null)
+                { return Pending; }
+                reply = Pending is null ? null : answer;
+                Pending = null;
+                if (steps.MoveNext())
+                { return Pending = steps.Current; }
+                Completed = true;
+                steps.Dispose();
+                return null;
+            }
+            catch { faulted = true; steps.Dispose(); throw; }
+        }
+        public void Dispose() { disposed = true; steps.Dispose(); }
+    }
     public UnitSlot? Create(UnitType type, CivilizationSlot owner, MapPoint position)
+    {
+        if (revelation is not null)
+        { throw new InvalidOperationException("Use Begin for creation with retained revelation"); }
+        using var operation = Begin(type, owner, position, "creation");
+        while (!operation.Completed)
+        { operation.Resume(); }
+        return operation.Result;
+    }
+    private IEnumerable<DiplomaticContactDecision?> Execute(Operation operation, UnitType type, CivilizationSlot owner, MapPoint position, string call)
+    {
+        if (revelation is not null)
+        { MapKnowledge.RequireLocal(world); }
+        if (Initialize(type, owner, position) is not { } slot)
+        { yield break; }
+        if (revelation is null)
+        { effects.RevealSurroundings(slot.Value, true); }
+        else
+        {
+            using var child = revelation.Begin(slot.Value, true, call + "/revelation");
+            while (!child.Completed)
+            {
+                var decision = child.Resume(operation.TakeReply());
+                if (!child.Completed)
+                { yield return decision; }
+            }
+            operation.Report(child.PresentationFailures);
+        }
+        Finish(type, owner);
+        operation.Result = slot;
+    }
+    private UnitSlot? Initialize(UnitType type, CivilizationSlot owner, MapPoint position)
     {
         if (world.Globals.Multiplayer >= GameMode.Tcp && !world.Multiplayer.NetworkHost)
         {
@@ -68,8 +145,11 @@ public sealed class UnitCreation(GameState world, ProcessContext process, StackO
         unit.Position = unit.Destination = new(-1, -1);
         unit.Carrier = null;
         stacks.AttachAtFront(slot.Value, position, false);
-        effects.RevealSurroundings(slot.Value, true);
-
+        return slot;
+    }
+    private void Finish(UnitType type, CivilizationSlot owner)
+    {
+        var rules = process.Rules.Definitions;
         if (world.Globals.Turn != 0 && world.Globals.HumanPlayers.Contains(owner.Value)
             && world.Globals.Multiplayer == GameMode.SinglePlayer)
         {
@@ -100,11 +180,11 @@ public sealed class UnitCreation(GameState world, ProcessContext process, StackO
             }
             else if (world.Globals.GameOptions.Tutorial && unchecked((sbyte)rule.Role) < 5)
             {
-                if (civ.MilitaryCount == 1)
+                if (world.Civilizations[owner.Value].MilitaryCount == 1)
                 {
                     effects.Notice(UnitCreationNotice.FirstMilitary);
                 }
-                if (civ.MilitaryCount == 2)
+                if (world.Civilizations[owner.Value].MilitaryCount == 2)
                 {
                     effects.Notice(UnitCreationNotice.SecondMilitary);
                 }
@@ -114,7 +194,6 @@ public sealed class UnitCreation(GameState world, ProcessContext process, StackO
         {
             effects.SynchronizeCreation();
         }
-        return slot;
     }
 
     private void Tutorial(UnitCreationNotice notice)

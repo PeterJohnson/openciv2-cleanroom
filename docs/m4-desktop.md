@@ -6223,3 +6223,48 @@ orchestration and generated human/AI end conditions remain open. F04 formulas,
 the A08 incoming review delta and the other recorded independent-observation gaps
 are unchanged. Browser, cross-platform qualification and network execution remain
 deferred. M4 is not complete.
+
+## U01 retained creation and S02 unit actions — 2026-11-23
+
+The general desktop composition audit reached S02's action dependency: a scenario
+CreateUnit must finish actual U01 revelation/contact before applying its own
+veteran and home fields. `UnitCreation.Begin` now retains that boundary. Allocation,
+counters, lifetime, fields and attachment precede the meeting; tutorials read the
+requested type/owner and live rules afterward. The result remains the originally
+allocated slot. Synchronous callers supplying retained revelation are rejected
+before allocation, and disposal/failure retains the created unit and prior effects.
+Existing synchronous adapters remain available for their explicitly bounded graphs.
+
+`ScenarioUnitActions` implements the real CreateUnit and MoveUnit bodies. Creation
+keeps ordered location admission, sea-on-ocean occupancy behavior, one-level owner
+resolution, live post-creation veteran/home values, the first home-name match even
+when foreign, and byte-domain home absence. Movement assigns orders by classic
+unit slot rather than type, with captured descending bounds, signed eligibility,
+all eight rectangle comparisons, narrowed destination coordinates and the distinct
+All/zero/negative quantity rules. It performs no immediate movement.
+
+Eight new groups cover these action branches and actual creation/contact, including
+live tutorial rules, initialized-unit failure/disposal effects and private Session
+reply routing. Cancellation and timeout finish contact with its existing defaults;
+presentation failure is reported after the scenario's post-creation assignments.
+The shared probe passed all 1627 groups. Full retained S02 dispatch and other action
+domains remain required before the general desktop service graph is complete.
+
+Root/App formatting and verification passed; both Release builds completed with
+zero warnings/errors. Native tests passed **1660 of 1662**, with two existing
+platform/audio skips. All **1627 shared groups** passed across 179 coverage families;
+identity verified **815 compiled inputs**. The 43-project graph, eight identity
+tests and three coverage tests passed. These checks cover native Core/Session
+composition and the App build; no new graphical input-driver run was performed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-scenario-units-native.json` | `102d626078f44b23185a08452ca377a387d08b79a10adbb9cd2cd51df79e6c69` |
+| `m4-scenario-units-identity.json` | `97d3c674db55cece77a19d4e231b813487b5447a547f2529bd8a2c6bfb0416bc` |
+
+The next S02 dependencies include V01 forced removal (distinct from last-city
+checks), terrain changes and the retained dispatcher/matching hooks. Other U01
+creation callers also need to forward contact decisions. Desktop service graph,
+audience presentation, full turn orchestration and generated-game acceptance
+remain open. Recorded original-observation gaps are unchanged. Browser,
+cross-platform qualification and network execution remain deferred; M4 is ongoing.

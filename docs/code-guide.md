@@ -1223,3 +1223,11 @@ rejects a contact-capable graph when contact is allowed, before mutations.
 finish/cleanup. Direct and parent movement Session adapters route its private
 choices and report cosmetic failures after completed gameplay. The desktop
 composition root still needs the full service graph and audience presentation.
+
+`UnitCreation.Begin` retains actual revelation/contact between initialization and
+creation tutorials, returning the originally allocated slot. `ScenarioUnitActions`
+uses it for S02 CreateUnit, then applies live veteran and home operands. It also
+owns MoveUnit order assignment, including the classic unit-slot selector and signed
+checks. `ScenarioUnitCreationOperation` forwards private contact choices and reports
+cosmetic failures after the action completes. Full S02 dispatch and other creation
+callers still need this retained path before general desktop composition.

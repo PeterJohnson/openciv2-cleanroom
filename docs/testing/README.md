@@ -1187,3 +1187,11 @@ Actual movement charges and relocates once before the private meeting; final
 direction and cleanup wait for its reply. Session privacy, cancellation and timeout
 cover direct completion and dispatcher routes, including presentation diagnostics.
 These checks do not establish graphical audience or full-game acceptance.
+
+U01/S02 creation groups retain actual contact before tutorials and caller-owned
+veteran/home changes. Location cases cover sea occupancy, coastal and foreign-city
+gates, first accepted coordinates, count backing and home-name/selector behavior.
+MoveUnit cases preserve slot-based selection, descending counts, signed eligibility,
+rectangle comparisons and destination narrowing without immediate movement. Private
+Session replies, cancellation/timeout and failure/disposal preserve allocated units.
+These cases do not close full event dispatch or desktop scenario integration.
