@@ -103,7 +103,8 @@ public static partial class LocalPlayCommands
     private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall,
         Action<OperationContext, int>? autosave) : IContinuation
     {
-        private bool confirmed, movementChecked, entryFinished, postCityFinished, activated;
+        private bool confirmed, movementChecked, entryFinished, postCityFinished, upkeepFinished, noticesFinished, activated;
+        private HumanTurnNoticesOperation? turnNotices;
         private PendingOutcomeOperation? movementOutcome, finalOutcome;
         private SinglePlayerTurnEntryOperation? entry;
         private bool upkeepCommitted;
@@ -165,6 +166,7 @@ public static partial class LocalPlayCommands
             movementOutcome?.Dispose();
             entry?.Dispose();
             finalOutcome?.Dispose();
+            turnNotices?.Dispose();
         }
 
         private OperationStep ResumeStep(OperationContext context, OperationInput input)
@@ -365,11 +367,32 @@ public static partial class LocalPlayCommands
                 shipPresentation = null;
                 input = new();
             }
-            if (!activated)
+            if (!upkeepFinished)
             {
                 world.Production.CivilizationTurnInProgress = false;
                 activeWorld = null;
                 autosave?.Invoke(context, context.Actor.Civilization.Value);
+                upkeepFinished = true;
+                turnNotices = new(new HumanTurnNotices(world, context.Gameplay, point =>
+                    world.Views[world.Multiplayer.LocalHuman] = world.Views[world.Multiplayer.LocalHuman] with { Center = point })
+                    .Begin(context.Actor.Civilization.Value, $"local-notices/{world.Globals.Turn}"),
+                    c => c == context.Actor.Civilization.Value ? context.Actor.Participant
+                        : throw new InvalidOperationException("The authored profile has no other turn-notice recipient"));
+                input = new();
+            }
+            if (!noticesFinished)
+            {
+                var result = turnNotices!.Resume(context, input);
+                if (!result.Status.Terminal())
+                { return result; }
+                RememberFailure(result);
+                turnNotices.Dispose();
+                turnNotices = null;
+                noticesFinished = true;
+                input = new();
+            }
+            if (!activated)
+            {
                 world.Globals.ActiveUnit = null;
                 SelectReadyUnit(context);
                 activated = true;

@@ -271,6 +271,14 @@ cursor/selected-city facts; blink/music/tutorial procedures remain presentation
 policy. General native admission, full civilization/global scheduling and U04's
 unknown hold producer remain open.
 
+`HumanTurnNotices` owns F04's council invitation schedule/selection and ordered
+tutorial reminders, including retained last-city updates. `CouncilSummary` is a
+pure owned snapshot for P09-permitted stock advice; it does not implement the
+original opinion-keyed chapter parser. `HumanTurnNoticesOperation` routes private
+invitation/report/tutorial interactions. The authored desktop turn invokes it
+after upkeep/autosave and before unit activation. General generated scheduling
+and original council content admission remain open.
+
 `TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
 It uses actual stacks, movement exhaustion, map mutations, remembered features
 and C03 refresh for an eligible nearby city selection. It preserves per-unit

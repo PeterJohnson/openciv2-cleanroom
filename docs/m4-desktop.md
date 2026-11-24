@@ -7597,3 +7597,59 @@ integration.
 
 M4 remains active and incomplete. Generated human/AI games, full-turn snapshots
 and the recorded original-observation/integration gates remain unresolved.
+
+## F04 human turn notices and desktop council
+
+`HumanTurnNotices` implements the turn-51/101/151 council schedule, signed city
+size and Palace weighting, one primary remainder draw for each eligible value
+above one, and strictly-greater replacement preserving the first tied city.
+Declining does not undo those draws; autoplay does not suppress the schedule.
+The invitation owns its selected city identity/name/year. Accepting prepares a
+current, owned `CouncilSummary` for stock military, science, treasury, foreign
+and domestic information. P09 permits new stock prose and presentation; this
+summary does not invoke unrelated city/AI calculations or consume further random
+samples. Original opinion-keyed chapter/content parsing remains unimplemented.
+
+After council handling, the operation reads the live Tutorial option and runs
+F04's ordered early-turn and expansion checks. The one-city branch uses actual
+C01 nearest-city selection and does not fall through when no city is found.
+Expansion ignores Settlers in production, unlike the one-city condition. Both
+last-city writes occur only after the corresponding notice is handled. Closing
+or timing out a tutorial acknowledges it; an invitation cancellation declines
+council. Disposal before acknowledgement retains the earlier prefix without
+applying a pending last-city write. Centering failures are reported separately;
+required failures make the operation terminal.
+
+`HumanTurnNoticesOperation` routes each invitation, stock report and tutorial to
+its captured civilization's private participant. The authored desktop turn now
+calls it after completed upkeep/autosave and before active-unit selection. This
+is an actual desktop caller, not a supplied turn child. The general F04 scheduler
+still needs to invoke the same operation when resumed upkeep is skipped.
+
+Seven shared groups cover schedule boundaries, signed/Palace scoring, first ties,
+absent cities, current owned council facts, retained reports, live tutorial inputs,
+expansion gates, private replies, cancellation/timeout, failures/disposal and
+actual direct/console turns. The latter accepts council at turn 51, saves/reloads
+and advances to turn 52, comparing complete save and replay bytes. The native
+input driver adds the same invitation/report/save/reload path through production
+controls and compares both saves with the direct reference.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1843/1845**, with the two existing
+platform/audio skips. All **1808 shared groups** passed across **201 coverage
+families**; identity verified **902 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The isolated native input
+run passed **29 checks**, including the new council scenario, with complete
+save-byte comparisons unchanged. Optional Lua was not run; no Lua integration
+changed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-human-notices-native.json` | `558d2339a2e8c16a89009844463dbb20237d8eddadfb51958250436bc6dfbbb5` |
+| `m4-human-notices-identity.json` | `5edac06f47d12f7155ec1337fc5a63f9f0dd24483fb343378130a0573374aa60` |
+| `m4-human-notices-play.json` | `f7de4fa4b9f9a71643da0c688ea06f6019807d5fca33f5f305beb64b60869d61` |
+
+This closes the authored desktop notice caller, not the full generated-game
+scheduler or complete M4. The two F04 city-analysis formula observations, U04
+hold producer, full-turn integration/evidence and other recorded gaps remain
+open. Browser, cross-platform qualification and network execution remain deferred.

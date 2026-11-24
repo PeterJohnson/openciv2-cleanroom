@@ -6207,6 +6207,32 @@
         "F04.human-phase-private-contact-pin",
         "F04.human-phase-session-commands"
       ]
+    },
+    {
+      "id": "human-turn-notices",
+      "status": "partial",
+      "contract": "F04 section 8 council/tutorial scheduling and last-city writes; P09 stock advice presentation freedom",
+      "publicSurface": "HumanTurnNotices.Begin; CouncilSummary.Prepare; HumanTurnNoticesOperation; LocalPlayCommands turn.end",
+      "review": "Council cadence, signed size/Palace scoring, primary draw order and first ties; post-council live tutorial options and ordered hints; one-city nearest selection versus expansion fallback and retained last-city updates. Stock council reports own current facts without unrelated gameplay or additional random draws. Private interactions, failure/disposal, desktop turn integration after autosave, direct/console save/replay and native turn-51 report plus reload continuation are covered. Original opinion-keyed chapter/content admission and general generated F04 scheduling remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/HumanTurnNotices.cs",
+        "src/OpenCiv2.Session/HumanTurnNoticesOperation.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/HumanTurnNoticesCases.cs",
+        "tests/OpenCiv2.FoundationProbe/Program.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "F04.human-notices-council-schedule",
+        "F04.human-notices-council-summary",
+        "F04.human-notices-expansion",
+        "F04.human-notices-failure-disposal",
+        "F04.human-notices-private-session",
+        "F04.human-notices-tutorial-schedule",
+        "F04.local-human-notices-replay"
+      ]
     }
   ]
 }

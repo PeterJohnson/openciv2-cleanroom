@@ -15,6 +15,13 @@ now composes actual selection and active execution, with wait/city-window gates,
 bound-change reselection, distinct session/phase exits and private Session
 segments. General native human-phase admission remains open.
 
+F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
+retained last-city updates, private report choices and failure/disposal. The
+stock council snapshot reads owned facts without city/AI recalculation. Desktop
+turns execute notices after upkeep/autosave; direct/console replay and the native
+turn-51 council scenario compare saved and resumed games. Original council
+chapter files and generated-game scheduling remain separate work.
+
 P04 substitution cases check token case/advancement, decimal wrap, safe HEX widths,
 selector boundaries, culture-independent numbers and captured parameter ownership.
 Actual parsed scenario text uses the adapter through private retained interactions;

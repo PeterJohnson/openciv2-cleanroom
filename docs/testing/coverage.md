@@ -273,3 +273,11 @@ the global turn. Pins, cancellation, failure and disposal are covered. Native
 blink/music pumping is replaced by cooperative scheduling; it cannot manufacture
 the waited flag. Full native admission, U04 hold production and complete generated
 human/AI turns remain open. Browser/cross-platform execution is deferred.
+
+F04 human turn notices now run through retained council invitations, stock council
+summaries and tutorial reminders. Shared cases verify signed/Palace scoring and
+first ties, live tutorial scheduling, one-city versus expansion behavior, delayed
+last-city writes, privacy and failure/disposal. Direct/console and native cases
+exercise turn 51, the council report, save/reload and turn 52. The stock P09 report
+uses current own-civilization facts without triggering unrelated game work;
+original opinion-keyed content parsing is not claimed.

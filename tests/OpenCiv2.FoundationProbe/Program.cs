@@ -126,6 +126,16 @@ if (args is ["--local-commodity-reference", string commodityInitial, string comm
     return 0;
 }
 
+if (args is ["--local-human-notices-reference", string noticeInitial, string noticeCompleted, string noticeContinued])
+{
+    var reference = FoundationSuite.LocalHumanNoticesReference();
+    foreach (var (path, bytes) in new[] { (noticeInitial, reference.Initial), (noticeCompleted, reference.Completed), (noticeContinued, reference.Continued) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew); output.Write(bytes);
+    }
+    return 0;
+}
+
 string report = FoundationSuite.RunJson(typeof(Program).Assembly);
 Console.WriteLine(report);
 using var parsed = JsonDocument.Parse(report);
