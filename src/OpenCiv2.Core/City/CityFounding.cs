@@ -63,6 +63,7 @@ public sealed partial class CityFounding(GameState world, ProcessContext process
             steps = (player ? parent.Player(this, unit, call) : parent.Found(this, unit, city, name, call)).GetEnumerator();
         }
         internal FoundingReply? TakeReply() { var answer = reply; reply = null; return answer; }
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
         internal void Present(Action action)
         { try { action(); } catch (Exception error) { failures.Add(error); } }
         public FoundingDecision? Resume(FoundingReply? answer = null)
@@ -124,7 +125,19 @@ public sealed partial class CityFounding(GameState world, ProcessContext process
         var position = Unit(unit).Position;
         if (world.Globals.RevealMap != 0 || Unit(unit).Owner.Value == world.Multiplayer.LocalHuman)
         { operation.Present(() => effects.EnsureVisible(position, Unit(unit).Owner.Value)); }
-        var selected = suppliedCity ?? creation.Create(Unit(unit).Owner, position);
+        var selected = suppliedCity;
+        if (selected is null)
+        {
+            using var child = creation.Begin(Unit(unit).Owner, position, call + "/create");
+            while (!child.Completed)
+            {
+                var contact = child.Resume(operation.TakeReply()?.Decision);
+                if (!child.Completed)
+                { yield return contact is null ? null : new FoundingDecision.Lifecycle(new LifecycleContact(contact)); }
+            }
+            operation.Report(child.PresentationFailures);
+            selected = child.Result;
+        }
         operation.City = selected;
         if (selected is not { } city)
         { operation.Result = FoundingOutcome.Unavailable; yield break; }

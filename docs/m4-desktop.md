@@ -7908,3 +7908,42 @@ integration; the authored profile excludes foreign-city capture.
 | --- | --- |
 | `m4-partisan-contact-native.json` | `266772fe24066bc638dee8e3329e8b67c92bfe98d35cda6f1c03c0dfb5a46fa0` |
 | `m4-partisan-contact-identity.json` | `728cb1230ad74a5694a1c8d0bb887069fd2dc876cfe2271154ef7fec264961ee` |
+
+## Retained first-AI-city defender
+
+`CityCreation.Begin` now retains the real U01/W03/V04/S02 free-defender child of
+the first AI city. Allocation, naming, Palace and first-city awards precede that
+child. Route clearing, environmental flags, area claims and commodity refresh
+wait until it completes. Later environmental reads use the live map, while the
+city slot and original coordinates remain retained. Failed unit allocation still
+allows city completion. Required child failure or disposal preserves the
+initialized city and any allocated defender without running the tail.
+
+`CityFounding` awaits this creation operation and forwards contact decisions
+through its existing lifecycle union. Settler deletion, naming supplied by the
+caller and the final founding changes follow completion. Explicit synchronous
+creation remains available for existing synchronous setup compositions.
+
+Three shared groups cover the pending prefix, repeated polls, live final
+environmental reads, allocation failure, required media failure, disposal and
+private founding/session routing. The integration case uses the production
+diplomacy graph and actual scenario permission text. Its command descriptor
+declares the adapter's text `outcome` result; initial failures caught an omitted,
+then incorrectly typed, result declaration in the test.
+
+Hut rewards still need to adopt the retained creation entries. General desktop
+movement admission, lifecycle/combat composition, generated scheduling and
+complete-game evidence remain open, along with the original-observation gaps.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1872/1874**, with the two existing
+platform/audio skips. All **1837 shared groups** passed across **204 coverage
+families**; identity verified **914 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua suites
+were not rerun: the new contact-capable founding path is not admitted by the
+authored desktop profile, whose human constructor remains synchronous.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-city-defender-native.json` | `fd7664ffddd3255539480fd48e7ef104cfdd41318c499be9a41ceb42d0c8c61b` |
+| `m4-city-defender-identity.json` | `833247aef3c209f7db7f51c7ebcfed71f3ea4ab6e62663c2e21c3366ff25eca5` |

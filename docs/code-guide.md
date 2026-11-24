@@ -71,6 +71,11 @@ Appendix D. The generated desktop gameplay caller remains open.
 actual naming, C06 defender eligibility, C08 presence, U01 creation, W03
 knowledge, `CityArea` claims and C07 `Commodities`. The local founding command
 uses this constructor before the full C03 worker/output calculation.
+`CityCreation.Begin` retains a first AI city's free defender through actual
+contact decisions before clearing routes, surveying environmental flags and
+refreshing commodities. `Create` remains the synchronous compatibility entry.
+Founding awaits this child and forwards its contacts through `LifecycleContact`
+before deleting the settler or applying the founding tail.
 `City/CityFounding` now composes C01 founding and player Build/Join City with
 actual basic unit deletion, city removal and nested lifecycle decisions. Naming
 pauses after creation; cancellation removes that city and then adjusts the live

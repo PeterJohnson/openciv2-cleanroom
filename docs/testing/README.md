@@ -49,6 +49,13 @@ handling. A complete C09 capture routes the contact to a separate participant
 and delays its final city fields until that participant replies. These joins
 remove the synchronous-creation blocker in the movement/capture dependency graph.
 
+Retained C01 creation tests pause a first AI city's free defender in actual
+scenario contact. They verify the initialized city and defender remain stable
+while route clearing, environmental flags and commodities wait; later terrain
+changes are read on completion. Disposal, required child failure and failed
+unit allocation retain their specified effects. A private founding/session case
+waits through contact before deleting its settler.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

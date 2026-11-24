@@ -10,8 +10,90 @@ namespace OpenCiv2.Core.City;
 public sealed class CityCreation(
     GameState world, ProcessContext process, NameCatalog names, UnitCreation units, Action tooManyCities)
 {
+    private GameState World => world;
+    /// <summary>Compatibility entry for explicitly synchronous unit creation.</summary>
     public CitySlot? Create(CivilizationSlot owner, MapPoint position)
     {
+        using var operation = new Operation(this, owner, position, "city-creation", false);
+        while (!operation.Completed)
+        {
+            if (operation.Resume() is not null)
+            { throw new InvalidOperationException("Synchronous city creation cannot answer contact decisions"); }
+        }
+        return operation.Result;
+    }
+
+    public Operation Begin(CivilizationSlot owner, MapPoint position, string call) => new(this, owner, position, call, true);
+    public sealed class Operation : IDisposable
+    {
+        private readonly CityCreation parent;
+        private readonly IEnumerator<DiplomaticContactDecision?> steps;
+        private readonly List<Exception> failures = [];
+        private ResearchReply? reply;
+        private bool disposed, faulted;
+        public bool Completed { get; private set; }
+        public CitySlot? Result { get; internal set; }
+        public DiplomaticContactDecision? Pending { get; private set; }
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal Operation(CityCreation parent, CivilizationSlot owner, MapPoint position, string call, bool retained)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(call);
+            this.parent = parent;
+            steps = parent.Execute(this, owner, position, call, retained).GetEnumerator();
+        }
+        internal ResearchReply? TakeReply() { var answer = reply; reply = null; return answer; }
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
+        public DiplomaticContactDecision? Resume(ResearchReply? answer = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
+            { throw new InvalidOperationException("Failed city creation cannot resume"); }
+            if (Completed)
+            { return null; }
+            try
+            {
+                MapKnowledge.RequireLocal(parent.World);
+                if (Pending is not null && answer is null)
+                { return Pending; }
+                reply = Pending is null ? null : answer;
+                Pending = null;
+                if (steps.MoveNext())
+                { return Pending = steps.Current; }
+                Completed = true;
+                steps.Dispose();
+                return null;
+            }
+            catch { faulted = true; steps.Dispose(); throw; }
+        }
+        public void Dispose() { disposed = true; steps.Dispose(); }
+    }
+    private IEnumerable<DiplomaticContactDecision?> Execute(Operation operation, CivilizationSlot owner,
+        MapPoint position, string call, bool retained)
+    {
+        if (Initialize(owner, position, out bool firstAi) is not { } slot)
+        { yield break; }
+        if (firstAi && FirstAiCity(slot, owner, position) is { } defender)
+        {
+            if (retained)
+            {
+                using var child = units.Begin(defender, owner, position, call + "/defender");
+                while (!child.Completed)
+                {
+                    var pending = child.Resume(operation.TakeReply());
+                    if (!child.Completed)
+                    { yield return pending; }
+                }
+                operation.Report(child.PresentationFailures);
+            }
+            else
+            { units.Create(defender, owner, position); }
+        }
+        Finish(slot, position);
+        operation.Result = slot;
+    }
+    private CitySlot? Initialize(CivilizationSlot owner, MapPoint position, out bool firstAi)
+    {
+        firstAi = false;
         MapKnowledge.RequireLocal(world);
         var pool = world.Entities.Cities;
         int index = 0;
@@ -100,9 +182,15 @@ public sealed class CityCreation(
             civ.CapitalX = unchecked((short)position.X);
             if (!world.Globals.HumanPlayers.Contains(owner.Value))
             {
-                FirstAiCity(slot, owner, position);
+                firstAi = true;
             }
         }
+        return slot;
+    }
+    private void Finish(CitySlot slot, MapPoint position)
+    {
+        ref var city = ref world.Entities.Cities.At(slot);
+        var rules = process.Rules.Definitions;
         city.RouteCount = 0;
         city.RoutePartners[0] = new(0);
         // C01 Appendix A's partial clear: positive residual references retain their upper byte.
@@ -140,10 +228,9 @@ public sealed class CityCreation(
         Commodities.Refresh(world, rules, slot);
         city.Science = city.Tax = city.Trade = 0;
         city.TotalFood = city.TotalShields = city.Happy = city.Unhappy = 0;
-        return slot;
     }
 
-    private void FirstAiCity(CitySlot slot, CivilizationSlot owner, MapPoint position)
+    private UnitType? FirstAiCity(CitySlot slot, CivilizationSlot owner, MapPoint position)
     {
         for (int i = 0; i < 20; ++i)
         {
@@ -171,7 +258,8 @@ public sealed class CityCreation(
         }
         if (world.Globals.Turn > 40 && city.Production != UnitTypeIds.Settlers)
         {
-            units.Create(new((byte)city.Production), owner, position);
+            return new((byte)city.Production);
         }
+        return null;
     }
 }

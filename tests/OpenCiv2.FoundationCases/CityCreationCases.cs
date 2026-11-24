@@ -9,11 +9,11 @@ namespace OpenCiv2.FoundationCases;
 
 public static partial class FoundationSuite
 {
-    private static CityCreation CityCreator(RevelationFixture f, Action? notice = null, NameCatalog? names = null)
+    private static CityCreation CityCreator(RevelationFixture f, Action? notice = null, NameCatalog? names = null, UnitCreation? units = null)
     {
         f.Process.Rules.Leaders[0].Plural = new("tribes 0");
         return new(f.World, f.Process, names ?? NamingCatalog(["First", "Second"]),
-            new UnitCreation(f.World, f.Process, f.Stacks, f), notice ?? (() => throw new InvalidOperationException("Unexpected city limit")));
+            units ?? new UnitCreation(f.World, f.Process, f.Stacks, f), notice ?? (() => throw new InvalidOperationException("Unexpected city limit")));
     }
 
     private static void CityCreationInitialization()

@@ -2012,8 +2012,8 @@
     {
       "id": "city-creation-commodities",
       "contract": "C01 local creation and radius; C06 initial defender eligibility; C07 survey, scores, ranking and suppression",
-      "publicSurface": "CityCreation; CityArea; Commodities.Refresh; actual constructor used by the local founding command; region/port nearest and coastal body/sea summary queries",
-      "review": "Specification score vector, independent resource/road weights, zero road-base repair, signed rounding, technology/facility/tribe modifiers, ranking ties and partial publication, exceptional-slot collisions, last reciprocal route and unsigned home suppression. Creation covers retained holes, wrapped tokens/counts, real naming/eligibility/commodity/unit children, first-AI-city thresholds, raw Apollo and repeated region63 coast visits. Network creation, general founding/deletion, worker/economy calculation and remaining trade operations remain open.",
+      "publicSurface": "CityCreation; CityArea; Commodities.Refresh; actual constructor used by the local founding command; region/port nearest and coastal body/sea summary queries; CityCreation.Begin/Operation and retained defender contact inside CityFounding",
+      "review": "Specification score vector, independent resource/road weights, zero road-base repair, signed rounding, technology/facility/tribe modifiers, ranking ties and partial publication, exceptional-slot collisions, last reciprocal route and unsigned home suppression. Creation covers retained holes, wrapped tokens/counts, real naming/eligibility/commodity/unit children, first-AI-city thresholds, raw Apollo and repeated region63 coast visits. Network creation, general founding/deletion, worker/economy calculation and remaining trade operations remain open. The first AI defender now awaits actual U01/W03/V04/S02 decisions before route clearing, environmental flags and commodity completion. The pending city and defender retain identity; disposal and required child failures preserve the prefix. A private Session founding case waits before deleting the settler and completing its city. Legacy synchronous creation remains explicit. Hut and generated-game retained composition remain separate follow-ups.",
       "sharedGroups": [
         "C01.coastal-queries",
         "C01.creation-ai-first-city",
@@ -2021,6 +2021,9 @@
         "C01.creation-initialization",
         "C01.creation-limits-wrap",
         "C01.creation-production-failures",
+        "C01.creation-retained-defender",
+        "C01.creation-retained-failure-disposal",
+        "C01.founding-retained-defender-contact",
         "C01.region-port-queries",
         "C07.commodity-exceptional-suppression",
         "C07.commodity-facilities-tribes",
@@ -2033,6 +2036,7 @@
       "sources": [
         "src/OpenCiv2.Core/City/CityArea.cs",
         "src/OpenCiv2.Core/City/CityCreation.cs",
+        "src/OpenCiv2.Core/City/CityFounding.cs",
         "src/OpenCiv2.Core/City/CityQueries.cs",
         "src/OpenCiv2.Core/City/Commodities.cs",
         "src/OpenCiv2.Core/City/LocalCityEconomy.cs",
@@ -2041,6 +2045,7 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/CityCreationCases.cs",
+        "tests/OpenCiv2.FoundationCases/CityCreationContinuationCases.cs",
         "tests/OpenCiv2.FoundationCases/CommodityCases.cs"
       ]
     },
