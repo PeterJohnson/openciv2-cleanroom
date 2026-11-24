@@ -101,7 +101,7 @@ public static partial class LocalPlayCommands
     /// <summary>Local F04 mode adapter. The controller supplies the end-phase and research decisions.</summary>
     private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall) : IContinuation
     {
-        private bool confirmed, movementChecked, entryFinished, financeFinished, activated;
+        private bool confirmed, movementChecked, entryFinished, postCityFinished, activated;
         private PendingOutcomeOperation? movementOutcome, finalOutcome;
         private SinglePlayerTurnEntryOperation? entry;
         private bool upkeepCommitted;
@@ -114,11 +114,9 @@ public static partial class LocalPlayCommands
         private int foodSurplus;
         private ResearchDecision? pendingResearch;
         private InteractionSpec? researchIntelligence;
-        private bool cityPassFinished, maintenanceFinished, assessed;
+        private bool cityPassFinished;
         private int startGold;
-        private CivilizationFinanceOperation? finance;
-        private CivilizationPoliticsOperation? politics;
-        private CivilizationAssessmentOperation? assessment;
+        private CivilizationPostCityOperation? postCity;
         private string deferredFailure = "";
         private GameState? activeWorld;
         private OperationContext? currentContext;
@@ -145,10 +143,8 @@ public static partial class LocalPlayCommands
             production?.Dispose();
             production = null;
             pendingResearch = null;
-            politics?.Dispose();
-            politics = null;
-            assessment?.Dispose();
-            assessment = null;
+            postCity?.Dispose();
+            postCity = null;
             movementOutcome?.Dispose();
             entry?.Dispose();
             finalOutcome?.Dispose();
@@ -281,45 +277,18 @@ public static partial class LocalPlayCommands
             {
                 cityPass!.Finish();
                 cityPassFinished = true;
-                int owner = context.Actor.Civilization.Value;
-                var participant = context.Actor.Participant;
-                politics = new(owner,
-                    new DiplomacyTurn(world, context.Process.Rules.Definitions, context.Gameplay, new AuthoredDiplomacyTurn()),
-                    preferences, choices, c => c == owner ? participant
-                        : throw new InvalidOperationException("The authored profile has no other government recipient"),
-                    _ => throw new InvalidOperationException("The authored profile has no emissary intelligence"),
-                    $"local-diplomacy/{world.Globals.Turn}");
+                postCity = BeginPostCity(context);
             }
-            if (!maintenanceFinished)
+            if (!postCityFinished)
             {
-                var result = politics!.Resume(context, input);
+                var result = postCity!.Resume(context, input);
                 if (!result.Status.Terminal())
                 { return result; }
                 RememberFailure(result);
-                politics.Dispose();
-                politics = null;
-                maintenanceFinished = true;
-            }
-            if (!assessed)
-            {
-                assessment ??= BeginAssessment(context);
-                var result = assessment.Resume(context, input);
-                if (!result.Status.Terminal())
-                { return result; }
-                RememberFailure(result);
-                assessment.Dispose();
-                assessment = null;
-                assessed = true;
-                finance = new(preferences, choices, startGold);
+                postCity.Dispose();
+                postCity = null;
+                postCityFinished = true;
                 input = new();
-            }
-            if (!financeFinished)
-            {
-                var financialResult = finance!.Resume(context, input);
-                if (financialResult.Status == CommandStatus.AwaitingInteraction)
-                { return financialResult; }
-                RememberFailure(financialResult);
-                financeFinished = true;
             }
             if (!activated)
             {
@@ -461,7 +430,7 @@ public static partial class LocalPlayCommands
                 new("name", new CommandValue.Text(notice.Name)), new("credit", new CommandValue.Integer(notice.Credit))]));
         }
 
-        private CivilizationAssessmentOperation BeginAssessment(OperationContext context)
+        private CivilizationPostCityOperation BeginPostCity(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -478,10 +447,13 @@ public static partial class LocalPlayCommands
                 changes, notices.Incident);
             int owner = context.Actor.Civilization.Value;
             var participant = context.Actor.Participant;
-            return new(new CivilizationAssessment(world, context.Process.Rules, stacks, CreateProductionOrders(context),
-                governments, loss, effects.Elimination(), context.Gameplay)
-                .Begin(owner, $"local-assessment/{world.Globals.Turn}", incidents),
-                c => c == owner ? participant : throw new InvalidOperationException("The authored profile has no other assessment recipient"));
+            return new(owner, startGold,
+                new DiplomacyTurn(world, rules, context.Gameplay, new AuthoredDiplomacyTurn()),
+                new CivilizationAssessment(world, context.Process.Rules, stacks, CreateProductionOrders(context),
+                    governments, loss, effects.Elimination(), context.Gameplay), incidents, preferences, choices,
+                c => c == owner ? participant : throw new InvalidOperationException("The authored profile has no other upkeep recipient"),
+                _ => throw new InvalidOperationException("The authored profile has no emissary intelligence"),
+                $"local-diplomacy/{world.Globals.Turn}", $"local-assessment/{world.Globals.Turn}");
         }
 
         private void FinishCity(OperationContext context, CitySlot slot)

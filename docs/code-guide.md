@@ -532,6 +532,16 @@ admission. Completion and failures are terminal; a cached result cannot save twi
 `RateDecisionPreferences` retains rate holds for that session. The local F04
 adapter captures normalized start gold before upkeep and runs the notice sequence
 once after civilization assessment, retaining accepted effects across decisions.
+The finance operation's explicit civilization/recipient-resolver pair supports
+trusted upkeep for other civilizations, including silent AI milestone updates. It rechecks the
+actual funds gates after population acknowledgment without requiring the command
+actor to be the affected human; the legacy entry retains phase admission.
+`CivilizationPostCityOperation` joins actual government/diplomacy, retained
+assessment and financial notices in F04 order. It carries the first output failure
+through later gameplay, routes each child privately and owns their disposal.
+The authored desktop turn uses it after the city pass. This is steps 5–7 of
+civilization upkeep; spaceship presentation, autosave and full scheduling remain
+separate integration work.
 
 V08 arithmetic and report preparation live in `CivilizationScore`. `ScoreWorkspace`
 is world-owned scratch; `ScoreReport` is an owned presentation snapshot. Direct

@@ -1297,3 +1297,13 @@ turn flag is cleared. Existing census, assignment, government, production and
 desktop direct/console regressions exercise the shared stage iterator. These are
 specification-derived native cases; full generated turns and graphical acceptance
 remain open.
+
+F04 post-city cases join actual government/rates, diplomacy, assessment and
+population/funds operations. Human cases verify census before financial gates,
+private choices for a civilization distinct from the command actor, two real rate
+children and deferred preference failures. AI cases retain human Library and
+nested elimination decisions before census completion or finance, without creating
+an AI participant. Explicit financial cases recheck live gates after population
+acknowledgment and retain milestone/preview effects on cancellation or failure.
+Private/stale replies and disposal at each stage preserve ordering. The lifecycle
+case excludes A08's recorded missing incoming-delta path; that gap remains open.

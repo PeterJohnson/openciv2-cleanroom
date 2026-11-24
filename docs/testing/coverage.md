@@ -210,3 +210,11 @@ and their [private Session adapter](../../src/OpenCiv2.Session/CivilizationAsses
 The desktop turn waits for this assessment before its financial notices. Actual
 nested incidents, recreation, disposal and failure boundaries supplement the
 existing census/assignment cases; they do not establish full generated-game play.
+
+The `post-city-upkeep-composition` family covers [F04 steps 5–7](../../src/OpenCiv2.Session/CivilizationPostCityOperation.cs)
+through actual government/diplomacy, assessment and finance children. Its
+[integration cases](../../tests/OpenCiv2.FoundationCases/PostCityCases.cs) verify
+private human choices during another civilization's work, sequential census/funds
+gates, retained Library/elimination decisions and failure/disposal boundaries.
+The shared composition runs in the authored desktop turn; complete upkeep and
+generated-game acceptance remain open.

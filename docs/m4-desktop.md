@@ -6718,3 +6718,46 @@ games, full-turn snapshots and graphical acceptance remain open. The recorded
 formula and independent original-game evidence gaps remain unresolved. These
 specification-derived native cases add no original-game observations. Browser,
 cross-platform and network execution remain deferred. M4 is ongoing.
+
+## F04 post-city upkeep composition
+
+`CivilizationPostCityOperation` joins actual government/diplomacy, retained A01
+assessment and population/funds handling for an explicitly captured civilization.
+Each child finishes before the next begins; accepted replies are consumed only by
+their pending child. A preference-output failure is retained while later gameplay
+continues, then reported at completion. Required exceptions and disposal stop later
+stages without undoing completed effects. The authored desktop end-turn path now
+uses this shared sequence after its city pass.
+
+`CivilizationFinanceOperation` accepts an explicit civilization and recipient
+resolver together for trusted upkeep. It routes population, funds and actual rate
+decisions privately without changing the command actor. AI milestones update
+silently without resolving a participant. Funds gates remain live after population
+acknowledgment; inactive turns and changed human/autoplay state are handled by those
+specific gates, not a blanket player-phase rejection. The legacy constructor keeps
+its existing admission. Terminal results and disposal own the rate child's lifetime.
+
+Six new groups cover the complete human government/rates/diplomacy/census/finance
+sequence, actual human Library choices during AI diplomacy, actual nested
+elimination during assessment, private and stale replies, explicit-target rate
+persistence, post-population gates, cancellation/timeout, disposal at each stage,
+required resolver failure and deferred preference failure. Existing desktop
+direct/console government, assessment, population and turn regressions pass.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1745/1747**, with the
+two existing platform/audio skips. All **1712 shared groups** passed across
+**189 coverage families**; identity verified **852 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-post-city-native.json` | `3fe1e34a5d0fc2bd1082cfb73672a6c785e41b45a94385d7bcf2cfe2f5f6c007` |
+| `m4-post-city-identity.json` | `2901797c3ada8e5cf39bd2e97f4f48af8259ef106ba772d02345487859cd2d16` |
+
+This is civilization-upkeep steps 5–7. Full F04 scheduling, general city/production
+composition, spaceship presentation/autosave, generated human/AI games and graphical
+acceptance remain open. A08's incoming attitude delta and the other recorded
+formula/evidence gaps remain unresolved; the lifecycle case excludes that missing
+path. These specification-derived cases add no original-game observations. Browser,
+cross-platform and network execution remain deferred. M4 is ongoing.

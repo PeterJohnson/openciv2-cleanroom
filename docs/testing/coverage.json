@@ -3126,7 +3126,7 @@
       "status": "partial",
       "contract": "V02 section11 local treasury normalization, population queries, milestone and funds notices; F04 post-assessment boundary",
       "publicSurface": "CivilizationFinances; CivilizationFinanceOperation; reusable CivilizationRateDecision and RateDecisionPreferences",
-      "review": "Preserves ordered signed treasury thresholds, token-independent city population, live signed-owner scan and capped civilization population, signed milestones, human/autoplay presentation gates, post-popup live funds gates, retained city-count summary, wrapped forecast and nonzero rate responses. The session child joins real rate preview, acceptance and preference failure retention. Desktop turns normalize before city upkeep and suspend after assessment for population notices without replaying prior stages. Direct/console and native save/reload continuation compare exact bytes. The authored single-city profile cannot reach the funds popup; composed session tests cover that branch without widening the profile. Full F04 and generated-game desktop acceptance remain open.",
+      "review": "Preserves ordered signed treasury thresholds, token-independent city population, live signed-owner scan and capped civilization population, signed milestones, human/autoplay presentation gates, post-popup live funds gates, retained city-count summary, wrapped forecast and nonzero rate responses. The session child joins real rate preview, acceptance and preference failure retention. Desktop turns normalize before city upkeep and suspend after assessment for population notices without replaying prior stages. Direct/console and native save/reload continuation compare exact bytes. The authored single-city profile cannot reach the funds popup; composed session tests cover that branch without widening the profile. Full F04 and generated-game desktop acceptance remain open. The explicit civilization/recipient-resolver path, silent AI updates and post-population live gates are additionally covered by post-city-upkeep-composition; the legacy entry retains player-phase admission.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationFinances.cs",
         "src/OpenCiv2.Session/CivilizationFinanceOperation.cs",
@@ -5872,6 +5872,29 @@
         "M4.local-government-turns",
         "V02.rates-explicit-civilization",
         "V02.selection-captured-choices"
+      ]
+    },
+    {
+      "id": "post-city-upkeep-composition",
+      "contract": "F04 \u00a76 steps 5\u20137; V02 \u00a711 population/funds; actual V02/V04/A08 and A01 children",
+      "publicSurface": "CivilizationPostCityOperation; CivilizationFinanceOperation explicit civilization/recipient resolver; desktop post-city upkeep",
+      "status": "partial",
+      "review": "Actual government/diplomacy, retained assessment and finance run sequentially for a captured civilization with normalized start gold. Human cases cover private government/rate choices before diplomacy/census, census before funds gates, target-specific rate persistence and first output failure reported after later gameplay. AI cases retain real human Library and nested elimination decisions, then silently update population without resolving an AI participant. Finance rechecks live human/autoplay/active/city/gold gates after population acknowledgment; explicit routing does not replace the command actor. Disposal, required resolver failure, private/stale replies and cached completion preserve accepted effects. Desktop direct/console end-turn regressions now use the shared composition. This covers only upkeep steps 5\u20137, not the full F04 scheduler, spaceship/autosave tail, generated service graph or graphical acceptance. The lifecycle fixture excludes A08's unresolved incoming attitude delta; recorded formula/evidence gaps remain. Browser/cross-platform/network execution is deferred; expectations are specification-derived, not original-game observations.",
+      "sources": [
+        "src/OpenCiv2.Session/CivilizationFinanceOperation.cs",
+        "src/OpenCiv2.Session/CivilizationPostCityOperation.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PostCityCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.post-city-ai-library",
+        "F04.post-city-assessment-finance",
+        "F04.post-city-disposal-failure",
+        "F04.post-city-human-order-failure",
+        "F04.post-city-private-session",
+        "V02.finance-explicit-target-gates"
       ]
     }
   ]
