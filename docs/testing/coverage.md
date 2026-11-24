@@ -151,3 +151,8 @@ V01 forced removal now has its own retained service and S02 destruction wrapper,
 with inline stack/city/radius semantics and real spy/recreation children. See
 [RemovalCases.cs](../../tests/OpenCiv2.FoundationCases/RemovalCases.cs). Full scenario
 dispatch, general desktop integration and graphical acceptance remain pending.
+
+S02 ChangeTerrain now has a retained operation and actual C01/U01/V01 children.
+The `scenario-terrain` family covers rectangle aliases and ordering, complete
+terrain-byte replacement, cityless resets, private nested choices and failure
+prefixes. Full retained event dispatch and desktop integration remain open.

@@ -1210,3 +1210,11 @@ foreign spy/recreation children. S02 cases cover one-level recipient resolution,
 local defeat ordering, private nested government choices, stale replies and
 cancellation/timeout diagnostics. These cases do not claim full event dispatch,
 network execution or graphical desktop acceptance.
+
+S02 terrain cases exercise actual city/unit deletion, post-deletion stack lookup,
+two rectangle passes, full terrain encoding and remembered-feature updates.
+Empty rectangles still run cityless resets without an Alive gate. Actual
+last-settler/Library children retain private choices; session cases cover
+cancellation, timeout and diagnostic completion. W01 rectangular parity aliases
+are tested independently of the shared fallback tile. Full event dispatch and
+graphical acceptance remain separate gates.

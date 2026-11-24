@@ -1243,3 +1243,11 @@ can retain private decisions. `ScenarioDestruction` resolves the S02 recipient,
 publishes local defeat when required, and waits for this removal before returning.
 The matching Session adapters retain full replies and completion diagnostics.
 Full retained event dispatch and the general desktop composition remain open.
+
+`ScenarioTerrain` owns the S02 two-pass terrain action and cityless-civilization
+reset loop. It retains actual C01/U01 deletion and V01 creation decisions;
+`ScenarioTerrainOperation` routes them through the private Session interaction
+path. `ScenarioTerrainEncoding` in Formats replaces the whole terrain encoding,
+including retained file flags, through allocation-bound `MapCompatibility`.
+W01 rectangular lookup aliases noncanonical parity; it does not select fallback
+for parity alone. Full scenario dispatch and desktop composition remain open.

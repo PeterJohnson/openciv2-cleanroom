@@ -6353,3 +6353,45 @@ integration, as do other U01 creation callers and the general desktop graph.
 Generated-game, full turn and graphical/end-game acceptance remain open. The
 recorded F04/A08/original-observation gaps are unchanged. Browser, cross-platform
 and network execution remain deferred; M4 is ongoing.
+
+## S02 retained terrain action
+
+Implemented `ScenarioTerrain` with the actual C01 city-removal, U01 deletion and
+V01 creation/reset children. The two captured rectangle passes preserve X/Y
+order, signed wrapping coordinates, post-deletion next-link reads and live terrain
+operands. Whole terrain-byte replacement lives in Formats and updates retained
+file flags; improvements, claims, regions and remembered features follow the
+specified order. Live city radii are then reapplied. Cityless civilizations are
+processed even for empty rectangles and absent Alive membership, with descending
+unit deletion, local defeat and actual retained reset.
+
+The operation retains nested last-settler and Library decisions. Its Session
+adapter routes private replies, cancel and timeout, and reports cosmetic failures
+after committed completion. Periodic yields keep wrapping rectangle scans
+cancellable, including an empty inner range, without clamping their coordinates.
+Seven shared groups cover these paths, retained fields, parity aliases, stale
+map-allocation failure prefixes, network rejection and disposal.
+
+Resolved S02's contradictory parity/fallback phrase through the owning W01 §2
+contract: rectangular in-bounds coordinates alias stored tiles regardless of
+parity; only rectangular misses reach fallback. The S02 wording and tests now
+state that distinction. This is a contract clarification, not original-game
+execution evidence.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1679/1681**, with the
+two existing audio/platform skips. All **1646 shared groups** passed across
+**181 coverage families**; identity verified **825 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-scenario-terrain-native.json` | `3e55bf8b91fbd6c7ab5e559e0255a9e6b68e272a8329ee215728c2c6237a5a33` |
+| `m4-scenario-terrain-identity.json` | `30591f2f90922793a1bb87a88c1e3bc6a548128aaac1396697130e4e4091d233` |
+
+Full retained S02 dispatch, its remaining action joins, other U01 creation callers
+and the general desktop graph remain open. This slice does not establish generated
+complete-game or graphical acceptance. F04/A08/original-observation gaps remain;
+Windows may support those observations, but specified implementation work remains
+available on Linux. Browser, cross-platform and network execution stay deferred.
+M4 remains in progress.

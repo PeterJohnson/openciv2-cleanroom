@@ -708,9 +708,10 @@ Perform these ordered phases:
    the live unit count and delete all its live units in descending order.
    If it is the local human and a human member, publish game-over reason 4.
    For every X then Y within live map dimensions, clear that civilization's
-   visibility using W01's tile accessor, including its deliberate dummy-tile
-   behavior for invalid parity. Call V01 civilization creation/reset for that
-   civilization, then redraw all views for the live local human with mode 1.
+   visibility using W01's tile accessor, including its noncanonical-parity
+   aliases (W01 §2); parity alone does not select the fallback tile. Call V01
+   civilization creation/reset for that civilization, then redraw all views for
+   the live local human with mode 1.
 
 Return the changed-tile count. The cityless-civilization phase has no Alive gate
 and runs even for a completely empty rectangle or civilizations elsewhere on

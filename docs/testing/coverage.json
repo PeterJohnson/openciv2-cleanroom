@@ -5642,6 +5642,30 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/RemovalCases.cs"
       ]
+    },
+    {
+      "id": "scenario-terrain",
+      "contract": "S02 \u00a79 ChangeTerrain; W01 \u00a72 lookup and whole-byte terrain; actual C01/U01/V01 children",
+      "publicSurface": "ScenarioTerrain.Begin/Operation.Resume; ScenarioTerrainEncoding; ScenarioTerrainOperation",
+      "review": "Two captured rectangle passes retain signed wrapping coordinates, rectangular parity aliases, post-deletion next-link lookup, live terrain operands, full terrain-flag replacement, remembered features and city radius refresh. Cityless scans ignore Alive, include barbarians, delete captured descending units, preserve human membership and publish local defeat before actual civilization creation/reset. Real last-settler and Library children retain private decisions. Cases cover empty rectangles, retained reset/deletion, cancellation/timeout, redraw diagnostics, disposal, bounded wrapping scans, network rejection and stale-allocation failure prefixes. W01 \u00a72 resolves the former S02 noncanonical-parity/fallback wording inconsistency. Full retained S02 dispatcher, general desktop composition, original observations and graphical acceptance remain open.",
+      "sharedGroups": [
+        "S02.terrain-bounds-failures",
+        "S02.terrain-cityless-empty",
+        "S02.terrain-deletion-order",
+        "S02.terrain-private-session",
+        "S02.terrain-replacement-rectangle",
+        "S02.terrain-retained-deletion",
+        "S02.terrain-retained-reset"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/ScenarioTerrain.cs",
+        "src/OpenCiv2.Formats/ScenarioTerrainEncoding.cs",
+        "src/OpenCiv2.Session/ScenarioTerrainOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ScenarioTerrainCases.cs"
+      ]
     }
   ]
 }
