@@ -772,7 +772,8 @@ public static partial class LocalPlayCommands
             public void Astronauts() => throw OutsideProfile();
             public void AlmostWonder(AlmostWonderNotice notice) => throw OutsideProfile();
             public int ChoosePart(SpaceshipPartChoice choice) => throw OutsideProfile();
-            public void NoFurther(int civilization, int part) => throw OutsideProfile();
+            public void NoFurther(int civilization, int part) => current().Effect("spaceship.part_full",
+                new([new("civilization", new CommandValue.Integer(civilization)), new("part", new CommandValue.Integer(part))]));
             public void Launched(SpaceshipLaunchNotice notice) => throw OutsideProfile();
             public void ShowShip(int civilization) => throw OutsideProfile();
             private static InvalidOperationException OutsideProfile() => new("The authored profile has no wonder or spaceship presentation path");

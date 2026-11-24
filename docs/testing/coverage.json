@@ -2470,22 +2470,32 @@
       "id": "spaceship-construction",
       "status": "partial",
       "contract": "V07 sections2\u20136 configurable capacities, performance, group choice, part assembly and local launch; V04 section3 bilateral flag cascades; actual F04 calendar",
-      "publicSurface": "SpaceshipPerformance.Calculate/ChooseGroup; SpaceshipConstruction.AddPart/Launch; SpaceshipWorkspace; configurable SpaceshipQueries; DiplomaticRelations.Set/Clear",
-      "review": "Shared world scratch and actual calendar preserve Fusion retention, missing-kind mass, distinct supported/raw flight estimates, post-division scale, preview wrap and launched metadata. Group selection and assembly retain custom maxima, race-close/emergency equality, human retry and backed custom reply behavior, first-ship contacts, AI ties/return3 and slot0 launch comparison. Launch uses real bilateral Incident mutations or ordered directed changes and retains failure prefixes; AI production reselection and player presentation remain required children. Thirteen shared groups include values loaded through the content bundle, actual calendar era change, reset/fresh-world retention and relation cascades. C06 nonunit production now composes these services; spaceship UI/video/report operations, F04 arrival outcomes, scoring and full desktop games remain pending.",
+      "publicSurface": "SpaceshipPerformance.Calculate/ChooseGroup; SpaceshipConstruction.AddPart/Launch; SpaceshipWorkspace; configurable SpaceshipQueries; DiplomaticRelations.Set/Clear; SpaceshipConstruction.BeginAddPart; CityProduction.PartDecision; private assembly prompt",
+      "review": "Shared world scratch and actual calendar preserve Fusion retention, missing-kind mass, distinct supported/raw flight estimates, post-division scale, preview wrap and launched metadata. Group selection and assembly retain custom maxima, race-close/emergency equality, human retry and backed custom reply behavior, first-ship contacts, AI ties/return3 and slot0 launch comparison. Launch uses real bilateral Incident mutations or ordered directed changes and retains failure prefixes; AI production reselection and player presentation remain required children. Thirteen shared groups include values loaded through the content bundle, actual calendar era change, reset/fresh-world retention and relation cascades. C06 nonunit production now composes these services; spaceship UI/video/report operations, F04 arrival outcomes, scoring and full desktop games remain pending. Retained assembly shares the synchronous sequence and waits for actual component/module replies. New cases cover cached polls, live human/full-group changes, raw negative replies versus strict non-cancellable session ingress, automatic AI launch, fault/disposal prefixes and the actual C06 parent. The lifecycle-service production overload retains this child after spending/announcement and before its remaining effects; private routing and rejected stale/cancel replies are covered. Native authored production still excludes spaceship items.",
       "sources": [
+        "src/OpenCiv2.Core/City/CityProduction.cs",
         "src/OpenCiv2.Core/DiplomaticRelations.cs",
+        "src/OpenCiv2.Core/SpaceshipConstruction.Operation.cs",
         "src/OpenCiv2.Core/SpaceshipConstruction.cs",
         "src/OpenCiv2.Core/SpaceshipPerformance.cs",
         "src/OpenCiv2.Core/SpaceshipQueries.cs",
-        "src/OpenCiv2.Core/State/GameState.cs"
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Session/CityProductionOperation.cs",
+        "src/OpenCiv2.Session/SpaceshipPartInteraction.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/SpaceshipAssemblyContinuationCases.cs",
         "tests/OpenCiv2.FoundationCases/SpaceshipConstructionCases.cs"
       ],
       "sharedGroups": [
         "V04.relation-cascades",
         "V07.ai-launch-race-slot-zero",
         "V07.ai-launch-thresholds",
+        "V07.assembly-retained-fault-disposal",
+        "V07.assembly-retained-live-ai",
+        "V07.assembly-retained-private-production",
+        "V07.assembly-retained-production",
+        "V07.assembly-retained-selection",
         "V07.configured-maxima-mass",
         "V07.first-ship-ai-selection",
         "V07.group-choice-race",
@@ -2727,7 +2737,7 @@
       "id": "city-production",
       "contract": "C06 local production parent and nonunit completion; C08 buildings/wonders; V03 Darwin; V07 spaceship; W03 Apollo",
       "publicSurface": "CityProduction resumable local dispatch with lifecycle-service overload; CityProductionOperation; retained CompletedImprovement; desktop production choices/turn/load",
-      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open. The lifecycle-service overload retains the unit child and exposes its pending abandonment/lifecycle decision alongside research. CityProductionOperation privately routes both forms, reports deferred child presentation failures and drives desktop upkeep before support retirement. The city-unit-production family covers the full-parent cross-recipient cases; cargo menu/confirmation/report decisions now flow through the same private adapter; general space interactions remain open.",
+      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open. The lifecycle-service overload retains the unit child and exposes its pending abandonment/lifecycle decision alongside research. CityProductionOperation privately routes both forms, reports deferred child presentation failures and drives desktop upkeep before support retirement. The city-unit-production family covers the full-parent cross-recipient cases; cargo menu/confirmation/report decisions now flow through the same private adapter; the lifecycle-service overload also retains spaceship assembly through PartDecision before its remaining completion effects. The session adapter privately routes nominal part choices and rejects cancellation; general spaceship production admission remains open.",
       "status": "partial",
       "sharedGroups": [
         "C06.city-production-ai-spaceship-retarget",

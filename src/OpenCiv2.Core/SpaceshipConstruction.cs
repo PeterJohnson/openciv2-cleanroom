@@ -5,7 +5,10 @@ using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Core;
 
-public sealed record SpaceshipPartChoice(int Civilization, int Group, int FirstCount, int SecondCount, int ThirdCount);
+public sealed record SpaceshipPartChoice(int Civilization, int Group, int FirstCount, int SecondCount, int ThirdCount)
+{
+    public int? FullPart { get; init; }
+}
 public sealed record SpaceshipLaunchNotice(int Civilization, string Plural, int ArrivalYear);
 
 /// <summary>Human construction choices and semantic launch presentation. The window receives a
@@ -20,7 +23,7 @@ public interface ISpaceshipConstructionEffects
 
 /// <summary>V07 §§5–6 local assembly and launch, with actual performance/calendar and V04 relation
 /// mutations. The A02/C06 city-selection policy and player presentation remain required children.</summary>
-public sealed class SpaceshipConstruction(GameState world, RuleTables rules, SpaceshipValues values,
+public sealed partial class SpaceshipConstruction(GameState world, RuleTables rules, SpaceshipValues values,
     CalendarValues calendar, Action<CitySlot> reconsiderProduction, ISpaceshipConstructionEffects effects)
 {
     private readonly SpaceshipPerformance performance = new(world, rules, values, calendar);
@@ -30,12 +33,26 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
 
     public int AddPart(int owner, int group)
     {
+        int? result = null;
+        foreach (var request in AddSteps(owner, group, value => result = value))
+        { request.Reply(effects.ChoosePart(request.Choice)); }
+        return result!.Value;
+    }
+
+    public Operation BeginAddPart(int owner, int group) => new(this, owner, group);
+    private sealed record PartRequest(SpaceshipPartChoice Choice, Action<int> Reply);
+    private GameState World => world;
+
+    private IEnumerable<PartRequest> AddSteps(int owner, int group, Action<int> complete)
+    {
         MapKnowledge.RequireLocal(world);
         int selected = -1;
+        int? fullPart = null;
         performance.Calculate(owner, false);
         if (world.Civilizations[owner].SpaceshipFlags.Launched)
         {
-            return selected;
+            complete(selected);
+            yield break;
         }
 
         while (true)
@@ -45,7 +62,8 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
                 case 0:
                     if (Maxed(owner, 0))
                     {
-                        return selected;
+                        complete(selected);
+                        yield break;
                     }
 
                     selected = 0;
@@ -53,22 +71,32 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
                 case 1:
                     if (Maxed(owner, 1) && Maxed(owner, 2))
                     {
-                        return selected;
-                    }
-
-                    selected = Human(owner)
-                        ? unchecked(effects.ChoosePart(new(owner, group, Count(owner, 1), Count(owner, 2), 0)) + 1)
-                        : Count(owner, 1) < Count(owner, 2) ? 1 : 2;
-                    break;
-                default:
-                    if (Maxed(owner, 3) && Maxed(owner, 4) && Maxed(owner, 5))
-                    {
-                        return selected;
+                        complete(selected);
+                        yield break;
                     }
 
                     if (Human(owner))
                     {
-                        selected = unchecked(effects.ChoosePart(new(owner, 2, Count(owner, 3), Count(owner, 4), Count(owner, 5))) + 3);
+                        yield return new(new(owner, group, Count(owner, 1), Count(owner, 2), 0) { FullPart = fullPart },
+                            reply => selected = unchecked(reply + 1));
+                    }
+                    else
+                    {
+                        selected = Count(owner, 1) < Count(owner, 2) ? 1 : 2;
+                    }
+
+                    break;
+                default:
+                    if (Maxed(owner, 3) && Maxed(owner, 4) && Maxed(owner, 5))
+                    {
+                        complete(selected);
+                        yield break;
+                    }
+
+                    if (Human(owner))
+                    {
+                        yield return new(new(owner, 2, Count(owner, 3), Count(owner, 4), Count(owner, 5)) { FullPart = fullPart },
+                            reply => selected = unchecked(reply + 3));
                     }
                     else
                     {
@@ -92,6 +120,7 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
             }
 
             effects.NoFurther(owner, selected);
+            fullPart = selected;
         }
         if (!world.Civilizations[owner].SpaceshipFlags.Exists)
         {
@@ -118,7 +147,8 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
         performance.Calculate(owner, false);
         if (Human(owner))
         {
-            return selected;
+            complete(selected);
+            yield break;
         }
 
         bool enginesFull = true;
@@ -132,11 +162,12 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
 
         if (world.Civilizations[owner].SpaceshipFlags.Launched || world.Spaceship.Success < 40)
         {
-            return selected;
+            complete(selected);
+            yield break;
         }
 
         if (enginesFull)
-        { Launch(owner); return selected; }
+        { Launch(owner); complete(selected); yield break; }
         int earliest = 0;
         for (int human = 1; human < EntityLimits.Civilizations; ++human)
         {
@@ -154,7 +185,8 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
                 if (other != owner && !Human(other) && world.Civilizations[other].SpaceshipFlags.Launched
                     && world.Civilizations[other].SpaceshipArrivalYear < world.Civilizations[0].SpaceshipArrivalYear)
                 {
-                    return selected;
+                    complete(selected);
+                    yield break;
                 }
             }
         }
@@ -180,7 +212,8 @@ public sealed class SpaceshipConstruction(GameState world, RuleTables rules, Spa
             }
         }
 
-        return selected;
+        complete(selected);
+        yield break;
     }
 
     public void Launch(int owner)

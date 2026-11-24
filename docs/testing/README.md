@@ -51,6 +51,12 @@ entry gating, live report rebuilding, private recipients and negative close.
 The native advisor scenario scrolls the commodity list, visits populated and
 empty reports, returns to search and compares complete saves before/after and
 after reload. Foreign supply filtering remains covered by shared multi-civ cases.
+V07 assembly now runs through the retained C06 production parent. Shared cases
+cover full-part retries, live human membership, trusted signed replies, actual
+AI launch, private choices and accepted failure/disposal prefixes. The player
+prompt rejects cancellation and custom subtype values rather than treating a
+negative reply as a universal cancel code. The authored desktop profile still
+excludes spaceship production; these cases do not claim native part admission.
 V06 incident cases compose actual war, stance and Anarchy transitions. They cover
 directed treaty gates, live mission retention, human pretext without expulsion,
 leniency and senate draw order, scenario/autoplay gates and retained failures.

@@ -165,6 +165,11 @@ building storage, wonder ownership/effects, spaceship retargeting/assembly and
 resumable Darwin research. The lifecycle-service overload also retains the unit
 child; `CityProductionOperation` routes its cargo/abandonment/lifecycle choices and
 research decisions privately and reports deferred child presentation failures.
+The lifecycle-service overload also exposes retained spaceship `PartDecision`:
+`SpaceshipConstruction.BeginAddPart` shares assembly with the synchronous entry,
+and the session adapter waits for nominal component/module replies before the
+production tail. Trusted core replies retain V07's signed behavior; the player
+prompt admits only listed choices and has no cancellation sentinel.
 It retains cost/net/item across choices, applies the
 human wonder-priority early return, and runs the common tail once. The desktop
 city pass now uses it; Temple and Library choices extend the authored profile.

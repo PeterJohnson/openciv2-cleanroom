@@ -5,12 +5,13 @@ using OpenCiv2.Core.City;
 
 namespace OpenCiv2.Session;
 
-/// <summary>C06 production retains research, settler abandonment and lifecycle decisions.</summary>
+/// <summary>C06 production retains research, cargo, spaceship assembly and lifecycle decisions.</summary>
 public sealed class CityProductionOperation(CityProduction.Operation operation, Func<int, ParticipantId> recipient,
     Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private ResearchDecision? research;
     private UnitProductionDecision? unit;
+    private SpaceshipPartChoice? part;
     private InteractionSpec? intelligenceWindow;
     private OperationStep? completed;
     private bool faulted, disposed;
@@ -32,24 +33,27 @@ public sealed class CityProductionOperation(CityProduction.Operation operation, 
 
         try
         {
-            ResearchReply? reply = unit switch
-            {
-                SettlerAbandonment => input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout ? new(0)
-                    : input.Kind == OperationInputKind.Choice && input.Choice is { } choice ? new(choice) : null,
-                UnitProductionLifecycle lifecycle => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
-                UnitProductionCargo cargo => CargoInteraction.Reply(cargo.Decision, input),
-                _ => ResearchFlowInteraction.Reply(research, input)
-            };
+            ResearchReply? reply = part is not null
+                ? input.Kind == OperationInputKind.Choice && input.Choice is { } selected ? new(selected) : null
+                : unit switch
+                {
+                    SettlerAbandonment => input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout ? new(0)
+                        : input.Kind == OperationInputKind.Choice && input.Choice is { } choice ? new(choice) : null,
+                    UnitProductionLifecycle lifecycle => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
+                    UnitProductionCargo cargo => CargoInteraction.Reply(cargo.Decision, input),
+                    _ => ResearchFlowInteraction.Reply(research, input)
+                };
             var previousResearch = research;
             var previousUnit = unit;
             research = operation.Resume(reply);
             unit = operation.UnitDecision;
+            part = operation.PartDecision;
             if (!ReferenceEquals(previousResearch, research) || !ReferenceEquals(previousUnit, unit))
             {
                 intelligenceWindow = null;
             }
 
-            InteractionSpec? prompt = unit switch
+            InteractionSpec? prompt = part is not null ? SpaceshipPartInteraction.Prompt(part, recipient) : unit switch
             {
                 SettlerAbandonment abandon => new($"Abandon {abandon.CityName} to keep the new {abandon.UnitName}? "
                     + "Keeping the city removes the new unit without refunding its shields.",

@@ -76,14 +76,16 @@ public sealed class CityProduction
     public sealed class Operation(CityProduction production, CitySlot slot, string call,
         CivilizationElimination? lifecycle = null, EspionageIncidents? incidents = null) : IDisposable
     {
-        private enum Phase { Begin, Unit, FirstResearch, SecondResearch, AfterEffects, Finish, Done }
+        private enum Phase { Begin, Unit, Part, FirstResearch, SecondResearch, AfterEffects, Finish, Done }
         private Phase phase;
         private bool faulted, disposed;
         private int owner, net, cost;
         private int? improvement, wonder;
         private ResearchOperation? child;
         private CityUnitProduction.Operation? unit;
+        private SpaceshipConstruction.Operation? part;
         public UnitProductionDecision? UnitDecision { get; private set; }
+        public SpaceshipPartChoice? PartDecision { get; private set; }
         public bool ZoomRequested { get; private set; }
         private readonly List<Exception> failures = [];
         public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
@@ -105,9 +107,9 @@ public sealed class CityProduction
 
             try
             { return ResumeCore(reply); }
-            catch { faulted = true; child?.Dispose(); unit?.Dispose(); throw; }
+            catch { faulted = true; child?.Dispose(); unit?.Dispose(); part?.Dispose(); throw; }
         }
-        public void Dispose() { disposed = true; child?.Dispose(); unit?.Dispose(); }
+        public void Dispose() { disposed = true; child?.Dispose(); unit?.Dispose(); part?.Dispose(); }
 
         private ResearchDecision? ResumeCore(ResearchReply? reply)
         {
@@ -155,6 +157,19 @@ public sealed class CityProduction
                         unit = null;
                         Finished = true;
                         return null;
+                    case Phase.Part:
+                        PartDecision = part!.Resume(reply?.Selected);
+                        reply = null;
+                        if (part.Result is null)
+                        {
+                            return null;
+                        }
+
+                        CheckPartResult(improvement!.Value, part.Result.Value);
+                        part.Dispose();
+                        part = null;
+                        CompleteTail(improvement.Value);
+                        break;
                     case Phase.FirstResearch:
                     case Phase.SecondResearch:
                         if (child!.Resume(reply) is { } request)
@@ -331,12 +346,25 @@ public sealed class CityProduction
 
             if (item is >= BuildingIds.Structural and <= BuildingIds.Module)
             {
-                int part = production.spaceship.AddPart(owner, item - BuildingIds.Structural);
-                if (production.Human(owner) && !World.Civilizations[owner].SpaceshipFlags.Launched && part < 0)
+                if (lifecycle is not null)
                 {
-                    BadSpace(item);
+                    part = production.spaceship.BeginAddPart(owner, item - BuildingIds.Structural);
+                    phase = Phase.Part;
+                    return;
                 }
+                CheckPartResult(item, production.spaceship.AddPart(owner, item - BuildingIds.Structural));
             }
+            CompleteTail(item);
+        }
+
+        private void CheckPartResult(int item, int result)
+        {
+            if (production.Human(owner) && !World.Civilizations[owner].SpaceshipFlags.Launched && result < 0)
+            { BadSpace(item); }
+        }
+
+        private void CompleteTail(int item)
+        {
             if (item == BuildingIds.Palace)
             {
                 for (int i = 0; i < World.Entities.Cities.End; ++i)

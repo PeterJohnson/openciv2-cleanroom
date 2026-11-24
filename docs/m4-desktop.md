@@ -7151,3 +7151,48 @@ gate, report-return behavior and full saved/reloaded byte comparisons.
 M4 remains active: these report/search checks do not establish complete generated
 human/AI games or resolve the undefined F04 formulas. Browser, cross-platform and
 network execution remain deferred.
+
+## Retained spaceship assembly in production
+
+V07 `SpaceshipConstruction.BeginAddPart` now shares the synchronous assembly
+sequence. Human Component/Module choices retain the entry calculation and wait
+without repeating it. A full selected part reports NoFurther and retries with
+live group counts, retaining the previous selected value when a callback fills
+the whole group. Human membership is re-read after the reply; the AI increment,
+automatic launch, contact changes and production reconsideration keep their
+existing order and return value. Trusted negative replies retain their backed
+part meaning; unsupported reads and required-effect failures are terminal and
+cannot replay accepted mutations.
+
+The lifecycle-service `CityProduction` overload retains assembly after spending
+and announcement and before the remaining completion effects/common tail.
+`CityProductionOperation` routes the part choice privately, shows current counts
+and the full-part retry reason, and admits only nominal subtype replies. Its
+prompt is not cancellable: V07 supplies no generic cancellation sentinel, and
+the adapter does not turn a cancel/timeout into a different part. The legacy
+production entry and standalone synchronous assembly retain supplied callbacks.
+
+Five shared groups exercise retained selection, live retries and membership,
+actual AI launch, disposal/failure prefixes, full C06 ordering and private session
+admission. The authored desktop production profile still excludes spaceship
+parts; general native part-production admission and complete generated games
+remain open. Browser, cross-platform and network execution remain deferred.
+
+Validation applied and verified formatting for the root and App solutions; both
+Release builds passed with zero warnings/errors. Native tests passed
+**1789/1791**, with the two existing platform/audio skips. All **1754 shared
+groups** passed across **193 coverage families**; identity verified **880 compiled
+inputs**. The 43-project graph, eight identity tests and three coverage tests
+passed. No new native input run was performed: the authored profile cannot
+produce these parts, and the new retained decisions are covered through the
+actual core/session production parent. The preceding native UI receipt remains
+evidence for its own checkpoint, not native assembly acceptance.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-retained-ship-native.json` | `2b1ea4f10601fc0e9d64b85711be5351d94646d889ac19fec0e5925a5a0b7d69` |
+| `m4-retained-ship-identity.json` | `8656179abe103ea36c61c09d051c1b1ad5588b1c793e95706418c4279ad1c7f5` |
+
+M4 remains active. General F04 composition, the undefined government-score and
+best-shield formulas, complete generated human/AI games and independent
+original-game evidence remain open.
