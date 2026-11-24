@@ -1234,3 +1234,12 @@ owns MoveUnit order assignment, including the classic unit-slot selector and sig
 checks. `ScenarioUnitCreationOperation` forwards private contact choices and reports
 cosmetic failures after the action completes. Full S02 dispatch and other creation
 callers still need this retained path before general desktop composition.
+
+
+`CivilizationRemoval` implements V01 forced removal separately from last-city
+checks. Inline unit and city changes preserve the specified stack links, dead
+records and radius-claim behavior; actual lifecycle spy escapes and recreation
+can retain private decisions. `ScenarioDestruction` resolves the S02 recipient,
+publishes local defeat when required, and waits for this removal before returning.
+The matching Session adapters retain full replies and completion diagnostics.
+Full retained event dispatch and the general desktop composition remain open.

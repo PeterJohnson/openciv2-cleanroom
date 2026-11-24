@@ -6310,3 +6310,46 @@ formulas and the recorded A08 relation delta remain unresolved. Other U01 creati
 callers, full S02 dispatch, generated desktop composition and graphical/end-game
 acceptance remain open. Browser, cross-platform and network execution remain
 deferred; M4 is ongoing.
+
+
+## V01 forced removal and S02 destruction — 2026-11-23
+
+`CivilizationRemoval` implements the separate V01 §8 operation. Human control,
+kill/recreate low bytes and retirement policy retain their distinct effects. The
+inline ascending unit pass preserves sticky relinking, retained unit payload,
+carrier wakeup without occupancy filtering and one-slot bound shortening. The
+city pass preserves route removal, raw wonder destruction, retained records and
+visibility; its final radius repair includes dead and foreign cities and assigns
+the eliminated owner, including on Ocean tiles. Ship/alive/exploration and password
+effects precede the live remaining-human/recreation tail.
+
+Actual foreign spy escapes and last-settler checks retain their own research
+choices before later unit removals. Recreation uses the actual V01 operation;
+the non-destructive path retains existing assets while creation may add units and
+pause in diplomatic contact. Required failures and disposal retain committed
+prefixes. Presentation diagnostics follow completed gameplay.
+
+`ScenarioDestruction` supplies S02's one-level recipient resolution, alive/normal
+player admission and local defeat reason before actual removal. Its Session
+adapter routes private child decisions and publishes the action result only after
+the child completes. Eight new groups cover these branches, invalid stack writes,
+real nested Library decisions, private replies, stale replies and cancellation/
+timeout. These are specification-derived Core/Session tests, not original-game
+observations or graphical acceptance.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1672 of 1674**, with the two existing
+platform/audio skips. All **1639 shared groups** passed across 180 coverage families;
+identity verified **821 compiled inputs**. The 43-project graph, eight identity
+tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-forced-removal-native.json` | `ff3c224ab3afeff455784c628b1f2a99c10869ce73fe9531b8378e75c2863f75` |
+| `m4-forced-removal-identity.json` | `8d6afb18c3297a74a1c3777ae8b356ed152ebe879326bbeb2ee2ae00998e2f2d` |
+
+The retained S02 dispatcher and remaining terrain/action dependencies still need
+integration, as do other U01 creation callers and the general desktop graph.
+Generated-game, full turn and graphical/end-game acceptance remain open. The
+recorded F04/A08/original-observation gaps are unchanged. Browser, cross-platform
+and network execution remain deferred; M4 is ongoing.

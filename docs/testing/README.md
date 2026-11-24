@@ -1202,3 +1202,11 @@ required failures, cancellation/timeout diagnostics, and private last-city resta
 replies. Nested technology help preserves its full reply through Session, lifecycle,
 creation and contact without granting an advance or continuing placement. These
 native cases do not establish generated desktop or graphical audience acceptance.
+
+V01 forced-removal cases distinguish human-control removal from destruction and
+recreation. They cover low-byte flags, sticky stack relinking, stale carrier wakeup,
+retained city fields, routes/wonders, dead-city and Ocean radius repair, and actual
+foreign spy/recreation children. S02 cases cover one-level recipient resolution,
+local defeat ordering, private nested government choices, stale replies and
+cancellation/timeout diagnostics. These cases do not claim full event dispatch,
+network execution or graphical desktop acceptance.

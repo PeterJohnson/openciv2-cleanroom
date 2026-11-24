@@ -146,3 +146,8 @@ reply forwarding preserve research-help values; private Session cases cover
 recipient isolation, cancellation, timeout and diagnostic completion. See
 [CreationContactCases.cs](../../tests/OpenCiv2.FoundationCases/CreationContactCases.cs).
 Full generated desktop composition and graphical acceptance remain open.
+
+V01 forced removal now has its own retained service and S02 destruction wrapper,
+with inline stack/city/radius semantics and real spy/recreation children. See
+[RemovalCases.cs](../../tests/OpenCiv2.FoundationCases/RemovalCases.cs). Full scenario
+dispatch, general desktop integration and graphical acceptance remain pending.

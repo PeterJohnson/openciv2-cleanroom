@@ -2298,7 +2298,7 @@
       "status": "partial",
       "contract": "V01 section6 local last-city check; V06 section2 escape/capture; V07 section8 reset/loss; actual C05 starvation integration",
       "publicSurface": "CivilizationElimination.Check/Begin/Operation.Resume; CivilizationEliminationOperation; SpyEscape.Try/Caught; SpaceshipLifecycle.Reset/Lost; desktop food/retirement deletion adapter",
-      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. The resumable operation now completes actual nested last-settler checks and espionage incidents before continuing the captured descending scan. Shared deletion/cargo/escape steps retain ordering across suspension; the synchronous APIs retain their owning callbacks. Tests cover multiple nested human victims without reply reuse, loss before pretext, later units/passwords remaining untouched while pending, bounded creation search, disposal and terminal failure prefixes. The session adapter routes each prompt to its victim participant; real command-runtime cases verify privacy, reply authority and cancellation as decline. General city/combat/mission callers and saved pending-operation restoration remain open. Actual nonzero-turn catch-up, nested Library effects and restart denial are covered by civilization-restart-research. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
+      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. The resumable operation now completes actual nested last-settler checks and espionage incidents before continuing the captured descending scan. Shared deletion/cargo/escape steps retain ordering across suspension; the synchronous APIs retain their owning callbacks. Tests cover multiple nested human victims without reply reuse, loss before pretext, later units/passwords remaining untouched while pending, bounded creation search, disposal and terminal failure prefixes. The session adapter routes each prompt to its victim participant; real command-runtime cases verify privacy, reply authority and cancellation as decline. General city/combat/mission callers and saved pending-operation restoration remain open. Actual nonzero-turn catch-up, nested Library effects and restart denial are covered by civilization-restart-research. Forced removal is covered by civilization-forced-removal; civil war has its own retained service. Network requests and full endgame/generated-game acceptance remain pending.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationElimination.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
@@ -5615,6 +5615,32 @@
         "S02.unit-creation-private-session",
         "U01.creation-retained-boundaries",
         "U01.creation-retained-contact"
+      ]
+    },
+    {
+      "id": "civilization-forced-removal",
+      "contract": "V01 \u00a78 local forced removal/retirement; S02 \u00a79 DestroyACivilization; actual V06/V03/V01 children",
+      "publicSurface": "CivilizationRemoval.Begin/Operation.Resume; ScenarioDestruction.Begin; CivilizationRemovalOperation; ScenarioDestructionOperation",
+      "review": "Low-byte flags and retirement policy; live ascending unit/city scans; sticky relink state, retained fields, carrier wakeup and one-slot bound shortening; route removal, raw wonders, visibility and eliminated-owner radius repair including dead cities/Ocean. Actual foreign spy survival and last-settler loss retain nested Library decisions before later removals. Non-destructive recreation retains assets and actual placement contact. Session privacy, stale replies, cancellation/timeout and presentation diagnostics; required failure/disposal prefixes. S02 recipient resolution and defeat-before-removal are implemented; full retained scenario dispatcher and graphical/general-desktop integration remain pending. Network execution is deferred.",
+      "sharedGroups": [
+        "S02.destruction-admission",
+        "S02.destruction-private-session",
+        "V01.removal-city-routes-and-radius",
+        "V01.removal-control-and-low-bytes",
+        "V01.removal-foreign-mission-and-failure",
+        "V01.removal-inline-units",
+        "V01.removal-retained-recreation",
+        "V01.removal-retains-foreign-spy-loss"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/CivilizationRemoval.cs",
+        "src/OpenCiv2.Core/ScenarioDestruction.cs",
+        "src/OpenCiv2.Session/CivilizationRemovalOperation.cs",
+        "src/OpenCiv2.Session/ScenarioDestructionOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RemovalCases.cs"
       ]
     }
   ]
