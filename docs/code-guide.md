@@ -1146,3 +1146,9 @@ W03 `Units/NegotiatedMaps` and V04 alliance cancellation. Mercenary treaty chang
 remain distinct from generic war declaration. `Session/DiplomaticFavorOperation`
 shares technology interaction handling with direct exchanges. Full audience and
 treaty-negotiation callers remain open.
+
+`Core/NegotiatedTreaties` owns V04 §5's negotiated alliance, peace and ceasefire
+wrappers, including actual stance evaluation. `Core/TreatyNegotiation` owns V05
+§5's willingness, payment and solidarity stages and composes real grants, war and
+treaty effects. `Session/TreatyNegotiationOperation` routes actor choices and nested
+recipient research decisions. Full proposal/demand and audience callers remain open.

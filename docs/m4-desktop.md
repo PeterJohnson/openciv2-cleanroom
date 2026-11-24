@@ -5816,3 +5816,48 @@ previously recorded F04 formulas, relation-review input gap, complete turn
 orchestration and generated human/AI end-condition acceptance. Directional
 multiplayer map offers are separate work. Browser, cross-platform qualification
 and network execution remain deferred.
+
+## V04 negotiated treaties and V05 bargaining — 2026-11-23
+
+`NegotiatedTreaties` implements V04 §5's alliance, peace and ceasefire wrappers
+with actual A08 stance evaluation. Alliance adjusts attitude, establishes its
+Peace cascade, updates both HasAllied flags and clears the counterpart's request
+counter. Peace and ceasefire preserve the shared hotseat attitude-store gate.
+Ceasefire clears Tribute before evaluation, retains the request count, and clears
+incoming Aggressor flags only after the required notice; AggressorLong survives.
+
+`TreatyNegotiation` implements V05 §5's alliance/peace willingness, technology and
+gold payments, solidarity and refusal branches. Peace reasons retain their
+distinct meanings; wonder compulsion survives payment refusal while other reasons
+are cleared. Technology grants precede valuation of the live best choice. Gold
+prices use signed products and the specified repeated decrement; accepted prices
+remain cached without another affordability check. Later solidarity rejection
+retains payment and distinguishes whether the audience should end. Acceptance
+uses actual mediated war, new-common-target flags and the negotiated wrappers.
+
+The Session adapter privately routes actor payment/solidarity decisions and
+nested recipient grants. Ten new groups cover treaty wrapper ordering, hotseat
+storage, peace/wonder reasons, pricing, live post-grant valuation, paid/unpaid
+solidarity refusals, mediated war, refusal messages, request wrap, required
+failures, disposal and cancel/timeout. A command-runtime case transfers prompt
+ownership from the actor to the technology recipient's government decision.
+The initial build caught an unused failure-fixture flag; adding its intended
+required-notice test completed that case. Initial and final shared probes passed.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1577 of 1579**, with two existing
+platform/audio skips. The shared probe passed all **1544 groups** across 171
+coverage families; source identity verified **788 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. This checkpoint uses
+native Core/Session composition and the App build; it does not claim a new
+graphical input-driver run or full desktop audience acceptance.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-treaty-native.json` | `f34cc62e61e40797eb66c45157fcd7ef559ff4d983477d6f70052c3f2d358253` |
+| `m4-treaty-identity.json` | `85c81fa186f904df1bb07fb00a1ac56be8b82660499b9386f33d9c7adca55d6c` |
+
+Full V05 proposal dispatch, demands and audience orchestration remain open,
+together with the previously recorded F04 formulas, relation-review input gap,
+complete turn orchestration and generated human/AI end-condition acceptance.
+Browser, cross-platform qualification and network execution remain deferred.

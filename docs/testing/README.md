@@ -1112,3 +1112,11 @@ distrust, admission overrides, cached payment, nested two-technology grants,
 mercenary/betrayal flags and failure prefixes. Actual exchange and Session cases
 cover patience repetition, private prompts and cancellation. Full desktop audience
 and generated-game acceptance remain open.
+
+V04/V05 treaty cases exercise negotiated wrappers with actual stance evaluation,
+hotseat attitude storage, request/contact updates and ceasefire cleanup after the
+required notice. Bargaining cases cover peace reasons and wonder compulsion, gold
+rounding, payment retention, live post-grant valuation, solidarity/mediated war,
+refusal branches and private nested government choices. Cancellation and failure
+cases preserve actual prefixes. Full proposal/demand and audience integration
+remain open.

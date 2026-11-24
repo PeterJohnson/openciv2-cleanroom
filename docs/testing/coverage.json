@@ -5346,6 +5346,33 @@
         "W03.negotiated-maps-directional",
         "W03.negotiated-maps-entities-failures"
       ]
+    },
+    {
+      "id": "treaty-negotiation",
+      "status": "partial",
+      "contract": "V04 section5 negotiated alliance/peace/ceasefire; V05 section5 alliance and peace bargaining",
+      "publicSurface": "NegotiatedTreaties.FormAlliance/SignPeace/AgreeCeasefire; TreatyNegotiation.Begin/PeaceWillingness/GoldPrice; TreatyNegotiationOperation",
+      "review": "Actual A08 willingness/evaluation, V03 retained grants and V04 mediated war. Payment conditions, live post-grant valuation, wonder-compelled peace, cached gold and solidarity refusal preserve ordered state. Treaty wrappers retain attitude gates, contact/request updates and post-notice ceasefire cleanup. Session routes payment/solidarity and nested government choices privately. Full proposal/demand and audience integration remains open; network, browser and cross-platform work deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/NegotiatedTreaties.cs",
+        "src/OpenCiv2.Core/TreatyNegotiation.cs",
+        "src/OpenCiv2.Session/TreatyNegotiationOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/TreatyNegotiationCases.cs"
+      ],
+      "sharedGroups": [
+        "V04.negotiated-treaty-wrappers",
+        "V05.treaty-gold-pricing-payment",
+        "V05.treaty-peace-reasons",
+        "V05.treaty-private-session-grant",
+        "V05.treaty-refusal-branches",
+        "V05.treaty-session-cancellation-disposal",
+        "V05.treaty-solidarity-actual-war",
+        "V05.treaty-solidarity-payment-refusal",
+        "V05.treaty-technology-live-valuation",
+        "V05.treaty-wonder-compulsion"
+      ]
     }
   ]
 }
