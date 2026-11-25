@@ -6,6 +6,15 @@ the additional support/unhappiness government-score terms and the best-shield
 summary producer. This procedure prepares independent original-game evidence;
 it supplies neither expression and does not close M4.
 
+The first [Windows observation session, 2026-11-24](f04-original-observations-2026-11-24.md)
+records a repeated baseline, no-turn controls and one-city shield outputs 1/2/3.
+The [follow-up session](f04-original-observations-2026-11-24-followup.md) confirms
+the displayed target version and adds twelve two-city/support turn pairs,
+including a matched away-garrison control. These constrain the positive
+best-shield producer and final government-score differences; both general
+formula gaps remain open. The records retain private capture locations,
+observed values and the remaining discriminating experiments.
+
 Use original-game interactions, saved files and, when needed, external process
 observations under the
 [cleanroom boundary](../architecture.md#1-cleanroom-and-compatibility-boundary).
@@ -23,7 +32,8 @@ process-observation path below is separate tooling, not a feature of that packag
 
 Copy the original installation to a writable Windows working directory. Preserve
 the supplied installation and saves. Record the version shown by the original
-game's About screen, the operating system and any patches/compatibility settings.
+game's Game Options title (`Ctrl+O`), the operating system and any
+patches/compatibility settings. The inspected About entry opened credits instead.
 The target is MGE **5.4.0f, patch 3**; an executable hash or save format alone does
 not establish that version. Record a mismatch rather than relabeling the result.
 

@@ -467,8 +467,9 @@ anarchy score. For a currently nonhuman civilization, run
 using the two accumulated predicates and current state. Then run
 [A08's strategic government-score adjustments](A08-ai-research-government-and-diplomacy.md#strategic-adjustments-to-government-scores)
 for all civilizations, and clear the 28 wonder-notice entries again. These run
-**after** the completed city scan and before civilization diplomacy; C04/C05
-own the city-level score contributions.
+**after** the completed city scan and before civilization diplomacy. C02–C05
+own the recalculation and support children; F04 owns the additional stage-5
+score contributions and stage-7 summary defined below.
 
 The scan captures its upper bound, not the records. A city created in a higher
 slot during a callback is not appended to this pass. A newly occupied lower
@@ -486,9 +487,9 @@ mutations inside each stage remain with the mechanics owners.
 | 2 | Resolve food/growth/starvation from incoming state ([C05](C05-city-growth-and-support.md#food-turn-starvation-or-ordinary-growth)). If the child returns nonzero, return the city-removed sentinel immediately; bypass the remaining stages and their trailing cleanup. |
 | 3 | Recalculate the city fully (C02–C05), refresh a displayed dirty window, and issue any worker-overflow notice. Compute and add this turn's food surplus; test the low-food warning using the captured incoming box ([C05](C05-city-growth-and-support.md#this-turns-food-accumulation-and-warning)). |
 | 4 | Process [C06 production](C06-city-production-and-purchasing.md#production-during-a-city-turn), then run [C05 support-shortage/retirement handling](C05-city-growth-and-support.md#unsupported-unit-and-disorder-retirement-pass). Newly produced units therefore exist before this support-disband pass. |
-| 5 | Enable worker reallocation and city-processing mode, clear the current terrain-job result/priority, recalculate fully again, then disable worker reallocation. Accumulate support and unhappiness effects into government scores (C04/C05/A08/V02). |
+| 5 | Enable worker reallocation and city-processing mode, clear the current terrain-job result/priority, recalculate fully again, then disable worker reallocation. Apply the [stage-5 government-score contributions](#stage-5-government-score-contributions) below using the completed calculation. |
 | 6 | Process [disorder, tax collection and celebration](C04-city-happiness-and-disorder.md#city-turn-disorder-tax-and-celebration-operation), then add research (V03). If the captured owner's civilization is currently human, process [pollution and meltdown](W05-pollution-and-global-warming.md#ordinary-city-pollution), then [improvement upkeep](C08-buildings-and-wonders.md#city-maintenance-payment-and-forced-loss). The human test is made once for this pair; it is not retested between them. |
-| 7 | Add [AI terrain-work goals](A03-ai-settlement-and-terrain-work.md#3-city-terrain-job-publication) (A03) and update the civilization's best-shield summary from this city's calculation. |
+| 7 | Add [AI terrain-work goals](A03-ai-settlement-and-terrain-work.md#3-city-terrain-job-publication) (A03), then apply the [stage-7 best-shield publication](#stage-7-best-shield-publication) below using the current calculation. |
 | 8 | Unlock refresh and invalidate the cached calculated-city identity. If it was displayed, save its build state and refresh; if zoom was requested, open it. Clear city-processing mode and return the current happy-minus-unhappy count. |
 
 The founder update in stage 1 occurs when
@@ -496,23 +497,173 @@ The founder update in stage 1 occurs when
 as founder. The city-removed path does not execute stage 8. Do not add a
 universal cleanup block and assume its workspace effects match the original.
 
-### Open city-analysis arithmetic
+<a id="open-city-analysis-arithmetic"></a>
 
-The stage-5 reference to additional support/unhappiness government-score terms
-does not yet define those terms. C02/C03's explicit yield, corruption and
-distribution contributions and C05's retirement sentinel are specified; they
-do not establish the missing parent expressions. Stage 7 likewise names the
-best-shield summary without defining its producer's scale, comparison and
-publication arithmetic. A02 consumes that retained value alongside doubled
-shield surplus and also shifts it; those consumers do not uniquely determine
-the producer. Keep these two parent operations open pending a precise behavioral
-contract or independent original-game observations. Do not infer missing formulas
-from historical source records or claim a complete F04 city analysis from the
-already specified contributions.
+### City-analysis arithmetic
+
+The two parent operations below are defined behavioral contracts. Their former
+formula gaps are closed by the specifically authorized source-evidence review
+recorded in [Appendix B](#city-analysis-resolution-2026-11-24). Implement these
+contracts together with the existing child specifications. Formula closure does
+not establish implementation, joined-turn validation or whole-game conformance.
+
+Both operations credit the civilization captured as this city's owner at stage 1.
+They apply to human and AI civilizations and have no additional actual-government
+or disorder gate. The stage-2 city-removed return bypasses both. Existing score
+contributions, including C02/C03 recalculation effects and C05 retirement markers,
+remain in the accumulators; these operations add to them rather than resetting
+them. The city pass alone resets the seven scores and best-shield summary to zero.
+
+All arithmetic below uses F01's signed cyclic `s32` domain, with signed
+comparisons. Each score publication reduces to `s16`, then subsequent reads use
+that signed value. `clampAB(x, lo, hi) = min(max(x, lo), hi)` is
+[F01's shared clamp](F01-determinism-and-arithmetic.md#shared-clamp-and-shift-helpers);
+do not swap reversed bounds. The formulas specify observable numeric results,
+not required internal storage or additional callback boundaries.
+
+#### Stage-5 government-score contributions
+
+Run after the second full recalculation has completed and worker reallocation
+has been disabled, before stage 6's disorder/tax/celebration operation. The
+operands are the current semantic calculation outputs at this boundary:
+
+| Symbol | Meaning |
+| --- | --- |
+| `S` | Full signed32 shield total after production bonuses and waste, before shield support, from C02/C03. |
+| `U` | C05's signed32 `shieldSupport` cost under the actual government. |
+| `N` | C05's signed32 `supportedUnits` count, including eligible units within the free allowance; it is not `U` or a count of every unit in the civilization. |
+| `A` | C05's signed32 `aggressiveUnits` count, including its role, domain, city-location and fortress exceptions. Do not replace it with a new generic away-unit count. |
+| `size` | The current signed city population. |
+| `M`, `C`, `F` | The unsigned-byte Monarchy, Communism and Fundamentalism free-support rules, interpreted as nonnegative integers. |
+| `score[g]` | The captured owner's current signed16 analysis score for government `g`. |
+
+Use full calculation outputs for `S`, `U`, `N` and `A`; the city's narrowed
+saved shield byte and visible mood counts are not substitutes. C05 defines the
+unit membership and charging operations; F04 consumes their completed results.
+Actual government affects those upstream results but does not select which of
+the seven analysis scores is updated here.
+
+First apply the support terms, in this order:
+
+```text
+if S < U:
+    shortage = s32(U - S)
+    score[Anarchy] = s16(s32(score[Anarchy] + s32(5 * shortage)))
+
+extra = clampAB(s32(N - M), 0, size)
+score[Anarchy] = s16(s32(score[Anarchy] + extra))
+
+for g in [Despotism, Monarchy, Communism, Fundamentalism, Republic, Democracy]:
+    allowance = { Despotism: size, Monarchy: M, Communism: C,
+                  Fundamentalism: F, Republic: 0, Democracy: 0 }[g]
+    if allowance < N:
+        score[g] = s16(s32(score[g] - s32(N - allowance)))
+```
+
+The Fundamentalism analysis term uses `N` and `F` directly; it does not rerun
+the unit-type exemption test from C05's actual support charging operation.
+For admitted negative population values, the Anarchy clamp retains F01's
+reversed-bound behavior. For ordinary nonnegative counts and population, the
+six deductions are `max(N - allowance, 0)`.
+
+Next apply the leader/building/wonder terms. Building presence, active wonder
+ownership and active wonder location use
+[C08's queries](C08-buildings-and-wonders.md#wonder-location-owner-and-obsolescence).
+Let `civilize` and `attack` be the captured owner's leader's signed-byte traits,
+widened without changing their signed values.
+
+```text
+protection = 1 if hasWonder(owner, Women's Suffrage)
+                  or hasBuilding(city, Police Station), otherwise 0
+
+factor = s32(7 - civilize)
+if hasBuilding(city, Marketplace):
+    factor = s32(factor - 2)
+if hasBuilding(city, Bank):
+    factor = s32(factor - 1)
+if hasBuilding(city, Temple) and
+   (hasBuilding(city, Cathedral) or hasWonder(owner, Michelangelo's Chapel)):
+    factor = s32(factor - 1)
+
+if activeCity(Shakespeare's Theatre) != city:
+    weighted = s32(s32(attack + A) + 1)
+    penalty = clampAB(s32((2 - protection) * weighted), 0, 99)
+    score[Democracy] = s16(s32(score[Democracy] - s32(penalty * factor)))
+    penalty = clampAB(s32(s32(weighted - 1) * (1 - protection)), 0, 99)
+    score[Republic] = s16(s32(score[Republic] - s32(penalty * factor)))
+```
+
+Bank's reduction does not require a Marketplace. The Temple conjunction
+subtracts only one even if both Cathedral and Michelangelo qualify. Protection
+is Boolean, so Police Station and Women's Suffrage do not stack. Shakespeare's
+active-city match skips only these two leader deductions, not the support terms.
+Do not clamp `factor` or either final score. Wrapping precedes the `0..99` clamp;
+the clamp precedes multiplication by `factor`.
+
+These are contributions to the current scores, not complete city or civilization
+vectors. After all cities, the existing city-pass operation performs
+`score[Anarchy] = s16(s32(score[Anarchy] + s32(2 * score[Despotism])))`, followed
+by the specified AI-rate and A08 strategic adjustments. Do not apply this
+Anarchy postprocessing separately after each city.
+
+#### Stage-7 best-shield publication
+
+After stage 6 and A03's terrain-work-goal publication, read the **current** full
+calculation shield total `S` and support cost `U`, with the meanings above.
+Preserve changes made by intervening semantic operations; do not reuse an
+entry-time or stage-5 snapshot in place of those current values. Update the
+captured owner's summary before stage 8's calculation invalidation and refresh:
+
+```text
+candidate = s32(s32(2 * S) - U)
+if bestShieldSummary <= candidate:       # signed16 summary widened to signed32
+    bestShieldSummary = s16(candidate)
+```
+
+The comparison includes equality and uses the full signed32 candidate before
+narrowing. A tie stores the same scalar and does not select or retain a city
+identity. There is no separate zero, shortage, disorder, human/AI or government
+test at this publication. A city that reaches it contributes under the same
+rule; any upstream yield/support changes remain effective.
+
+With no relevant overflow, the city pass produces
+`max(0, max_over_processed_cities(2*S-U))`. This shorthand is not the general
+arithmetic contract: a candidate outside the signed16 range can pass comparison
+and wrap on publication, affecting later cities' comparisons. Preserve the
+descending city order and each publication's conversion. A02 consumes this
+retained weighted summary; it is neither raw shields nor doubled net surplus.
 
 The [original-game observation procedure](../testing/f04-original-observations.md)
-defines controlled save captures for these gaps. Packaging a capture is not a
-formula resolution or original-compatibility conclusion.
+remains useful for independent validation of these contracts and their joins.
+Packaging a capture alone establishes neither formula correctness nor complete
+original-game compatibility.
+
+#### Independent finite observation constraints
+
+The [2026-11-24 Windows follow-up](../testing/f04-original-observations-2026-11-24-followup.md)
+confirms the displayed MGE 5.4.0f patch 3 version and retains twelve original
+turn pairs. In the observed human Despotism cases with ordinary production,
+positive small yields and zero to three shield support, the final best-shield
+value fits `max(2*S-U)` across cities, where `S` is shields after waste and before
+support and `U` is shield support. Unequal/equal candidates, either slot supplying
+the larger candidate, waste, support changes and an 8-to-6 reset distinguish this
+candidate from several alternatives. The mixed-support crossing distinguishes
+comparison of the final candidate from comparison before subtracting support,
+assuming the descending city order specified above. All twelve pairs agree
+with the stage-7 contract. These finite independent observations do not establish
+its internal operands/timing, zero/shortage, disorder, other-government or
+narrowing cases; those details are supplied by the separately identified source
+evidence, not retroactively attributed to these captures.
+
+The same report records final government-vector deltas of
+`[1,1,1,1,0,8,15]` and `[2,1,0,0,0,8,15]` for successive away-unit removals.
+A matched garrison-location comparison changes only the Republic/Democracy
+entries by `-7/-14` while support cost, yields and visible mood remain unchanged.
+These constrain the aggregate saved result; they do not separate stage 5 from
+C02/C03 recalculation and the Anarchy/A08 post-pass terms. The stage-5 contract
+above now defines those parent expressions. Its source-derived provenance does
+not enlarge the independent observations' scope or turn their aggregate results
+into isolated stage-5 measurements.
 
 ## 7. Unit reset, recovery and movement boundaries
 
@@ -790,6 +941,22 @@ the declared random inputs. Unmentioned state is retained.
 | All eligible units exhausted; no earlier input wait in this player phase. | Lack of units alone does not select the automatic end branch. |
 | Autosave backup deletion/rename fails. | Still call the save writer. The caller does not roll back upkeep or propagate that helper's write result. |
 
+### City-analysis arithmetic cases
+
+These are specification-derived arithmetic expectations, not additional original
+observations. Each row isolates the named operation; it does not assert that an
+arbitrary supplied calculation is reachable through every preceding child.
+
+| Input and isolated operation | Expected result |
+| --- | --- |
+| Stage-5 support terms only; all scores initially 0; `S=3`, `U=2`, `N=4`, `size=2`, `M=C=3`, `F=10`. | Scores in Anarchy-through-Democracy order become `[1,-2,-1,-1,0,-4,-4]`, before leader terms, other contributions and city-pass postprocessing. |
+| Stage-5 shortage term only; `S=3`, `U=5`. | Add 10 to Anarchy, with signed16 publication; continue with the other support terms. |
+| Leader terms only; `factor=7`, `attack+A=1`, no Shakespeare exemption. | Without protection, subtract 28 from Democracy and 7 from Republic. With protection, subtract 14 and 0. An active Shakespeare match skips both deductions. |
+| Stage-7 summary starts 0; higher-slot city has `S=3,U=0`; next lower-slot city has `S=4,U=3`. | Publish 6, then retain 6 against candidate 5. Compare after support subtraction. |
+| Stage-7 summary starts 0; separate cases `S=0,U=0`, `S=0,U=1`, and `S=3,U=5`. | Candidate 0 publishes 0; candidate -1 leaves 0; candidate 1 publishes 1 despite the shield shortage. |
+| Stage-7 current summary 7; `S=32768,U=0`. | Candidate 65536 passes the signed comparison, then publishes 0 after `s16`; it is not clamped to 32767. |
+| Stage-7 current summary 1; `S=-2147483648,U=0`. | Doubling wraps to candidate 0; retain 1. |
+
 ## Appendix A. Original encodings and snapshot mapping
 
 The logical values above need not use these addresses or field layouts.
@@ -851,6 +1018,53 @@ Independent evidence at the pinned `civ2` revision includes
 and `src/civ_autosave.cpp`. It corroborates phase ordering, calendar tables,
 live reads, treasury normalization and autosave rotation. Its explicit stops
 for missing backing state are evidence boundaries, not original error returns.
+
+### City-analysis resolution, 2026-11-24
+
+The user explicitly authorized a specification-only update from the investigated
+decompiled evidence to close the two section-6 arithmetic gaps. The stage-5 and
+stage-7 contracts above are the resulting implementation inputs. This is a
+scoped source-derived specification resolution; the general implementation
+boundary and the status of other specification gaps are unchanged. Implementers
+use the self-contained contracts, not the external source or historical harnesses.
+
+This review supplements the older evidence pins above with:
+
+- OpenCiv2 revision `0629e37fb9252ac5ff3788a6807baf1777aee414`:
+  `src/auto/city.cpp`, `re/decomp.c`, and the city-pass reset/postprocessing in
+  `src/auto/civ.cpp`.
+- `civ2` revision `cccd7d70ca461e1631d7368a861d6d84577443a7`:
+  `src/city_turn.cpp` and the support/yield producers. The matching original
+  city-turn entry is `004f0a9c`; support terms are at `004f0d8a..004f0f38`,
+  leader/building/wonder terms at `004f0f39..004f110b`, and best-shield evaluation,
+  comparison and publication at `004f1161..004f11ae`.
+- Archived original instruction listing
+  `analysis/city/capture/ai-city/city-turn/instructions.txt` at the `civ2` tag
+  `reconstruction-reference-2026-10-26` (commit
+  `c40a86ccf18868284da0f739c5cb9ad7e42b9e11`, listing Git blob
+  `a3aff05ef7b0eb7e447f7c55d91386be683e4f90`). All **494** listed instructions
+  in the city-turn range, covering **1,903 bytes**, matched the local original
+  executable; the four support-switch targets were also checked. Executable
+  SHA-256 is
+  `edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c`,
+  matching the version-qualified original observation reports.
+
+The archived `city-upkeep/debug-post.json` and `debug-leader.json`, alongside
+the retained `analysis/city/capture/README.md` account, record four controlled
+original-region support cases and six leader cases. The account also records
+three original tail-region cases covering equality, signed comparison and
+narrowing/wrap. Those historical checks use supplied state/frames and have their
+recorded limits; they were not rerun for this update and are not independent
+whole-turn observations. The byte comparison is static verification, not a new
+original execution. No original executable or reconstructed implementation is
+included in this repository by this update.
+
+The twelve independent follow-up best-shield results were checked against
+`max(0, max(2*S-U))` in their observed small-value domain and all matched. The
+government-vector contrasts remain aggregate observations, with the limits
+recorded in section 6. Both formula gaps are closed at the specification level;
+general F04 integration, independent joined-turn validation and the remaining
+section-12 obligations retain their existing scope.
 
 ### Differences and bounded child behavior
 

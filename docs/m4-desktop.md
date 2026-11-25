@@ -8795,3 +8795,36 @@ is claimed.
 | --- | --- |
 | `m4-unit-execution-presentation-native.json` | `f3398295a44a182cb8947e2ae95cef36177d1e024f0871e2f62c37b0a68f3d4f` |
 | `m4-unit-execution-presentation-identity.json` | `b34c36c1c612982408ef5ffbe921c17e651758e68c00cffb92046a14bb28d72d` |
+
+## Initial Windows F04 observations
+
+The [2026-11-24 original-game session](testing/f04-original-observations-2026-11-24.md)
+packaged six controlled save comparisons outside the repository. A human city
+with zero support produced saved best-shield values 2/4/6 for shield outputs
+1/2/3; no-turn controls and a repeated baseline retained the target values.
+Reload/replay confounders and government-score vectors are recorded explicitly.
+All twelve stored-save inspections succeeded and 118 manifest entries verified.
+The displayed numeric version was not yet qualified at that checkpoint, and
+those cases do not resolve multi-city comparison/publication or the additional
+government arithmetic.
+Both F04 gaps and M4 remain open. No gameplay implementation changed.
+
+## F04 version, two-city and support observations
+
+The [2026-11-24 follow-up](testing/f04-original-observations-2026-11-24-followup.md)
+confirms MGE 5.4.0f patch 3 in the original Game Options title. Twelve new turn
+pairs use two supplied two-city saves, preserving their unverified historical
+provenance separately from the newly observed transitions. Unequal/equal city
+outputs, support 0–3, waste, a mixed-support crossing and a falling prior maximum
+all fit the candidate `max(2*shieldsAfterWasteBeforeSupport-shieldSupport)` in the
+observed domain. An away-garrison comparison and matched control isolate a final
+Republic/Democracy score difference of -7/-14 with unchanged support cost, yields
+and visible mood; the recorded return restores the vector but includes research
+completion. Successive away-unit removals supply additional score constraints.
+
+All twelve packages and 24 stored inspections succeeded; 273 manifest entries
+and four original/source-copy identities matched. Inspections retain the two
+informational rules/view-civilization diagnostics. F04 records these finite
+constraints without promoting them to general formulas: stage boundaries,
+zero/shortage/disorder cases and other-government effects remain unobserved.
+No gameplay code changed. Full F04 integration, generated games and M4 remain open.

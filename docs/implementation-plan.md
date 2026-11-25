@@ -487,8 +487,10 @@ inputs without leaking an earlier game's view or duplicating a completed action.
 Owners: all F/W/U/C/V/A mechanics, with S02 and presentation hooks integrated
 as their callers require them.
 
-The current workstream targets desktop, with execution on the available Linux
-host. Browser integration/WASM execution and cross-platform qualification are
+The current workstream targets desktop. Earlier implementation checks ran on
+Linux; the current Windows host supplies original-game F04 observations through
+the [capture procedure](testing/f04-original-observations.md). Browser
+integration/WASM execution and cross-platform qualification are
 deferred; this does not reduce the mechanics or AI scope below. The
 [desktop work record](m4-desktop.md) tracks delivered operations, remaining
 dependencies and acceptance evidence without claiming complete M4 from leaf tests.
